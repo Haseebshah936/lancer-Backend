@@ -22,7 +22,9 @@ const {logger} = require("./utils/logger");
 
 // Routes 
     app.use("/api/auth", authRouter)
-
+    app.get("/api/", (req, res) => {
+        res.send("Hello World");
+    })
 
 // Started Server
     // const port = process.env.PORT || 3002;
