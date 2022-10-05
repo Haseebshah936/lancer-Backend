@@ -1,6 +1,8 @@
 {
-    "name": "My Application-Developement",
-    "mail": {
-        "host": "infolancer7@gmail.com"
-    }
+    "name": "Lancer-Developement",
+    "mongoDB": {
+        "name": "haseeb",
+        "password": "haseeb"
+    },
+    "port": 3003
 }

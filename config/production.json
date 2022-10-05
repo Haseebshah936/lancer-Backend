@@ -1,6 +1,6 @@
 {
-    "name": "My Application-Producation",
-    "mail": {
-        "host": "infolancer7@gmail.com"
+    "name": "Lancer-Producation",
+    "mongoDB": {
+        "name": "admin"
     }
 }

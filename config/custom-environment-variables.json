@@ -1,5 +1,6 @@
 {
-    "mail": {
-        "password": "lancer_password"
-    }
+    "mongoDB": {
+        "password": "admin_password"
+    },
+    "port": "PORT"
 }

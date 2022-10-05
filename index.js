@@ -1,9 +1,11 @@
 require("./db/connectDB");
+const config = require("config");
 const morgan = require("./utils/morgan");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const authRouter = require("./routes/auth");
+const {logger} = require("./utils/logger");
 
 // Initialzing express app
     const app = express();
@@ -23,5 +25,6 @@ const authRouter = require("./routes/auth");
 
 
 // Started Server
-    const port = process.env.PORT || 3002;
-    app.listen(port, () => console.log(`Server started on port ${port}`));
+    // const port = process.env.PORT || 3002;
+    const port = config.get("port");
+    app.listen(port, () => logger(`Server started on port ${port}`));
