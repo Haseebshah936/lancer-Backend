@@ -4,5 +4,9 @@
         "name": "haseeb",
         "password": "haseeb"
     },
+    "googleKeys":{
+        "clientId": "30719619583-j2d2baepb0dkbscqrm3661mb6bomooch.apps.googleusercontent.com",
+        "clientSecret": "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"
+    },
     "port": 3003
 }

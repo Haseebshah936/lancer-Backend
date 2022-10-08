@@ -1,19 +1,23 @@
 const mongoose = require('mongoose');
 const User = require("../models/user");
-const {OAuth2Client, UserRefreshClient} = require("google-auth-library")
-const  clientId= "30719619583-j2d2baepb0dkbscqrm3661mb6bomooch.apps.googleusercontent.com"
-const clientSecret= "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"
+const {OAuth2Client, UserRefreshClient} = require("google-auth-library");
+const config = require("config");
+const clientId = config.get("googleKeys.clientId");
+const clientSecret = config.get("googleKeys.clientSecret");
+const argon2 = require("argon2")
+
 const oAuth2Client = new OAuth2Client({
-    clientId: "30719619583-j2d2baepb0dkbscqrm3661mb6bomooch.apps.googleusercontent.com",
-    clientSecret: "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",
-    "postMessage": true,
+    clientId,
+    clientSecret,
+    redirectUri: "postmessage",
 })
 const signup = async (req, res) => {
     const {username, email,password} = req.body;
+    const encryptedPassword = await argon2.hash(password);
     const user = new User({
-        name: username,
+        name: "test1",
         email,
-        password,
+        password: encryptedPassword,
     })
     try {
         const savedUser = await User.findOne({email});
@@ -33,7 +37,7 @@ const login = async (req, res) => {
         const {email} = req.body;
         const user = await User.findOne({email});
         if(!user) return res.status(404).send("User not found");
-        if(user.password !== req.body.password) return res.status(403).send("Incorrect password");
+        if(await argon2.verify(user.password, req.body.password)) return res.status(403).send("Incorrect password");
         const {password, ...rest} = user._doc;
         res.status(200).send({
             ...rest
@@ -57,12 +61,28 @@ const remove = async (req, res) => {
 }
 
 const googleAuth = async (req, res) => {
-    console.log(req.body);
+    console.log("Body ",req.body);
     try {
         const { tokens } = await oAuth2Client.getToken(req.body.code); // exchange code for tokens
-        console.log(tokens);
-        res.status(200).json(tokens);
-        
+        const ticket = await oAuth2Client.verifyIdToken({idToken: tokens.id_token, audience: clientId}); // verify token
+        const payload = ticket.getPayload();
+        const user = await User.findOne({email: payload.email});
+        if(!user){
+            const encryptedPassword = await argon2.hash(payload.sub);
+            const newUser = new User({
+                name: payload.name,
+                email: payload.email,
+                password: encryptedPassword,
+                googleId: payload.sub,
+                profilePic: payload.picture,
+                emailVerified: true,
+            })
+            const response = await newUser.save();
+            const {password, ...rest} = response._doc;
+            res.status(201).send({...rest});
+            return
+        }
+        res.status(200).send(user);
     } catch (error) {
         res.status(500).send(error);
         console.log(error);
@@ -77,6 +97,12 @@ const googleAuth = async (req, res) => {
     );
     const { credentials } = await user.refreshAccessToken(); // optain new tokens
     res.status(200).json(credentials);
+  }
+
+  const callback = () => {
+    passport.authenticate("google", { failureRedirect: "http://localhost:3000" }), (req, res) => {
+    // Successful authentication, redirect secrets.
+    res.redirect("http://localhost:3000");};
   }
   
 // const forgotPassword = async (req, res) => {
@@ -121,5 +147,6 @@ module.exports = {
     login,
     remove,
     googleAuth,
-    refreshToken
+    refreshToken,
+    callback
 }

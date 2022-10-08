@@ -7,5 +7,6 @@ router.post('/login', login);
 router.post('/delete/:id', remove);
 router.post('/google', googleAuth);
 router.post('/google/refreshToken', refreshToken);
+router.post('/google/callback', refreshToken);
 
 module.exports = router;

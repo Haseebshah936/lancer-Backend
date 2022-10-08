@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { findOrCreate} = require("../utils/auth");
 
 const userSchema = mongoose.Schema({
     name:{
@@ -19,6 +20,11 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    emailVerified: {type:Boolean, default: false},
+    googleID: {type: String, default: null},
+    facebookID: {type: String, default: null},
+    twitterID: {type: String, default: null},
+    role: {type: String, default: "user"},
     profilePic:{type:String, default:""},
     about:{type:String, default:""},
     country:{type:String, default:""},
@@ -35,5 +41,7 @@ const userSchema = mongoose.Schema({
     stars:{type: Number, default: 5},
     createdAt: {type: Date, default: Date.now},
 })
-const User = mongoose.model("User", userSchema);
+// userSchema.plugin(passportLocalMongoose);
+userSchema.plugin(findOrCreate);
+const User = new mongoose.model("User", userSchema);
 module.exports = User;
