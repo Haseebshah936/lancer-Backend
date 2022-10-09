@@ -5,6 +5,8 @@ const config = require("config");
 const clientId = config.get("googleKeys.clientId");
 const clientSecret = config.get("googleKeys.clientSecret");
 const argon2 = require("argon2")
+const axios = require("axios");
+const {logger} = require('../utils/logger');
 
 const oAuth2Client = new OAuth2Client({
     clientId,
@@ -66,7 +68,7 @@ const googleAuth = async (req, res) => {
         const { tokens } = await oAuth2Client.getToken(req.body.code); // exchange code for tokens
         const ticket = await oAuth2Client.verifyIdToken({idToken: tokens.id_token, audience: clientId}); // verify token
         const payload = ticket.getPayload();
-        const user = await User.findOne({email: payload.email});
+        const user = await User.findOneAndUpdate({email: payload.email}, {googleId: payload.sub}, {new:true});
         if(!user){
             const encryptedPassword = await argon2.hash(payload.sub);
             const newUser = new User({
@@ -88,6 +90,45 @@ const googleAuth = async (req, res) => {
         console.log(error);
     }
   }
+
+const facebookAuth = async (req, res) => {
+
+    try {
+        const {accessToken, id} = req.body;
+        const { data } = await axios({
+          url: `https://graph.facebook.com/${id}`,
+          method: 'get',
+          params: {
+            fields: ['id', 'email', 'first_name', 'last_name', "picture.type(large)"].join(','),
+            access_token: accessToken,
+          },
+        });
+        logger(data); // { id, email, first_name, last_name }
+        const user = await User.findOneAndUpdate({email: data.email}, {facebookId: data.id},{new:true});
+        if(!user){
+            const encryptedPassword = await argon2.hash(data.id+"kingsman");
+            const newUser = new User({
+                name: data.first_name+" "+data.last_name,
+                email: data.email,
+                password: encryptedPassword,
+                facebookId: data.id,
+                profilePic: data.picture.data.url,
+                emailVerified: true,
+            })
+            const response = await newUser.save();
+            const {password, ...rest} = response._doc;
+            res.status(201).send({...rest});
+            return;
+        }
+        const {password, ...rest} = user._doc;
+        res.status(200).send({...rest});
+        return;
+      }
+      catch (error) {
+        console.error(error);
+        res.status(500).send(error);
+      } 
+}
 
  const refreshToken =  async (req, res) => {
     const user = new UserRefreshClient(
@@ -148,5 +189,6 @@ module.exports = {
     remove,
     googleAuth,
     refreshToken,
-    callback
+    callback,
+    facebookAuth,
 }
