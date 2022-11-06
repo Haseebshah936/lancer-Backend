@@ -40,14 +40,14 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email } = req.body;
+    console.log(req.body);
     const user = await User.findOne({ email });
     if (!user) return res.status(404).send("User not found");
-    if (await argon2.verify(user.password, req.body.password))
+    if (!(await argon2.verify(user.password, req.body.password)))
       return res.status(403).send("Incorrect password");
-    // const { password, ...rest } = user._doc;
-    res.status(200).send({
-      ...user.doc,
-    });
+    // const { email,password, ...rest } = user._doc;
+    console.log(user._doc);
+    res.status(200).send(user._doc);
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
