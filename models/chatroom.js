@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const chatroom = mongoose.Schema({
+const chatroomSchema = mongoose.Schema({
   isGroup: {
     type: Boolean,
     default: false,
@@ -10,7 +10,7 @@ const chatroom = mongoose.Schema({
       participantId: {
         type: mongoose.Types.ObjectId,
         required: ture,
-        ref: "user",
+        ref: "User",
       },
       isAdmin: {
         type: Boolean,
@@ -28,5 +28,5 @@ const chatroom = mongoose.Schema({
   },
 });
 
-const Chatroom = new mongoose.model("Chatroom", chatroom);
+const Chatroom = new mongoose.model("Chatroom", chatroomSchema);
 module.exports = Chatroom;
