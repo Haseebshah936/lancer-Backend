@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "NODE_ENV=production admin_password=kingsman node index.js",
     "dev": "DEBUG=app:* nodemon index.js",
+    "devW": "set DEBUG=app:* & nodemon index.js",
     "prod": "NODE_ENV=production DEBUG=app:* admin_password=kingsman PORT=3005 nodemon index.js"
   },
   "author": "",
