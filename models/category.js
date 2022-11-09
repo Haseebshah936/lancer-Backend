@@ -1,9 +1,12 @@
 const moongose = require("mongoose");
 
 const categorySchema = moongose.Schema({
-  name: {
+  title: {
     type: String,
     required: true,
+    trim: true,
+    minlength: 3,
+    maxlength: 50,
   },
   category: {
     type: moongose.Schema.Types.ObjectId,
