@@ -4,7 +4,9 @@ const { User, Seller } = require("../models/user");
 const getUser = async (req, res) => {
   try {
     const { email } = req.params;
-    const user = await User.findOne({ email }).populate("seller");
+    const user = await User.findOne({ email })
+      .populate("seller")
+      .select("-password");
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {
