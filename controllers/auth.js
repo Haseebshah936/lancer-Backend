@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const User = require("../models/user");
+const { User } = require("../models/user");
 const { OAuth2Client, UserRefreshClient } = require("google-auth-library");
 const config = require("config");
 const clientId = config.get("googleKeys.clientId");
