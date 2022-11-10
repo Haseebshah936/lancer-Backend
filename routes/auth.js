@@ -13,7 +13,7 @@ const {
 
 router.post("/signup", signup);
 router.post("/login", login);
-router.post("/delete/:id", remove);
+router.delete("/delete/:id", remove);
 router.post("/google/signup", googleSignup);
 router.post("/google/login", googleLogin);
 router.post("/google/refreshToken", refreshToken);

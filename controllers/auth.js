@@ -58,7 +58,7 @@ const remove = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(403).send("User not found");
-    if (user.password !== req.body.password)
+    if (user.password == argon2.hash(req.body.password))
       return res.status(403).send("Incorrect password");
     await user.deleteOne();
     res.status(200).send("User deleted successfully");
