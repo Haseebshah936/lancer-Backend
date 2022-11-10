@@ -1,10 +1,9 @@
 const Category = require("../models/category");
 
 const createCategory = async (req, res) => {
-  const { title, features, additionalFeatures } = req.body;
-
   try {
-    const category = await Category.find({
+    const { title, features, additionalFeatures } = req.body;
+    const category = await Category.findOne({
       title,
     });
     if (category) return res.status(403).send("Category already exists");
@@ -20,12 +19,42 @@ const createCategory = async (req, res) => {
   }
 };
 
+const updateCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, features, additionalFeatures } = req.body;
+    const updatedCategory = await Category.findByIdAndUpdate(
+      id,
+      {
+        $set: { title, features, additionalFeatures },
+      },
+      {
+        new: true,
+      }
+    );
+    if (!updatedCategory) return res.status(400).send("Category not exists");
+    res.status(201).status(category);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const getCategories = async (req, res) => {
+  try {
+    const categories = await Category.find({ category: null });
+    if (!categories) return res.status(404).send("No categories found");
+    res.status(200).send(categories);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
 const createSubCategory = async (req, res) => {
   const { title, category, features, additionalFeatures } = req.body;
   try {
-    const subCategory = await Category.find({
+    const subCategory = await Category.findOne({
       title,
-      category,
     });
     if (subCategory) return res.status(403).send("SubCategory already exists");
     const newSubCategory = new Category({
@@ -41,61 +70,63 @@ const createSubCategory = async (req, res) => {
   }
 };
 
-const updateCategoryTitle = async (req, res) => {
+const updateSubCategory = async (req, res) => {
   try {
-    const { id, title } = req.body;
-    const category = await Category.findByIdAndUpdate(
+    const { id } = req.params;
+    const { title, category, features, additionalFeatures } = req.body;
+    const subCategory = await Category.findByIdAndUpdate(
       id,
       {
-        title,
+        $set: {
+          title,
+          category,
+          features,
+          additionalFeatures,
+        },
       },
       {
         new: true,
       }
     );
-    if (!category) return res.status(400).send("Category not exists");
-    res.status(201).status(category);
+
+    if (!subCategory) return res.status(400).send("SubCategory not exists");
+    res.status(201).send(subCategory);
   } catch (error) {
     res.status(500).send(error);
   }
 };
 
-const updateCategoryName = async (req, res) => {
+const getSubCategories = async (req, res) => {
   try {
-    const { id, category } = req.body;
-    const updatedCategory = await Category.findByIdAndUpdate(
-      id,
-      {
-        category,
-      },
-      {
-        new: true,
-      }
+    const { id } = req.params;
+    const subCategories = await Category.find({ category: id }).populate(
+      "category"
     );
-    if (!updatedCategory) return res.status(400).send("Category not exists");
-    res.status(201).status(category);
+    if (!subCategories) return res.status(404).send("No subCategories found");
+    res.status(200).send(subCategories);
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 };
-
-const addFeature = async (req, res) => {
-  const { id, feature } = req.body;
-  const updatedCategory = await Category.findById(id);
-  updatedCategory.features.push(feature);
-};
-
-// remove Feature
-
-// add additionalFeatures
-
-// remove additionalFeatures
-
-// delete category
 
 const deleteCategory = async (req, res) => {
   try {
-    const category = await Category.findById(req.body.id);
+    const { id } = req.params;
+    console.log(id);
+    const category = await Category.findById(id);
+    if (!category) return res.status(400).send("Category not exist");
+    const result = await category.delete();
+    res.status(200).send("Category deleted");
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+const deleteCategoryByTitle = async (req, res) => {
+  try {
+    const { title } = req.params;
+    console.log(title);
+    const category = await Category.findOne({ title });
     if (!category) return res.status(400).send("Category not exist");
     const result = await category.delete();
     res.status(200).send("Category deleted");
@@ -106,8 +137,11 @@ const deleteCategory = async (req, res) => {
 
 module.exports = {
   createCategory,
+  updateCategory,
+  getCategories,
   createSubCategory,
-  updateCategoryTitle,
-  updateCategoryName,
+  updateSubCategory,
+  getSubCategories,
   deleteCategory,
+  deleteCategoryByTitle,
 };
