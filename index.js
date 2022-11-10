@@ -6,7 +6,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const authRouter = require("./routes/auth");
 const { logger } = require("./utils/logger");
-
+const user = require("./routes/user");
 
 // Initialzing express app
 const app = express();
@@ -18,13 +18,12 @@ app.use(express.json()); // For parsing application/json
 
 // app.use(express.static("public")); // For serving static files
 
-
-
 // Calling Morgan
 morgan(app);
 
 // Routes
 app.use("/api/auth", authRouter);
+app.use("/api/user", user);
 app.get("/api/", (req, res) => {
   res.send("Hello World");
 });

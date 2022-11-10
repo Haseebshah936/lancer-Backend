@@ -85,9 +85,29 @@ const addFeature = async (req, res) => {
   updatedCategory.features.push(feature);
 };
 
+// remove Feature
+
+// add additionalFeatures
+
+// remove additionalFeatures
+
+// delete category
+
+const deleteCategory = async (req, res) => {
+  try {
+    const category = await Category.findById(req.body.id);
+    if (!category) return res.status(400).send("Category not exist");
+    const result = await category.delete();
+    res.status(200).send("Category deleted");
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 module.exports = {
   createCategory,
   createSubCategory,
   updateCategoryTitle,
   updateCategoryName,
+  deleteCategory,
 };

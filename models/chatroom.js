@@ -7,17 +7,20 @@ const chatroomSchema = mongoose.Schema({
   },
   participants: [
     {
-      participantId: {
-        type: mongoose.Types.ObjectId,
-        required: ture,
-        ref: "User",
-      },
-      isAdmin: {
-        type: Boolean,
-        default: true,
-      },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
   ],
+  admin: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
+  participant: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -26,7 +29,18 @@ const chatroomSchema = mongoose.Schema({
     type: mongoose.Types.ObjectId,
     required: true,
   },
+  image: {
+    type: String,
+    default: "",
+  },
+  groupName: {
+    type: String,
+  },
+  description: {
+    type: String,
+    default: "",
+  },
 });
 
-const Chatroom = new mongoose.model("Chatroom", chatroomSchema);
-module.exports = Chatroom;
+module.exports = new mongoose.model("Chatroom", chatroomSchema);
+module.exports = new mongoose.model("Participant", participantSchema);

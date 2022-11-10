@@ -55,6 +55,11 @@ const productSchema = moongose.Schema({
       cost: { type: Number, default: 0, required: true },
     },
   ],
+  ownerId: {
+    type: moongose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
 });
 
 module.exports = moongose.model("Feature", featureSchema);
