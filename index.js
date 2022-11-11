@@ -8,7 +8,7 @@ const authRouter = require("./routes/auth");
 const { logger } = require("./utils/logger");
 const user = require("./routes/user");
 const category = require("./routes/category");
-
+const gig = require("./routes/gig");
 // Initialzing express app
 const app = express();
 
@@ -26,6 +26,7 @@ morgan(app);
 app.use("/api/auth", authRouter);
 app.use("/api/user", user);
 app.use("/api/category", category);
+app.use("/api/gig", gig);
 app.get("/api/", (req, res) => {
   res.send("Hello World");
 });
