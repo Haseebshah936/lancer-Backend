@@ -3,7 +3,7 @@ const { User, Seller } = require("../models/user");
 
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find().populate("seller").select("-password");
+    const users = await User.find().select("-password");
     res.status(200).json(users);
   } catch (error) {
     res.status(500).send(error);
@@ -13,9 +13,7 @@ const getUsers = async (req, res) => {
 const getUser = async (req, res) => {
   try {
     const { email } = req.params;
-    const user = await User.findOne({ email })
-      .populate("seller")
-      .select("-password");
+    const user = await User.findOne({ email }).select("-password");
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {
@@ -27,11 +25,9 @@ const getUserById = async (req, res) => {
   console.log("get user by id");
   try {
     const { id } = req.params;
-    const user = await User.findById(id)
-      .populate("seller")
-      .select(
-        "seller responseTime stars name profilePic country badge reviews"
-      );
+    const user = await User.findById(id).select(
+      "seller responseTime stars name profilePic country badge reviews"
+    );
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {

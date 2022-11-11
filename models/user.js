@@ -75,9 +75,10 @@ const sellerSchema = new mongoose.Schema({
   activeOrders: { type: Number, default: 0 },
   cancelledOrders: { type: Number, default: 0 },
   completedOrders: { type: Number, default: 0 },
+  score: { type: Number, default: 0 },
 });
 
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -124,6 +125,6 @@ const userSchema = mongoose.Schema({
 });
 // userSchema.plugin(passportLocalMongoose);
 userSchema.plugin(findOrCreate);
-const User = new mongoose.model("User", userSchema);
-const Seller = new mongoose.model("Seller", sellerSchema);
+const User = mongoose.model("User", userSchema);
+const Seller = mongoose.model("Seller", sellerSchema);
 module.exports = { User, Seller };

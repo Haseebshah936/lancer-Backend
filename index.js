@@ -8,6 +8,7 @@ const authRouter = require("./routes/auth");
 const { logger } = require("./utils/logger");
 const user = require("./routes/user");
 const category = require("./routes/category");
+const product = require("./routes/product");
 
 // Initialzing express app
 const app = express();
@@ -26,6 +27,7 @@ morgan(app);
 app.use("/api/auth", authRouter);
 app.use("/api/user", user);
 app.use("/api/category", category);
+app.use("/api/product", product);
 app.get("/api/", (req, res) => {
   res.send("Hello World");
 });
