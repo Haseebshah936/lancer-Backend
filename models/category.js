@@ -1,6 +1,6 @@
 const moongose = require("mongoose");
 
-const categorySchema = moongose.Schema({
+const categorySchema = new moongose.Schema({
   title: {
     type: String,
     required: true,
@@ -19,5 +19,5 @@ const categorySchema = moongose.Schema({
   createdAt: { type: Date, default: Date.now },
   count: { type: Number, default: 0 },
 });
-
-module.exports = moongose.model("Category", categorySchema);
+const Category = moongose.model("Category", categorySchema);
+module.exports = Category;

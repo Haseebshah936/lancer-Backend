@@ -1,6 +1,6 @@
 const user = require("../controllers/user");
 const router = require("express").Router();
-
+router.get("/", user.getUsers);
 router.get("/:email", user.getUser);
 router.get("/getUser/:id", user.getUserById);
 router.put("/updateFollowers/:id", user.changeFollowersCount);
