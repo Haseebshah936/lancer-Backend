@@ -3,6 +3,7 @@ const router = require("express").Router();
 router.get("/", user.getUsers);
 router.get("/:email", user.getUser);
 router.get("/getUser/:id", user.getUserById);
+router.get("/getUsers/sellers", user.getSellers);
 router.put("/updateFollowers/:id", user.changeFollowersCount);
 router.put("/updateFollowing/:id", user.changeFollowingCount);
 router.put("/updateReviews/:id", user.increaseReviewCount);

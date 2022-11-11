@@ -10,6 +10,25 @@ const getUsers = async (req, res) => {
     res.status(500).send(error);
   }
 };
+const getSellers = async (req, res) => {
+  try {
+    console.log("get sellers");
+    const users = await User.find()
+      .and([
+        {
+          seller: { $ne: null },
+        },
+        {
+          seller: { $exists: true },
+        },
+      ])
+      .select("-password");
+    console.log(users);
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
 
 const getUser = async (req, res) => {
   try {
@@ -416,6 +435,7 @@ const updateScore = async (req, res) => {
 
 module.exports = {
   getUsers,
+  getSellers,
   getUser,
   getUserById,
   changeFollowersCount,
