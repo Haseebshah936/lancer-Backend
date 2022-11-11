@@ -14,8 +14,18 @@ const categorySchema = new moongose.Schema({
     ref: "Category",
     default: null,
   },
-  features: [{ type: String, required: true }],
-  additionalFeatures: [{ type: String, default: "" }],
+  features: [
+    {
+      title: { type: String, required: true },
+      quantityBased: { type: Boolean, default: false },
+    },
+  ],
+  additionalFeatures: [
+    {
+      title: { type: String, required: true },
+      quantityBased: { type: Boolean, default: false },
+    },
+  ],
   createdAt: { type: Date, default: Date.now },
   count: { type: Number, default: 0 },
 });

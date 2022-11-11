@@ -33,8 +33,9 @@ const updateCategory = async (req, res) => {
       }
     );
     if (!updatedCategory) return res.status(400).send("Category not exists");
-    res.status(201).status(category);
+    res.status(201).send(updatedCategory);
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 };

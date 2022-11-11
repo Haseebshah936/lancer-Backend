@@ -97,6 +97,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  hourlyRate: {
+    type: Number,
+    default: 5,
+  },
+  tagLine: {
+    type: String,
+    default: "I am a freelancer",
+  },
   emailVerified: { type: Boolean, default: false },
   googleId: { type: String, default: null },
   facebookId: { type: String, default: null },
