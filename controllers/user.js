@@ -188,8 +188,21 @@ const completeProfile = async (req, res) => {
       }
     );
     if (!user) return res.status(404).send("User not found");
-    res.status(200).json(user);
+    const products = await product.Product.updateMany(
+      { "owner._id": id },
+      {
+        $set: {
+          "owner.name": name,
+          "owner.profilePic": profilePic,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+    res.status(200).send("Update successful");
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 };
