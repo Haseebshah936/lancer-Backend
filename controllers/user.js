@@ -1,6 +1,15 @@
 const c = require("config");
 const { User, Seller } = require("../models/user");
 
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find().populate("seller").select("-password");
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 const getUser = async (req, res) => {
   try {
     const { email } = req.params;
@@ -362,6 +371,7 @@ const updateCompletedOrders = async (req, res) => {
 };
 
 module.exports = {
+  getUsers,
   getUser,
   getUserById,
   changeFollowersCount,
