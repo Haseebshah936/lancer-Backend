@@ -313,7 +313,7 @@ const getProductsBySubCategoryWithBadge = async (req, res) => {
       .populate("owner._id", "isOnline seller.score name profilePic badge")
       .select("title images rating reviews ranking")
       .sort({
-        ranking: 1,
+        ranking: -1,
       });
     if (!products) return res.status(404).send({ error: "Products not found" });
     res.status(200).send(products);
