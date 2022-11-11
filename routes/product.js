@@ -10,6 +10,7 @@ router.put("/addOrderVideo/:id", product.addOrderVideo);
 router.put("/updateState/:id", product.updateState);
 router.put("/updateReviews/:id", product.updateReviews);
 router.put("/updateRating/:id", product.updateRating);
+router.put("/updateRanking/:id", product.updateRanking);
 router.get(
   "/getProductBySubCategory/:category",
   product.getProductsBySubCategory

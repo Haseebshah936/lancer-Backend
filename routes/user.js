@@ -18,5 +18,6 @@ router.put("/updateEarnings/:id", user.updateEarning);
 router.put("/updateActiveOrders/:id", user.updateActiveOrders);
 router.put("/updateCancelledOrders/:id", user.updateCancelledOrders);
 router.put("/updateCompletedOrders/:id", user.updateCompletedOrders);
+router.put("/updateSellerScore/:id", user.updateScore);
 
 module.exports = router;

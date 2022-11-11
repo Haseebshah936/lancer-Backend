@@ -1,5 +1,6 @@
 const c = require("config");
 const { User, Seller } = require("../models/user");
+const product = require("../models/product");
 
 const getUsers = async (req, res) => {
   try {
@@ -230,8 +231,20 @@ const updateBadge = async (req, res) => {
       }
     );
     if (!user) return res.status(404).send("User not found");
-    res.status(200).json(user);
+    const products = await product.Product.updateMany(
+      { "owner._id": id },
+      {
+        $set: {
+          "owner.badge": badge,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+    res.status(200).json(products);
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 };
@@ -366,6 +379,28 @@ const updateCompletedOrders = async (req, res) => {
   }
 };
 
+const updateScore = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { score } = req.body;
+    const user = await User.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          "seller.score": score,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+    if (!user) return res.status(404).send("User not found");
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 module.exports = {
   getUsers,
   getUser,
@@ -385,4 +420,5 @@ module.exports = {
   updateActiveOrders,
   updateCancelledOrders,
   updateCompletedOrders,
+  updateScore,
 };

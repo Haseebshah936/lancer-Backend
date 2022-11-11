@@ -4,7 +4,7 @@ const user = require("../models/user");
 
 const getProducts = async (req, res) => {
   try {
-    const products = await product.Product.find();
+    const products = await product.Product.find().populate("owner._id");
     if (!products) return res.status(404).send({ error: "Product not found" });
     res.status(200).send(products);
   } catch (error) {
@@ -262,6 +262,24 @@ const updateRating = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+const updateRanking = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { ranking } = req.body;
+    const updatedProduct = await product.Product.findByIdAndUpdate(
+      id,
+      {
+        $set: { ranking },
+      },
+      { new: true }
+    );
+    if (!updatedProduct)
+      return res.status(404).send({ error: "Product not found" });
+    res.status(200).send(updatedProduct);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
 
 const getProductsBySubCategory = async (req, res) => {
   try {
@@ -271,10 +289,10 @@ const getProductsBySubCategory = async (req, res) => {
       category,
       state: "live",
     })
-      .populate("owner", "isOnline seller.score")
-      .select("title images rating reviews")
+      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .select("title images rating reviews ranking")
       .sort({
-        "ownerId.seller.score": 1,
+        ranking: -1,
       });
     if (!products) return res.status(404).send({ error: "Products not found" });
     res.status(200).send(products);
@@ -292,9 +310,10 @@ const getProductsBySubCategoryWithBadge = async (req, res) => {
       state: "live",
       "owner.badge": badge,
     })
-      .select("-packages -additionalFeatures -orderImages -orderVideos")
+      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .select("title images rating reviews ranking")
       .sort({
-        "ownerId.rating": 1,
+        ranking: 1,
       });
     if (!products) return res.status(404).send({ error: "Products not found" });
     res.status(200).send(products);
@@ -473,6 +492,7 @@ module.exports = {
   updateState,
   updateReviews,
   updateRating,
+  updateRanking,
   getProducts,
   getProductsBySubCategory,
   getProductsBySubCategoryWithBadge,

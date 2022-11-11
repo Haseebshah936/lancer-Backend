@@ -115,6 +115,10 @@ const productSchema = new moongose.Schema({
       default: 0,
     },
   },
+  ranking: {
+    type: Number,
+    default: 0,
+  },
 });
 const Product = moongose.model("Product", productSchema);
 const Package = moongose.model("Package", packageSchema);
