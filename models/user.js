@@ -130,6 +130,8 @@ const userSchema = new mongoose.Schema({
   badge: { type: String, default: "Newbie" },
   currentBalance: { type: Number, default: 0 },
   earnings: { type: Number, default: 0 },
+  gender: { type: String },
+  DOB: { type: Date },
 });
 // userSchema.plugin(passportLocalMongoose);
 userSchema.plugin(findOrCreate);

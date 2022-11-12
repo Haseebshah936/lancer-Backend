@@ -11,6 +11,7 @@ router.put("/updateResponseTime/:id", user.changeResponseTime);
 router.put("/updateRating/:id", user.changeStars);
 router.put("/updateSearchHistory/:id", user.updateSearchHistory);
 router.put("/makeSeller/:id", user.makeSeller);
+router.put("/removeSeller/:id", user.removeSeller);
 router.put("/updateProfile/:id", user.completeProfile);
 router.put("/updateBadge/:id", user.updateBadge);
 router.put("/updateOnlineStatus/:id", user.updateOnlineStatus);

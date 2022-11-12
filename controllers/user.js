@@ -188,6 +188,25 @@ const makeSeller = async (req, res) => {
   }
 };
 
+const removeSeller = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findByIdAndUpdate(
+      id,
+      {
+        $set: { seller: null },
+      },
+      {
+        new: true,
+      }
+    );
+    if (!user) return res.status(404).send("User not found");
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 const completeProfile = async (req, res) => {
   try {
     const { id } = req.params;
@@ -454,4 +473,5 @@ module.exports = {
   updateCancelledOrders,
   updateCompletedOrders,
   updateScore,
+  removeSeller,
 };
