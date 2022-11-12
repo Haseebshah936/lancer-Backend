@@ -97,24 +97,6 @@ const productSchema = new moongose.Schema({
     type: Number,
     default: 0,
   },
-  deliveryTime: {
-    type: Date,
-    default: Date.now,
-  },
-  revisions: {
-    type: Number,
-    default: 0,
-  },
-  additionalRevisionCost: {
-    quantity: {
-      type: Number,
-      default: 0,
-    },
-    cost: {
-      type: Number,
-      default: 0,
-    },
-  },
   ranking: {
     type: Number,
     default: 0,

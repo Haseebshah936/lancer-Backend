@@ -4,7 +4,7 @@ const user = require("../models/user");
 
 const getProducts = async (req, res) => {
   try {
-    const products = await product.Product.find().populate("owner._id");
+    const products = await product.Product.find();
     if (!products) return res.status(404).send({ error: "Product not found" });
     res.status(200).send(products);
   } catch (error) {
