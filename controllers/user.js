@@ -210,7 +210,7 @@ const removeSeller = async (req, res) => {
 const completeProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, profilePic, country, currency } = req.body;
+    const { name, profilePic, country, currency, DOB, gender } = req.body;
     const user = await User.findByIdAndUpdate(
       id,
       {
@@ -219,6 +219,8 @@ const completeProfile = async (req, res) => {
           profilePic,
           country,
           currency,
+          DOB,
+          gender,
         },
       },
       {
@@ -238,7 +240,7 @@ const completeProfile = async (req, res) => {
         new: true,
       }
     );
-    res.status(200).send("Update successful");
+    res.status(200).send(user);
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
