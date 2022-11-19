@@ -25,13 +25,7 @@ const packageSchema = new moongose.Schema({
     type: String,
     required: true,
   },
-  features: [
-    {
-      type: moongose.Schema.Types.ObjectId,
-      ref: "Feature",
-      required: true,
-    },
-  ],
+  features: [featureSchema],
 });
 
 const productSchema = new moongose.Schema({
@@ -49,15 +43,8 @@ const productSchema = new moongose.Schema({
       ref: "User",
       required: true,
     },
-    profilePic: {
-      type: String,
-    },
     badge: {
       type: String,
-    },
-    name: {
-      type: String,
-      required: true,
     },
   },
   tags: [
@@ -70,13 +57,7 @@ const productSchema = new moongose.Schema({
   images: [{ type: String, required: true }],
   videos: [{ type: String, default: "" }],
   createdAt: { type: Date, default: Date.now },
-  packages: [
-    {
-      type: moongose.Schema.Types.ObjectId,
-      ref: "Package",
-      required: true,
-    },
-  ],
+  packages: [packageSchema],
   additionalFeatures: [
     {
       type: moongose.Schema.Types.ObjectId,
@@ -100,6 +81,10 @@ const productSchema = new moongose.Schema({
   ranking: {
     type: Number,
     default: 0,
+  },
+  cost: {
+    type: Number,
+    default: 5,
   },
 });
 const Product = moongose.model("Product", productSchema);

@@ -11,6 +11,16 @@ const getProducts = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+const getProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await product.Product.findById(id);
+    if (!product) return res.status(404).send({ error: "Product not found" });
+    res.status(200).send(product);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
 
 const createProduct = async (req, res) => {
   try {
@@ -25,9 +35,7 @@ const createProduct = async (req, res) => {
       packages,
       additionalFeatures,
     } = req.body;
-    const owner = await user.User.findById(ownerId).select(
-      "name profilePic badge"
-    );
+    const owner = await user.User.findById(ownerId).select("badge");
     if (!owner) return res.status(404).send({ error: "User not found" });
     const newPakages = [];
     packages.map((p) => {
@@ -69,6 +77,7 @@ const createProduct = async (req, res) => {
       images,
       videos: [video],
       category,
+      cost: packages[0].cost,
       packages: newPakages,
       additionalFeatures: newAdditionalFeatures,
     });
@@ -95,9 +104,7 @@ const updateProduct = async (req, res) => {
       additionalFeatures,
     } = req.body;
     console.log(title);
-    const owner = await user.User.findById(ownerId).select(
-      "name profilePic badge"
-    );
+    const owner = await user.User.findById(ownerId).select("badge");
     if (!owner) return res.status(404).send({ error: "User not found" });
     const newPakages = [];
     packages.map((p) => {
@@ -139,6 +146,7 @@ const updateProduct = async (req, res) => {
     newProduct.packages = newPakages;
     newProduct.additionalFeatures = newAdditionalFeatures;
     newProduct.owner = owner;
+    newProduct.cost = packages[0].cost;
     newProduct.markModified("packages");
     newProduct.markModified("owner");
     newProduct.markModified("additionalFeatures");
@@ -290,7 +298,31 @@ const getProductsBySubCategory = async (req, res) => {
       state: "live",
     })
       .populate("owner._id", "isOnline seller.score name profilePic badge")
-      .select("title images rating reviews ranking")
+      .select("title images rating reviews ranking cost")
+      .sort({
+        ranking: -1,
+      });
+    if (!products) return res.status(404).send({ error: "Products not found" });
+    res.status(200).send(products);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+const getProductsBySubCategoryWithCost = async (req, res) => {
+  try {
+    console.log(req.params);
+    const { category, lowerRange, upperRange } = req.params;
+    const products = await product.Product.find({
+      category,
+      state: "live",
+      cost: {
+        $gte: lowerRange,
+        $lte: upperRange,
+      },
+    })
+      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .select("title images rating reviews ranking cost")
       .sort({
         ranking: -1,
       });
@@ -311,7 +343,32 @@ const getProductsBySubCategoryWithBadge = async (req, res) => {
       "owner.badge": badge,
     })
       .populate("owner._id", "isOnline seller.score name profilePic badge")
-      .select("title images rating reviews ranking")
+      .select("title images rating reviews ranking cost")
+      .sort({
+        ranking: -1,
+      });
+    if (!products) return res.status(404).send({ error: "Products not found" });
+    res.status(200).send(products);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+const getProductsBySubCategoryWithBadge_Cost = async (req, res) => {
+  try {
+    const { category, badge, lowerRange, upperRange } = req.params;
+    console.log(category, badge);
+    const products = await product.Product.find({
+      category,
+      state: "live",
+      "owner.badge": badge,
+      cost: {
+        $gte: lowerRange,
+        $lte: upperRange,
+      },
+    })
+      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .select("title images rating reviews ranking cost")
       .sort({
         ranking: -1,
       });
@@ -331,8 +388,46 @@ const getProductsByCategory = async (req, res) => {
     console.log(subCategories);
     if (!subCategories) {
       const products = await product.Product.find({ category, state: "live" })
-        .populate("ownerId")
-        .select("-packages -additionalFeatures -orderImages -orderVideos");
+        .populate("owner._id", "isOnline seller.score name profilePic badge")
+        .select("title images rating reviews ranking cost")
+        .sort({
+          ranking: -1,
+        });
+      if (!products)
+        return res.status(404).send({ error: "Products not found" });
+    } else {
+      const products = await product.Product.find({
+        category: { $in: subCategories },
+      });
+      if (!products)
+        return res.status(404).send({ error: "Products not found" });
+    }
+    res.status(200).send(products);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+const getProductsByCategoryWithCost = async (req, res) => {
+  try {
+    const { category, lowerRange, upperRange } = req.params;
+    const subCategories = await Category.find({
+      category,
+    }).select("_id");
+    console.log(subCategories);
+    if (!subCategories) {
+      const products = await product.Product.find({
+        category,
+        state: "live",
+        cost: {
+          $gte: lowerRange,
+          $lte: upperRange,
+        },
+      })
+        .populate("owner._id", "isOnline seller.score name profilePic badge")
+        .select("title images rating reviews ranking cost")
+        .sort({
+          ranking: -1,
+        });
       if (!products)
         return res.status(404).send({ error: "Products not found" });
     } else {
@@ -361,8 +456,48 @@ const getProductsByCategoryWithBadge = async (req, res) => {
         state: "live",
         "ownerId.badge": badge,
       })
-        .populate("ownerId")
-        .select("-packages -additionalFeatures -orderImages -orderVideos");
+        .populate("owner._id", "isOnline seller.score name profilePic badge")
+        .select("title images rating reviews ranking cost")
+        .sort({
+          ranking: -1,
+        });
+      if (!products)
+        return res.status(404).send({ error: "Products not found" });
+    } else {
+      const products = await product.Product.find({
+        category: { $in: subCategories },
+      });
+      if (!products)
+        return res.status(404).send({ error: "Products not found" });
+    }
+    res.status(200).send(products);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+const getProductsByCategoryWithBadge_Cost = async (req, res) => {
+  try {
+    const { category, badge, lowerRange, upperRange } = req.params;
+    const subCategories = await Category.find({
+      category,
+    }).select("_id");
+    console.log(subCategories);
+    if (!subCategories) {
+      const products = await product.Product.find({
+        category,
+        state: "live",
+        "owner.badge": badge,
+        cost: {
+          $gte: lowerRange,
+          $lte: upperRange,
+        },
+      })
+        .populate("owner._id", "isOnline seller.score name profilePic badge")
+        .select("title images rating reviews ranking cost")
+        .sort({
+          ranking: -1,
+        });
       if (!products)
         return res.status(404).send({ error: "Products not found" });
     } else {
@@ -384,19 +519,19 @@ const getProductsBySearch = async (req, res) => {
     const { search } = req.params;
     const searchTags = [];
     search.split(" ").map((e) => {
-      searchTags.push(new RegExp(`/.*${e}.*/`, "i"));
+      searchTags.push({
+        tags: new RegExp(e, "i"),
+      });
     });
     console.log(searchTags);
     const products = await product.Product.find({
-      tags: {
-        $in: searchTags,
-      },
       state: "live",
     })
-      .populate("ownerId")
-      .select("-packages -additionalFeatures -orderImages -orderVideos")
+      .or(searchTags)
+      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .select("title images rating reviews ranking cost")
       .sort({
-        "ownerId.score": 1,
+        ranking: -1,
       });
     if (!products) return res.status(404).send({ error: "Products not found" });
     res.status(200).send(products);
@@ -404,6 +539,36 @@ const getProductsBySearch = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
+const getProductsBySearchWithCost = async (req, res) => {
+  try {
+    const { search, lowerRange, upperRange } = req.params;
+    const searchTags = [];
+    search.split(" ").map((e) => {
+      searchTags.push({
+        tags: new RegExp(e, "i"),
+      });
+    });
+    console.log(searchTags);
+    const products = await product.Product.find({
+      cost: {
+        $gte: lowerRange,
+        $lte: upperRange,
+      },
+      state: "live",
+    })
+      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .select("title images rating reviews ranking cost")
+      .sort({
+        ranking: -1,
+      });
+    if (!products) return res.status(404).send({ error: "Products not found" });
+    res.status(200).send(products);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 const getProductsBySearchWithBadge = async (req, res) => {
   try {
     const { search } = req.params;
@@ -418,10 +583,10 @@ const getProductsBySearchWithBadge = async (req, res) => {
       "ownerId.badge": badge,
       state: "live",
     })
-      .populate("ownerId")
-      .select("-packages -additionalFeatures -orderImages -orderVideos")
+      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .select("title images rating reviews ranking cost")
       .sort({
-        "ownerId.score": 1,
+        ranking: -1,
       });
     if (!products) return res.status(404).send({ error: "Products not found" });
     res.status(200).send(products);
@@ -429,6 +594,37 @@ const getProductsBySearchWithBadge = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
+const getProductsBySearchWithBadge_Cost = async (req, res) => {
+  try {
+    const { search, badge, lowerRange, upperRange } = req.params;
+    const searchTags = [];
+    search.split(" ").map((e) => {
+      searchTags.push({
+        tags: new RegExp(e, "i"),
+      });
+    });
+    console.log(searchTags);
+    const products = await product.Product.find({
+      "owner.badge": badge,
+      cost: {
+        $gte: lowerRange,
+        $lte: upperRange,
+      },
+      state: "live",
+    })
+      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .select("title images rating reviews ranking cost")
+      .sort({
+        ranking: -1,
+      });
+    if (!products) return res.status(404).send({ error: "Products not found" });
+    res.status(200).send(products);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 const getProductsBySearchAndSubCategory = async (req, res) => {
   try {
     const { search, category } = req.params;
@@ -454,25 +650,31 @@ const getProductsBySearchAndSubCategory = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
-const getProductsBySearchAndSubCategoryWithBadge = async (req, res) => {
+
+const getProductsBySearchAndSubCategoryWithCost = async (req, res) => {
   try {
-    const { search, category, badge } = req.params;
+    const { search, category, lowerRange, upperRange } = req.params;
     const searchTags = [];
     search.split(" ").map((e) => {
-      searchTags.push(new RegExp(`/.*${e}.*/`, "i"));
+      searchTags.push({
+        tags: new RegExp(e, "i"),
+      });
     });
+    console.log(searchTags);
     const products = await product.Product.find({
-      tags: {
-        $in: searchTags,
-      },
-      category,
-      "ownerId.badge": badge,
       state: "live",
+      category,
+      cost: {
+        $gte: lowerRange,
+        $lte: upperRange,
+      },
     })
-      .populate("ownerId")
-      .select("-packages -additionalFeatures -orderImages -orderVideos")
+      .or(searchTags)
+      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .select("title images rating reviews ranking cost")
       .sort({
-        "ownerId.score": 1,
+        ranking: -1,
+        cost: 1,
       });
     if (!products) return res.status(404).send({ error: "Products not found" });
     res.status(200).send(products);
@@ -480,9 +682,68 @@ const getProductsBySearchAndSubCategoryWithBadge = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
-// search by category
-// search by cost range
-// search by status
+
+const getProductsBySearchAndSubCategoryWithBadge = async (req, res) => {
+  try {
+    const { search, category, badge } = req.params;
+    const searchTags = [];
+    search.split(" ").map((e) => {
+      searchTags.push({
+        tags: new RegExp(e, "i"),
+      });
+    });
+    console.log(searchTags);
+    const products = await product.Product.find({
+      state: "live",
+      "owner.badge": badge,
+      category,
+    })
+      .or(searchTags)
+      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .select("title images rating reviews ranking cost")
+      .sort({
+        ranking: -1,
+      });
+    if (!products) return res.status(404).send({ error: "Products not found" });
+    res.status(200).send(products);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+const getProductsBySearchAndSubCategoryWithBadge_Cost = async (req, res) => {
+  try {
+    const { search, category, badge, lowerRange, upperRange } = req.params;
+    const searchTags = [];
+    search.split(" ").map((e) => {
+      searchTags.push({
+        tags: new RegExp(e, "i"),
+      });
+    });
+    console.log(searchTags);
+    const products = await product.Product.find({
+      state: "live",
+      "owner.badge": badge,
+      category,
+      cost: {
+        $gte: lowerRange,
+        $lte: upperRange,
+      },
+    })
+      .or(searchTags)
+      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .select("title images rating reviews ranking cost")
+      .sort({
+        ranking: -1,
+        cost: 1,
+      });
+    if (!products) return res.status(404).send({ error: "Products not found" });
+    res.status(200).send(products);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   createProduct,
   updateProduct,
@@ -494,12 +755,21 @@ module.exports = {
   updateRating,
   updateRanking,
   getProducts,
+  getProduct,
   getProductsBySubCategory,
+  getProductsBySubCategoryWithCost,
   getProductsBySubCategoryWithBadge,
+  getProductsBySubCategoryWithBadge_Cost,
   getProductsByCategory,
+  getProductsByCategoryWithCost,
   getProductsByCategoryWithBadge,
+  getProductsByCategoryWithBadge_Cost,
   getProductsBySearch,
+  getProductsBySearchWithCost,
   getProductsBySearchWithBadge,
+  getProductsBySearchWithBadge_Cost,
   getProductsBySearchAndSubCategory,
+  getProductsBySearchAndSubCategoryWithCost,
   getProductsBySearchAndSubCategoryWithBadge,
+  getProductsBySearchAndSubCategoryWithBadge_Cost,
 };
