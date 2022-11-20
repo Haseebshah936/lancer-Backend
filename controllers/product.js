@@ -14,9 +14,12 @@ const getProducts = async (req, res) => {
 const getProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await product.Product.findById(id);
-    if (!product) return res.status(404).send({ error: "Product not found" });
-    res.status(200).send(product);
+    const p = await product.Product.findById(id).populate(
+      "owner._id",
+      "profilePic name badge"
+    );
+    if (!p) return res.status(404).send({ error: "Product not found" });
+    res.status(200).send(p);
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -291,8 +294,8 @@ const updateRanking = async (req, res) => {
 
 const getProductsBySubCategory = async (req, res) => {
   try {
-    console.log(req.params);
     const { category } = req.params;
+    console.log("C", req.params);
     const products = await product.Product.find({
       category,
       state: "live",
@@ -311,7 +314,7 @@ const getProductsBySubCategory = async (req, res) => {
 
 const getProductsBySubCategoryWithCost = async (req, res) => {
   try {
-    console.log(req.params);
+    console.log("C1", req.params);
     const { category, lowerRange, upperRange } = req.params;
     const products = await product.Product.find({
       category,
@@ -382,12 +385,13 @@ const getProductsBySubCategoryWithBadge_Cost = async (req, res) => {
 const getProductsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
-    const subCategories = await Category.find({
-      category,
-    }).select("_id");
+    let subCategories = await Category.find({ category }).select("_id");
+
+    subCategories = subCategories.map((subCategory) => subCategory._id);
     console.log(subCategories);
+    let products;
     if (!subCategories) {
-      const products = await product.Product.find({ category, state: "live" })
+      products = await product.Product.find({ category, state: "live" })
         .populate("owner._id", "isOnline seller.score name profilePic badge")
         .select("title images rating reviews ranking cost")
         .sort({
@@ -396,8 +400,9 @@ const getProductsByCategory = async (req, res) => {
       if (!products)
         return res.status(404).send({ error: "Products not found" });
     } else {
-      const products = await product.Product.find({
+      products = await product.Product.find({
         category: { $in: subCategories },
+        state: "live",
       });
       if (!products)
         return res.status(404).send({ error: "Products not found" });
@@ -410,12 +415,12 @@ const getProductsByCategory = async (req, res) => {
 const getProductsByCategoryWithCost = async (req, res) => {
   try {
     const { category, lowerRange, upperRange } = req.params;
-    const subCategories = await Category.find({
-      category,
-    }).select("_id");
+    let subCategories = await Category.find({ category }).select("_id");
+    subCategories = subCategories.map((subCategory) => subCategory._id);
     console.log(subCategories);
+    let products;
     if (!subCategories) {
-      const products = await product.Product.find({
+      products = await product.Product.find({
         category,
         state: "live",
         cost: {
@@ -431,8 +436,13 @@ const getProductsByCategoryWithCost = async (req, res) => {
       if (!products)
         return res.status(404).send({ error: "Products not found" });
     } else {
-      const products = await product.Product.find({
+      products = await product.Product.find({
         category: { $in: subCategories },
+        cost: {
+          $gte: lowerRange,
+          $lte: upperRange,
+        },
+        state: "live",
       });
       if (!products)
         return res.status(404).send({ error: "Products not found" });
@@ -446,15 +456,16 @@ const getProductsByCategoryWithCost = async (req, res) => {
 const getProductsByCategoryWithBadge = async (req, res) => {
   try {
     const { category, badge } = req.params;
-    const subCategories = await Category.find({
-      category,
-    }).select("_id");
+    console.log("t", req.params);
+    let subCategories = await Category.find({ category }).select("_id");
+    subCategories = subCategories.map((subCategory) => subCategory._id);
     console.log(subCategories);
+    let products;
     if (!subCategories) {
-      const products = await product.Product.find({
+      products = await product.Product.find({
         category,
         state: "live",
-        "ownerId.badge": badge,
+        "owner.badge": badge,
       })
         .populate("owner._id", "isOnline seller.score name profilePic badge")
         .select("title images rating reviews ranking cost")
@@ -464,8 +475,10 @@ const getProductsByCategoryWithBadge = async (req, res) => {
       if (!products)
         return res.status(404).send({ error: "Products not found" });
     } else {
-      const products = await product.Product.find({
+      products = await product.Product.find({
         category: { $in: subCategories },
+        state: "live",
+        "owner.badge": badge,
       });
       if (!products)
         return res.status(404).send({ error: "Products not found" });
@@ -479,12 +492,13 @@ const getProductsByCategoryWithBadge = async (req, res) => {
 const getProductsByCategoryWithBadge_Cost = async (req, res) => {
   try {
     const { category, badge, lowerRange, upperRange } = req.params;
-    const subCategories = await Category.find({
-      category,
-    }).select("_id");
+    console.log(req.params);
+    let subCategories = await Category.find({ category }).select("_id");
+    subCategories = subCategories.map((subCategory) => subCategory._id);
     console.log(subCategories);
+    let products;
     if (!subCategories) {
-      const products = await product.Product.find({
+      products = await product.Product.find({
         category,
         state: "live",
         "owner.badge": badge,
@@ -501,8 +515,14 @@ const getProductsByCategoryWithBadge_Cost = async (req, res) => {
       if (!products)
         return res.status(404).send({ error: "Products not found" });
     } else {
-      const products = await product.Product.find({
+      products = await product.Product.find({
         category: { $in: subCategories },
+        state: "live",
+        "owner.badge": badge,
+        cost: {
+          $gte: lowerRange,
+          $lte: upperRange,
+        },
       });
       if (!products)
         return res.status(404).send({ error: "Products not found" });
@@ -557,8 +577,9 @@ const getProductsBySearchWithCost = async (req, res) => {
       },
       state: "live",
     })
+      .or(searchTags)
       .populate("owner._id", "isOnline seller.score name profilePic badge")
-      .select("title images rating reviews ranking cost")
+      .select("title images rating reviews ranking cost tags")
       .sort({
         ranking: -1,
       });
@@ -571,18 +592,19 @@ const getProductsBySearchWithCost = async (req, res) => {
 
 const getProductsBySearchWithBadge = async (req, res) => {
   try {
-    const { search } = req.params;
+    const { search, badge } = req.params;
     const searchTags = [];
     search.split(" ").map((e) => {
-      searchTags.push(new RegExp(`/.*${e}.*/`, "i"));
+      searchTags.push({
+        tags: new RegExp(e, "i"),
+      });
     });
+    console.log(searchTags);
     const products = await product.Product.find({
-      tags: {
-        $in: searchTags,
-      },
       "ownerId.badge": badge,
       state: "live",
     })
+      .or(searchTags)
       .populate("owner._id", "isOnline seller.score name profilePic badge")
       .select("title images rating reviews ranking cost")
       .sort({
@@ -613,6 +635,7 @@ const getProductsBySearchWithBadge_Cost = async (req, res) => {
       },
       state: "live",
     })
+      .or(searchTags)
       .populate("owner._id", "isOnline seller.score name profilePic badge")
       .select("title images rating reviews ranking cost")
       .sort({
@@ -628,21 +651,23 @@ const getProductsBySearchWithBadge_Cost = async (req, res) => {
 const getProductsBySearchAndSubCategory = async (req, res) => {
   try {
     const { search, category } = req.params;
+    console.log(req.params);
     const searchTags = [];
     search.split(" ").map((e) => {
-      searchTags.push(new RegExp(`/.*${e}.*/`, "i"));
+      searchTags.push({
+        tags: new RegExp(e, "i"),
+      });
     });
+    console.log("S", searchTags);
     const products = await product.Product.find({
-      tags: {
-        $in: searchTags,
-      },
       category,
       state: "live",
     })
-      .populate("ownerId")
-      .select("-packages -additionalFeatures -orderImages -orderVideos")
+      .or(searchTags)
+      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .select("title images rating reviews ranking cost")
       .sort({
-        "ownerId.score": 1,
+        ranking: -1,
       });
     if (!products) return res.status(404).send({ error: "Products not found" });
     res.status(200).send(products);
@@ -654,13 +679,14 @@ const getProductsBySearchAndSubCategory = async (req, res) => {
 const getProductsBySearchAndSubCategoryWithCost = async (req, res) => {
   try {
     const { search, category, lowerRange, upperRange } = req.params;
+    console.log(req.params);
     const searchTags = [];
     search.split(" ").map((e) => {
       searchTags.push({
         tags: new RegExp(e, "i"),
       });
     });
-    console.log(searchTags);
+    // console.log(searchTags);
     const products = await product.Product.find({
       state: "live",
       category,
@@ -714,6 +740,7 @@ const getProductsBySearchAndSubCategoryWithBadge = async (req, res) => {
 const getProductsBySearchAndSubCategoryWithBadge_Cost = async (req, res) => {
   try {
     const { search, category, badge, lowerRange, upperRange } = req.params;
+    console.log("Te", req.params);
     const searchTags = [];
     search.split(" ").map((e) => {
       searchTags.push({

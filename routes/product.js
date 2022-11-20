@@ -39,7 +39,7 @@ router.get(
 );
 router.get(
   "/getProductByCategory/:category/:badge/:lowerRange/:upperRange",
-  product.getProductsBySubCategoryWithBadge_Cost
+  product.getProductsByCategoryWithBadge_Cost
 );
 router.get("/getProductBySearch/:search", product.getProductsBySearch);
 
@@ -56,19 +56,19 @@ router.get(
   product.getProductsBySearchWithBadge_Cost
 );
 router.get(
-  "/getProductBySearch/:search/:category",
+  "/getProductBySearchAndSubCategory/:search/:category",
   product.getProductsBySearchAndSubCategory
 );
 router.get(
-  "/getProductBySearch/:search/:category/:lowerRange/:upperRange",
+  "/getProductBySearchAndSubCategory/:search/:category/:lowerRange/:upperRange",
   product.getProductsBySearchAndSubCategoryWithCost
 );
 router.get(
-  "/getProductBySearch/:search/:badge/:category",
+  "/getProductBySearchAndSubCategory/:search/:category/:badge",
   product.getProductsBySearchAndSubCategoryWithBadge
 );
 router.get(
-  "/getProductBySearch/:search/:badge/:category/:lowerRange/:upperRange",
+  "/getProductBySearchAndSubCategory/:search/:category/:badge/:lowerRange/:upperRange",
   product.getProductsBySearchAndSubCategoryWithBadge_Cost
 );
 
