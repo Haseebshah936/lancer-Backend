@@ -6,12 +6,12 @@ const messageSchema = mongoose.Schema({
     required: true,
     ref: "Chatroom",
   },
-  senderId: {
+  userId: {
     type: mongoose.Types.ObjectId,
     ref: "User",
     required: true,
   },
-  messageType: {
+  type: {
     type: String,
     required: true,
   },
@@ -23,7 +23,11 @@ const messageSchema = mongoose.Schema({
     type: String,
     default: "",
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-const Message = new mongoose.model("Message", messageSchema);
+const Message = mongoose.model("Message", messageSchema);
 module.exports = Message;

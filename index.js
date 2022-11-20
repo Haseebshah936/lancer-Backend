@@ -10,6 +10,8 @@ const user = require("./routes/user");
 const category = require("./routes/category");
 const gig = require("./routes/gig");
 const product = require("./routes/product");
+const message = require("./routes/message");
+const chatroom = require("./routes/chatroom");
 
 // Initialzing express app
 const app = express();
@@ -30,6 +32,8 @@ app.use("/api/user", user);
 app.use("/api/category", category);
 app.use("/api/gig", gig);
 app.use("/api/product", product);
+app.use("/api/message", message);
+app.use("/api/chatroom", chatroom);
 app.get("/api/", (req, res) => {
   res.send("Hello World");
 });

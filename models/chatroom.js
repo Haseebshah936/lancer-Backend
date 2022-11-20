@@ -17,7 +17,7 @@ const chatroomSchema = mongoose.Schema({
       ref: "User",
     },
   ],
-  participant: {
+  participantId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
@@ -42,5 +42,5 @@ const chatroomSchema = mongoose.Schema({
   },
 });
 
-module.exports = new mongoose.model("Chatroom", chatroomSchema);
-module.exports = new mongoose.model("Participant", participantSchema);
+const Chatroom = mongoose.model("Chatroom", chatroomSchema);
+module.exports = Chatroom;
