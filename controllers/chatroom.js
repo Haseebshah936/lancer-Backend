@@ -1,4 +1,5 @@
 const Chatroom = require("../models/chatroom");
+const moongose = require("mongoose");
 
 const createChatroom = async (req, res) => {
   try {
@@ -82,6 +83,110 @@ const getChatroomsByUserId = async (req, res) => {
   }
 };
 
+const addAdmin = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const { id } = req.params;
+    const chatroom = await Chatroom.findById(id);
+    if (!chatroom) return res.status(404).send("Chatroom not found");
+    chatroom.admin.push(userId);
+    await chatroom.save();
+    res.status(200).send(chatroom);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+const removeAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.body;
+    console.log(userId);
+    let chatroom = await Chatroom.findById(id);
+    if (!chatroom) return res.status(404).send("Chatroom not found");
+    chatroom.admin = chatroom.admin.filter(
+      (admin) => admin.toString() !== userId
+    );
+    await chatroom.save();
+    res.status(200).send(chatroom);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+const addParticipant = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.body;
+    const chatroom = await Chatroom.findById(id);
+    if (!chatroom) return res.status(404).send("Chatroom not found");
+    chatroom.participants.push(userId);
+    await chatroom.save();
+    res.status(200).send(chatroom);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+const removeParticipant = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.body;
+    const chatroom = await Chatroom.findById(id);
+    if (!chatroom) return res.status(404).send("Chatroom not found");
+    chatroom.participants = chatroom.participants.filter(
+      (e) => e.toString() !== userId
+    );
+    chatroom.admin = chatroom.admin.filter((e) => e.toString() !== userId);
+    await chatroom.save();
+    res.status(200).send(chatroom);
+  } catch (error) {
+    req.status(500).send(error.message);
+  }
+};
+
+const updateImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { image } = req.body;
+    const chatroom = await Chatroom.findById(id);
+    if (!chatroom) return res.status(404).send("Chatroom not found");
+    chatroom.image = image;
+    await chatroom.save();
+    res.status(200).send(chatroom);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+const updateDescription = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { description } = req.body;
+    const chatroom = await Chatroom.findById(id);
+    if (!chatroom) return res.status(404).send("Chatroom not found");
+    chatroom.description = description;
+    await chatroom.save();
+    res.status(200).send(chatroom);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+const updateGroupName = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { groupName } = req.body;
+    const chatroom = await Chatroom.findById(id);
+    if (!chatroom) return res.status(404).send("Chatroom not found");
+    chatroom.groupName = groupName;
+    await chatroom.save();
+    res.status(200).send(chatroom);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 const deleteChatroom = async (req, res) => {
   try {
     const { id } = req.params;
@@ -102,4 +207,11 @@ module.exports = {
   getChatroom,
   getChatrooms,
   getChatroomsByUserId,
+  addAdmin,
+  removeAdmin,
+  addParticipant,
+  removeParticipant,
+  updateImage,
+  updateDescription,
+  updateGroupName,
 };
