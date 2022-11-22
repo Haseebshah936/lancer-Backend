@@ -1,26 +1,33 @@
 const mongoose = require("mongoose");
-
-const chatroomSchema = mongoose.Schema({
+const participantSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  muted: {
+    type: Boolean,
+    default: false,
+  },
+  lastVisited: {
+    type: Date,
+    default: Date.now,
+  },
+  blocked: {
+    type: Boolean,
+    default: false,
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
+});
+const chatroomSchema = new mongoose.Schema({
   isGroup: {
     type: Boolean,
     default: false,
   },
-  participants: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
-  admin: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
-  participantId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
+  participants: [participantSchema],
   createdAt: {
     type: Date,
     default: Date.now,
@@ -35,12 +42,23 @@ const chatroomSchema = mongoose.Schema({
   },
   groupName: {
     type: String,
+    validator: (value) => {
+      if (this.Chatroom.isGroup) {
+        return value.length > 0;
+      }
+    },
   },
   description: {
     type: String,
     default: "",
   },
+  latestMessage: {
+    type: mongoose.Types.ObjectId,
+    ref: "Message",
+    default: null,
+  },
 });
 
 const Chatroom = mongoose.model("Chatroom", chatroomSchema);
-module.exports = Chatroom;
+const Participant = mongoose.model("Participant", participantSchema);
+module.exports = { Chatroom, Participant };

@@ -1,5 +1,5 @@
-const { find } = require("../models/message");
 const Message = require("../models/message");
+const { Chatroom } = require("../models/chatroom");
 
 const getMessages = async (req, res) => {
   try {
@@ -10,6 +10,7 @@ const getMessages = async (req, res) => {
     const messages = await Message.find({
       chatroomId,
     })
+      .populate("userId", "name profilePic")
       .sort({
         createdAt: -1,
       })
@@ -36,6 +37,8 @@ const getMessagesCount = async (req, res) => {
 const createMessage = async (req, res) => {
   try {
     const { chatroomId, userId, type, text, uri } = req.body;
+    const chatroom = await Chatroom.findById(chatroomId);
+    if (!chatroom) return res.status(404).send("Chatroom not found");
     const newMessage = new Message({
       chatroomId,
       userId,
@@ -43,7 +46,9 @@ const createMessage = async (req, res) => {
       text,
       uri,
     });
+    chatroom.latestMessage = newMessage._id;
     const response = await newMessage.save();
+    await chatroom.save();
     res.status(201).send(response);
   } catch (err) {
     res.status(500).send(err.message);
