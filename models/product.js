@@ -25,6 +25,10 @@ const packageSchema = new moongose.Schema({
     type: String,
     required: true,
   },
+  delivery: {
+    type: Number,
+    required: true,
+  },
   features: [featureSchema],
 });
 

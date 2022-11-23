@@ -55,6 +55,7 @@ const createProduct = async (req, res) => {
         name: p.name,
         cost: p.cost,
         description: p.description,
+        delivery: p.delivery,
         features: newFeatures,
       });
       newPakages.push(package);
@@ -124,6 +125,7 @@ const updateProduct = async (req, res) => {
         name: p.name,
         cost: p.cost,
         description: p.description,
+        delivery: p.delivery,
         features: newFeatures,
       });
       newPakages.push(package);
