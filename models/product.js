@@ -62,12 +62,7 @@ const productSchema = new moongose.Schema({
   videos: [{ type: String, default: "" }],
   createdAt: { type: Date, default: Date.now },
   packages: [packageSchema],
-  additionalFeatures: [
-    {
-      type: moongose.Schema.Types.ObjectId,
-      ref: "AdditionalFeature",
-    },
-  ],
+  additionalFeatures: [additionalFeaturesSchema],
   orderImages: [{ type: String, default: "" }],
   orderVideos: [{ type: String, default: "" }],
   state: {
@@ -94,8 +89,8 @@ const productSchema = new moongose.Schema({
 const Product = moongose.model("Product", productSchema);
 const Package = moongose.model("Package", packageSchema);
 const Feature = moongose.model("Feature", featureSchema);
-const AdditionalFeature = moongose.model(
-  "AdditionalFeature",
-  additionalFeaturesSchema
-);
+// const AdditionalFeature = moongose.model(
+//   "AdditionalFeature",
+//   additionalFeaturesSchema
+// );
 module.exports = { Product, Package, Feature, AdditionalFeature };

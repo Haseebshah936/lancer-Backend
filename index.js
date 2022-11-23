@@ -19,7 +19,7 @@ const app = express();
 // Middlewares
 app.use(helmet()); // For security provide headers more to read on this
 app.use(cors({ origin: true })); // Allow cross origin requests
-app.use(express.json({ limit: "300kb" })); // For parsing application/json
+app.use(express.json({ limit: "100KB" })); // For parsing application/json
 
 // app.use(express.static("public")); // For serving static files
 
