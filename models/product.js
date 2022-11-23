@@ -89,8 +89,8 @@ const productSchema = new moongose.Schema({
 const Product = moongose.model("Product", productSchema);
 const Package = moongose.model("Package", packageSchema);
 const Feature = moongose.model("Feature", featureSchema);
-// const AdditionalFeature = moongose.model(
-//   "AdditionalFeature",
-//   additionalFeaturesSchema
-// );
+const AdditionalFeature = moongose.model(
+  "AdditionalFeature",
+  additionalFeaturesSchema
+);
 module.exports = { Product, Package, Feature, AdditionalFeature };
