@@ -1,6 +1,20 @@
 const Message = require("../models/message");
 const { Chatroom } = require("../models/chatroom");
 
+const getMessage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const message = await Message.findById(id).populate(
+      "userId",
+      "name profilePic"
+    );
+    if (!message) return res.status(404).send("Message not found");
+    res.status(200).json(message);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 const getMessages = async (req, res) => {
   try {
     const { chatroomId } = req.params;
@@ -79,6 +93,7 @@ const deleteAllMessages = async (req, res) => {
 };
 
 module.exports = {
+  getMessage,
   getMessages,
   getMessagesCount,
   createMessage,
