@@ -126,6 +126,7 @@ const getChatroomsByUserId = async (req, res) => {
       }
 
       if (chatroom?.isGroup) {
+        console.log("Chatrooms ", chatroom?._id, chatroom?.isGroup);
         formattedChatrooms.push({
           avatar: chatroom.image,
           alt: chatroom.groupName + " image",

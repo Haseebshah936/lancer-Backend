@@ -305,12 +305,11 @@ const updateBadge = async (req, res) => {
 const updateOnlineStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { isOnline } = req.body;
     const user = await User.findByIdAndUpdate(
       id,
       {
         $set: {
-          isOnline,
+          isOnline: Date.now(),
         },
       },
       {
