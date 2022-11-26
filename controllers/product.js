@@ -24,6 +24,18 @@ const getProduct = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+const getProductByUserId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const p = await product.Product.find({
+      "owner._id": id,
+    }).populate("owner._id", "profilePic name badge");
+    if (!p) return res.status(404).send({ error: "Product not found" });
+    res.status(200).send(p);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
 
 const createProduct = async (req, res) => {
   try {
@@ -789,8 +801,9 @@ module.exports = {
   updateReviews,
   updateRating,
   updateRanking,
-  getProducts,
   getProduct,
+  getProducts,
+  getProductByUserId,
   getProductsBySubCategory,
   getProductsBySubCategoryWithCost,
   getProductsBySubCategoryWithBadge,
