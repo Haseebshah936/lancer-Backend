@@ -85,6 +85,12 @@ const productSchema = new moongose.Schema({
     type: Number,
     default: 5,
   },
+  questions: [
+    {
+      title: { type: String, required: true },
+      discription: { type: String, required: true },
+    },
+  ],
 });
 const Product = moongose.model("Product", productSchema);
 const Package = moongose.model("Package", packageSchema);

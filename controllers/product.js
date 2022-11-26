@@ -37,7 +37,9 @@ const createProduct = async (req, res) => {
       video,
       packages,
       additionalFeatures,
+      questions,
     } = req.body;
+    console.log(req.body);
     const owner = await user.User.findById(ownerId).select("badge");
     if (!owner) return res.status(404).send({ error: "User not found" });
     const newPakages = [];
@@ -84,6 +86,7 @@ const createProduct = async (req, res) => {
       cost: packages[0].cost,
       packages: newPakages,
       additionalFeatures: newAdditionalFeatures,
+      questions,
     });
     newProduct.save();
     res.status(201).send(newProduct);
@@ -106,6 +109,7 @@ const updateProduct = async (req, res) => {
       video,
       packages,
       additionalFeatures,
+      questions,
     } = req.body;
     console.log(title);
     const owner = await user.User.findById(ownerId).select("badge");
@@ -152,6 +156,8 @@ const updateProduct = async (req, res) => {
     newProduct.additionalFeatures = newAdditionalFeatures;
     newProduct.owner = owner;
     newProduct.cost = packages[0].cost;
+    newProduct.questions = questions;
+    newProduct.markModified("questions");
     newProduct.markModified("packages");
     newProduct.markModified("owner");
     newProduct.markModified("additionalFeatures");
