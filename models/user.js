@@ -122,7 +122,7 @@ const userSchema = new mongoose.Schema({
   // gigs:[{type:mongoose.Types.ObjectId, ref:"Gig"}], //converted to collection
   // orders:[{type:mongoose.Types.ObjectId, ref:"Order"}],//converted to collection
   // reviews:[{type:mongoose.Types.ObjectId, ref:"Review"}],//converted to collection
-  isOnline: { type: Date, default: false },
+  isOnline: { type: Date },
   reviews: { type: Number, default: 0 },
   responseTime: { type: Number, default: 0 },
   stars: { type: Number, default: 5 },
