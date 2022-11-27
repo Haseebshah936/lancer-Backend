@@ -3,7 +3,15 @@ const { Chatroom } = require("../models/chatroom");
 
 const getMessage = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { chatroomId, id, userId } = req.params;
+    console.log(id, userId);
+    const chatroom = await Chatroom.findById(chatroomId);
+    if (!chatroom) return res.status(404).send("Chatroom not found");
+    const participantId = chatroom.participants.filter(
+      (participant) => participant.userId.toString() === userId
+    )[0]._id;
+    chatroom.participants.id(participantId).lastVisited = new Date();
+    chatroom.save();
     const message = await Message.findById(id).populate(
       "userId",
       "name profilePic"
@@ -17,8 +25,16 @@ const getMessage = async (req, res) => {
 
 const getMessages = async (req, res) => {
   try {
-    const { chatroomId } = req.params;
+    const { chatroomId, userId } = req.params;
     let { skip } = req.query;
+    console.log(chatroomId, userId);
+    const chatroom = await Chatroom.findById(chatroomId);
+    if (!chatroom) return res.status(404).send("Chatroom not found");
+    const participantId = chatroom.participants.filter(
+      (participant) => participant.userId.toString() === userId
+    )[0]._id;
+    chatroom.participants.id(participantId).lastVisited = new Date();
+    chatroom.save();
     if (skip === undefined) skip = 0;
     console.log(chatroomId);
     const messages = await Message.find({
@@ -32,9 +48,11 @@ const getMessages = async (req, res) => {
       .limit(10);
     res.status(200).send(messages);
   } catch (error) {
-    res.status(500).json({ message: err.message });
+    console.log(error);
+    res.status(500).json({ message: error.message });
   }
 };
+
 const getMessagesCount = async (req, res) => {
   try {
     const { chatroomId } = req.params;
@@ -51,6 +69,7 @@ const getMessagesCount = async (req, res) => {
 const createMessage = async (req, res) => {
   try {
     const { chatroomId, userId, type, text, uri } = req.body;
+    console.log(req.body);
     const chatroom = await Chatroom.findById(chatroomId);
     if (!chatroom) return res.status(404).send("Chatroom not found");
     const newMessage = new Message({
@@ -60,11 +79,17 @@ const createMessage = async (req, res) => {
       text,
       uri,
     });
+    console.log(chatroom.participants);
     chatroom.latestMessage = newMessage._id;
+    const participantId = chatroom.participants.filter(
+      (participant) => participant.userId.toString() === userId._id
+    )[0]._id;
+    chatroom.participants.id(participantId).lastVisited = new Date();
     const response = await newMessage.save();
     await chatroom.save();
     res.status(201).send(response);
   } catch (err) {
+    console.log(err);
     res.status(500).send(err.message);
   }
 };

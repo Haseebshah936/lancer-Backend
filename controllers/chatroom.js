@@ -106,7 +106,7 @@ const getChatroomsByUserId = async (req, res) => {
       },
     }).populate(
       "participants.userId latestMessage",
-      "profilePic name isOnline"
+      "profilePic name isOnline text type createdAt"
     );
     let formattedChatrooms = [];
     chatrooms.forEach((chatroom) => {
@@ -116,11 +116,12 @@ const getChatroomsByUserId = async (req, res) => {
       const user = chatroom.participants.filter(
         (e) => e.userId._id.toString() === id
       )[0];
-
+      console.log(chatroom.latestMessage);
       if (chatroom?.latestMessage) {
-        chatroom.latestMessage?.type === "text"
-          ? chatroom.latestMessage?.text
-          : chatroom.latestMessage?.type;
+        subtitle =
+          chatroom.latestMessage?.type === "text"
+            ? chatroom.latestMessage?.text
+            : "key##->doc";
         date = new Date(chatroom.latestMessage?.createdAt);
         unread = date.getTime() > new Date(user.lastVisited).getTime();
       }
@@ -161,7 +162,7 @@ const getChatroomsByUserId = async (req, res) => {
         });
       }
     });
-    // console.log(formattedChatrooms);
+    console.log(chatrooms);
     res.status(200).json(formattedChatrooms);
   } catch (error) {
     res.status(500).send(error.message);
