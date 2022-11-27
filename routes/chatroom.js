@@ -21,7 +21,7 @@ const {
 } = require("../controllers/chatroom");
 
 router.get("/", getChatrooms);
-router.get("/:id", getChatroom);
+router.get("/:id/:userId", getChatroom);
 router.get("/getChatroomsById/:id", getChatroomsByUserId);
 router.post("/createChatroom", createChatroom);
 router.post("/createGroupChatroom", createGroupChatroom);

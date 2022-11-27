@@ -75,10 +75,65 @@ const createGroupChatroom = async (req, res) => {
 
 const getChatroom = async (req, res) => {
   try {
-    const { id } = req.params;
-    const chatroom = await Chatroom.findById(id);
-    if (chatroom) return res.status(200).json(chatroom);
-    res.status(201).json(chatroom);
+    const { id, userId } = req.params;
+    const chatroom = await Chatroom.findById(id).populate(
+      "participants.userId latestMessage",
+      "profilePic name isOnline text type createdAt"
+    );
+    if (!chatroom) return res.status(404).send("Chatroom not found");
+    let formattedChatroom;
+    let subtitle = "";
+    let date = null;
+    let unread = false;
+    const user = chatroom.participants.filter(
+      (e) => e.userId._id.toString() === userId
+    )[0];
+    console.log(chatroom.latestMessage);
+    if (chatroom?.latestMessage) {
+      subtitle =
+        chatroom.latestMessage?.type === "text"
+          ? chatroom.latestMessage?.text
+          : "key##->doc";
+      date = new Date(chatroom.latestMessage?.createdAt);
+      unread = date.getTime() > new Date(user.lastVisited).getTime();
+    }
+
+    if (chatroom?.isGroup) {
+      console.log("Chatrooms ", chatroom?._id, chatroom?.isGroup);
+      formattedChatroom = {
+        avatar: chatroom.image,
+        alt: chatroom.groupName + " image",
+        title: chatroom.groupName,
+        description: chatroom.description,
+        subtitle,
+        date,
+        unread,
+        muted: user.muted,
+        userParticipantId: user._id,
+        id: chatroom._id,
+        isGroup: chatroom.isGroup,
+      };
+    } else {
+      const participant = chatroom.participants.filter(
+        (e) => e.userId._id.toString() !== id
+      )[0];
+      formattedChatroom = {
+        avatar: participant.userId.profilePic,
+        alt: participant.userId.name + " image",
+        title: participant.userId.name,
+        description: chatroom.description,
+        subtitle,
+        date,
+        unread,
+        muted: user.muted,
+        id: chatroom._id,
+        userParticipantId: user._id,
+        participantId: participant.userId._id,
+        isGroup: chatroom.isGroup,
+        isOnline: participant.userId.isOnline,
+      };
+    }
+    res.status(201).json(formattedChatroom);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: error.message });
