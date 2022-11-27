@@ -50,6 +50,7 @@ const createProduct = async (req, res) => {
       packages,
       additionalFeatures,
       questions,
+      state,
     } = req.body;
     console.log(req.body);
     const owner = await user.User.findById(ownerId).select("badge");
@@ -99,6 +100,7 @@ const createProduct = async (req, res) => {
       packages: newPakages,
       additionalFeatures: newAdditionalFeatures,
       questions,
+      state,
     });
     newProduct.save();
     res.status(201).send(newProduct);
