@@ -93,7 +93,7 @@ const changeFollowingCount = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {
@@ -112,7 +112,7 @@ const increaseReviewCount = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {
@@ -133,7 +133,7 @@ const changeStars = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {
@@ -153,7 +153,7 @@ const changeResponseTime = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {
@@ -180,7 +180,7 @@ const makeSeller = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {
@@ -199,7 +199,7 @@ const removeSeller = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {
@@ -226,7 +226,7 @@ const completeProfile = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     if (!user) return res.status(404).send("User not found");
     const products = await product.Product.updateMany(
       { "owner._id": id },
@@ -261,7 +261,7 @@ const updateSearchHistory = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {
@@ -294,7 +294,7 @@ const updateBadge = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     res.status(200).json(products);
   } catch (error) {
     console.log(error);
@@ -315,7 +315,7 @@ const updateOnlineStatus = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {
@@ -336,7 +336,7 @@ const updateCurrentBalance = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {
@@ -358,7 +358,7 @@ const updateEarning = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {
@@ -380,7 +380,7 @@ const updateActiveOrders = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {
@@ -401,7 +401,7 @@ const updateCancelledOrders = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {
@@ -423,7 +423,7 @@ const updateCompletedOrders = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {
@@ -445,7 +445,7 @@ const updateScore = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select("-password");
     if (!user) return res.status(404).send("User not found");
     res.status(200).json(user);
   } catch (error) {
