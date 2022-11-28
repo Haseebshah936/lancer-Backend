@@ -111,6 +111,19 @@ const getSubCategories = async (req, res) => {
   }
 };
 
+const getSubCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    const subCategories = await Category.findById(id).populate("category");
+    if (!subCategories) return res.status(404).send("No subCategories found");
+    res.status(200).send(subCategories);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
 const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
@@ -140,6 +153,7 @@ module.exports = {
   createCategory,
   updateCategory,
   getCategories,
+  getSubCategory,
   createSubCategory,
   updateSubCategory,
   getSubCategories,
