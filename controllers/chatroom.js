@@ -174,6 +174,7 @@ const getChatroomsByUserId = async (req, res) => {
           return e.userId._id.toString() === id
         }
       )[0];
+
       console.log(chatroom.latestMessage);
       if (chatroom?.latestMessage) {
         subtitle =
