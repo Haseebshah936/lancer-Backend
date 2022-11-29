@@ -169,7 +169,10 @@ const getChatroomsByUserId = async (req, res) => {
       let date = null;
       let unread = false;
       const user = chatroom.participants.filter(
-        (e) => e.userId._id.toString() === id
+        (e) => {
+          console.log(e.toString());
+          return e.userId._id.toString() === id
+        }
       )[0];
       console.log(chatroom.latestMessage);
       if (chatroom?.latestMessage) {
@@ -220,6 +223,7 @@ const getChatroomsByUserId = async (req, res) => {
     console.log(chatrooms);
     res.status(200).json(formattedChatrooms);
   } catch (error) {
+    console.log(error);
     res.status(500).send(error.message);
   }
 };

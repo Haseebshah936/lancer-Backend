@@ -28,7 +28,7 @@ const signup = async (req, res) => {
     if (savedUser) return res.status(403).send("User already exists");
     const result = await user.save();
     res.status(201).send({
-      ...result,
+      ...result._doc,
       email,
       password: encryptedPassword,
     });
