@@ -560,16 +560,20 @@ const getProductsBySearch = async (req, res) => {
     console.log(req.params);
     const { search } = req.params;
     const searchTags = [];
-    search.split(" ").map((e) => {
-      searchTags.push({
-        tags: new RegExp(e, "i"),
-      });
-    });
-    console.log(searchTags);
+    // search.split(" ").map((e) => {
+    //   searchTags.push({
+    //     tags: new RegExp(e, "i"),
+    //   });
+    // });
+    const tags = search.split(" ");
+    console.log(tags);
     const products = await product.Product.find({
       state: "live",
+      tags: {
+        $in: tags,
+      },
     })
-      .or(searchTags)
+      // .or(searchTags)
       .populate("owner._id", "isOnline seller.score name profilePic badge")
       .select("title images rating reviews ranking cost")
       .sort({
@@ -586,22 +590,27 @@ const getProductsBySearchWithCost = async (req, res) => {
   try {
     const { search, lowerRange, upperRange } = req.params;
     const searchTags = [];
-    search.split(" ").map((e) => {
-      searchTags.push({
-        tags: new RegExp(e, "i"),
-      });
-    });
-    console.log(searchTags);
+    // search.split(" ").map((e) => {
+    //   searchTags.push({
+    //     tags: new RegExp(e, "i"),
+    //   });
+    // });
+    // console.log(searchTags);
+    const tags = search.split(" ");
+    console.log(tags);
     const products = await product.Product.find({
       cost: {
         $gte: lowerRange,
         $lte: upperRange,
       },
+      tags: {
+        $in: tags,
+      },
       state: "live",
     })
-      .or(searchTags)
+      // .or(searchTags)
       .populate("owner._id", "isOnline seller.score name profilePic badge")
-      .select("title images rating reviews ranking cost tags")
+      .select("title images rating reviews ranking cost")
       .sort({
         ranking: -1,
       });
@@ -615,20 +624,25 @@ const getProductsBySearchWithCost = async (req, res) => {
 const getProductsBySearchWithBadge = async (req, res) => {
   try {
     const { search, badge } = req.params;
-    const searchTags = [];
-    search.split(" ").map((e) => {
-      searchTags.push({
-        tags: new RegExp(e, "i"),
-      });
-    });
-    console.log(searchTags);
+    // const searchTags = [];
+    // search.split(" ").map((e) => {
+    //   searchTags.push({
+    //     tags: new RegExp(e, "i"),
+    //   });
+    // });
+    // console.log(searchTags);
+    const tags = search.split(" ");
+    console.log(tags);
     const products = await product.Product.find({
       "ownerId.badge": badge,
+      tags: {
+        $in: tags,
+      },
       state: "live",
     })
-      .or(searchTags)
+      // .or(searchTags)
       .populate("owner._id", "isOnline seller.score name profilePic badge")
-      .select("title images rating reviews ranking cost")
+      .select("title images rating reviews ranking cost ")
       .sort({
         ranking: -1,
       });
@@ -643,12 +657,14 @@ const getProductsBySearchWithBadge_Cost = async (req, res) => {
   try {
     const { search, badge, lowerRange, upperRange } = req.params;
     const searchTags = [];
-    search.split(" ").map((e) => {
-      searchTags.push({
-        tags: new RegExp(e, "i"),
-      });
-    });
-    console.log(searchTags);
+    // search.split(" ").map((e) => {
+    //   searchTags.push({
+    //     tags: new RegExp(e, "i"),
+    //   });
+    // });
+    // console.log(searchTags);
+    const tags = search.split(" ");
+    console.log(tags);
     const products = await product.Product.find({
       "owner.badge": badge,
       cost: {
@@ -656,8 +672,11 @@ const getProductsBySearchWithBadge_Cost = async (req, res) => {
         $lte: upperRange,
       },
       state: "live",
+      tags: {
+        $in: tags,
+      },
     })
-      .or(searchTags)
+      // .or(searchTags)
       .populate("owner._id", "isOnline seller.score name profilePic badge")
       .select("title images rating reviews ranking cost")
       .sort({
@@ -674,18 +693,23 @@ const getProductsBySearchAndSubCategory = async (req, res) => {
   try {
     const { search, category } = req.params;
     console.log(req.params);
-    const searchTags = [];
-    search.split(" ").map((e) => {
-      searchTags.push({
-        tags: new RegExp(e, "i"),
-      });
-    });
-    console.log("S", searchTags);
+    // const searchTags = [];
+    // search.split(" ").map((e) => {
+    //   searchTags.push({
+    //     tags: new RegExp(e, "i"),
+    //   });
+    // });
+    // console.log("S", searchTags);
+    const tags = search.split(" ");
+    console.log(tags);
     const products = await product.Product.find({
       category,
       state: "live",
+      tags: {
+        $in: tags,
+      },
     })
-      .or(searchTags)
+      // .or(searchTags)
       .populate("owner._id", "isOnline seller.score name profilePic badge")
       .select("title images rating reviews ranking cost")
       .sort({
@@ -702,13 +726,15 @@ const getProductsBySearchAndSubCategoryWithCost = async (req, res) => {
   try {
     const { search, category, lowerRange, upperRange } = req.params;
     console.log(req.params);
-    const searchTags = [];
-    search.split(" ").map((e) => {
-      searchTags.push({
-        tags: new RegExp(e, "i"),
-      });
-    });
+    // const searchTags = [];
+    // search.split(" ").map((e) => {
+    //   searchTags.push({
+    //     tags: new RegExp(e, "i"),
+    //   });
+    // });
     // console.log(searchTags);
+    const tags = search.split(" ");
+    console.log(tags);
     const products = await product.Product.find({
       state: "live",
       category,
@@ -716,8 +742,11 @@ const getProductsBySearchAndSubCategoryWithCost = async (req, res) => {
         $gte: lowerRange,
         $lte: upperRange,
       },
+      tags: {
+        $in: tags,
+      },
     })
-      .or(searchTags)
+      // .or(searchTags)
       .populate("owner._id", "isOnline seller.score name profilePic badge")
       .select("title images rating reviews ranking cost")
       .sort({
@@ -734,19 +763,24 @@ const getProductsBySearchAndSubCategoryWithCost = async (req, res) => {
 const getProductsBySearchAndSubCategoryWithBadge = async (req, res) => {
   try {
     const { search, category, badge } = req.params;
-    const searchTags = [];
-    search.split(" ").map((e) => {
-      searchTags.push({
-        tags: new RegExp(e, "i"),
-      });
-    });
-    console.log(searchTags);
+    // const searchTags = [];
+    // search.split(" ").map((e) => {
+    //   searchTags.push({
+    //     tags: new RegExp(e, "i"),
+    //   });
+    // });
+    // console.log(searchTags);
+    const tags = search.split(" ");
+    console.log(tags);
     const products = await product.Product.find({
       state: "live",
       "owner.badge": badge,
       category,
+      tags: {
+        $in: tags,
+      },
     })
-      .or(searchTags)
+      // .or(searchTags)
       .populate("owner._id", "isOnline seller.score name profilePic badge")
       .select("title images rating reviews ranking cost")
       .sort({
@@ -763,13 +797,15 @@ const getProductsBySearchAndSubCategoryWithBadge_Cost = async (req, res) => {
   try {
     const { search, category, badge, lowerRange, upperRange } = req.params;
     console.log("Te", req.params);
-    const searchTags = [];
-    search.split(" ").map((e) => {
-      searchTags.push({
-        tags: new RegExp(e, "i"),
-      });
-    });
-    console.log(searchTags);
+    // const searchTags = [];
+    // search.split(" ").map((e) => {
+    //   searchTags.push({
+    //     tags: new RegExp(e, "i"),
+    //   });
+    // });
+    // console.log(searchTags);
+    const tags = search.split(" ");
+    console.log(tags);
     const products = await product.Product.find({
       state: "live",
       "owner.badge": badge,
@@ -778,8 +814,11 @@ const getProductsBySearchAndSubCategoryWithBadge_Cost = async (req, res) => {
         $gte: lowerRange,
         $lte: upperRange,
       },
+      tags: {
+        $in: tags,
+      },
     })
-      .or(searchTags)
+      // .or(searchTags)
       .populate("owner._id", "isOnline seller.score name profilePic badge")
       .select("title images rating reviews ranking cost")
       .sort({

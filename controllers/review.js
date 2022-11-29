@@ -66,12 +66,13 @@ const getSellerReviews = async (req, res) => {
 
 const createReview = async (req, res) => {
   try {
-    const { rating, comment, buyerId, sellerId } = req.body;
+    const { rating, comment, buyerId, sellerId, productId } = req.body;
     const review = new Review({
       rating,
       comment,
       buyerId,
       sellerId,
+      productId,
     });
     await review.save();
     res.status(200).send(review);
