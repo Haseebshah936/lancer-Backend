@@ -84,6 +84,7 @@ const productSchema = new moongose.Schema({
   cost: {
     type: Number,
     default: 5,
+    required: true,
   },
   questions: [
     {

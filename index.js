@@ -12,7 +12,7 @@ const gig = require("./routes/gig");
 const product = require("./routes/product");
 const message = require("./routes/message");
 const chatroom = require("./routes/chatroom");
-
+const review = require("./routes/review");
 // Initialzing express app
 const app = express();
 
@@ -34,6 +34,7 @@ app.use("/api/gig", gig);
 app.use("/api/product", product);
 app.use("/api/message", message);
 app.use("/api/chatroom", chatroom);
+app.use("/api/review", review);
 app.get("/api/", (req, res) => {
   res.send("Hello World");
 });

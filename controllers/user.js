@@ -164,14 +164,25 @@ const changeResponseTime = async (req, res) => {
 const makeSeller = async (req, res) => {
   try {
     const { id } = req.params;
-    const { skills, about, experience, education, achivements } = req.body;
+    const {
+      skills,
+      about,
+      experience,
+      education,
+      achivements,
+      languages,
+      englishLevel,
+    } = req.body;
     const seller = new Seller({
       skills,
       about,
       experience,
       education,
       achivements,
+      languages,
+      englishLevel,
     });
+
     const user = await User.findByIdAndUpdate(
       id,
       {
