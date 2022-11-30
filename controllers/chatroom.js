@@ -46,6 +46,53 @@ const createChatroom = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+const createChatroomWithId = async (req, res) => {
+  try {
+    const { creatorId, participantId, id } = req.body;
+    const possibilty = await Chatroom.findOne().or([
+      {
+        creatorId: creatorId,
+        participants: {
+          $elemMatch: {
+            userId: participantId,
+          },
+        },
+        isGroup: false,
+      },
+      {
+        creatorId: participantId,
+        participants: {
+          $elemMatch: {
+            userId: creatorId,
+          },
+        },
+        isGroup: false,
+      },
+    ]);
+    if (possibilty) {
+      console.log("Chatroom already exists");
+      return res.status(200).send(possibilty);
+    }
+    const newChatroom = new Chatroom({
+      creatorId,
+      _id: id,
+      participants: [
+        new Participant({
+          userId: participantId,
+        }),
+        new Participant({
+          userId: creatorId,
+        }),
+      ],
+      visited: [{}],
+    });
+    const response = await newChatroom.save();
+    res.status(201).send(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error.message);
+  }
+};
 
 const createGroupChatroom = async (req, res) => {
   try {
@@ -88,7 +135,7 @@ const getChatroom = async (req, res) => {
     const user = chatroom.participants.filter(
       (e) => e.userId?._id?.toString() === userId
     )[0];
-    console.log(chatroom.latestMessage);
+    // console.log(chatroom.latestMessage);
     if (chatroom?.latestMessage) {
       subtitle =
         chatroom.latestMessage?.type === "text"
@@ -115,7 +162,7 @@ const getChatroom = async (req, res) => {
       };
     } else {
       const participant = chatroom.participants.filter(
-        (e) => e.userId?._id?.toString() !== id
+        (e) => e.userId?._id?.toString() !== userId
       )[0];
       formattedChatroom = {
         avatar: participant.userId.profilePic,
@@ -417,6 +464,7 @@ const deleteChatroom = async (req, res) => {
 module.exports = {
   createChatroom,
   deleteChatroom,
+  createChatroomWithId,
   createGroupChatroom,
   getChatroom,
   getChatrooms,

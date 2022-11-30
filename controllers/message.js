@@ -27,7 +27,7 @@ const getMessages = async (req, res) => {
   try {
     const { chatroomId, userId } = req.params;
     let { skip } = req.query;
-    console.log(chatroomId, userId);
+    // console.log(chatroomId, userId);
     const chatroom = await Chatroom.findById(chatroomId);
     if (!chatroom) return res.status(404).send("Chatroom not found");
     const participantId = chatroom.participants.filter(
@@ -36,7 +36,7 @@ const getMessages = async (req, res) => {
     chatroom.participants.id(participantId).lastVisited = new Date();
     chatroom.save();
     if (skip === undefined) skip = 0;
-    console.log(chatroomId);
+    // console.log(chatroomId);
     const messages = await Message.find({
       chatroomId,
     })

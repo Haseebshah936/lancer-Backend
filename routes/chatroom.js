@@ -18,12 +18,14 @@ const {
   muteRoom,
   unMuteRoom,
   lastVisitedRoom,
+  createChatroomWithId,
 } = require("../controllers/chatroom");
 
 router.get("/", getChatrooms);
 router.get("/getChatroom/:id/:userId", getChatroom);
 router.get("/getChatroomsById/:id", getChatroomsByUserId);
 router.post("/createChatroom", createChatroom);
+router.post("/createChatroomWithId", createChatroomWithId);
 router.post("/createGroupChatroom", createGroupChatroom);
 router.put("/makeAdmin/:id", makeAdmin);
 router.put("/removeAdmin/:id", removeAdmin);
