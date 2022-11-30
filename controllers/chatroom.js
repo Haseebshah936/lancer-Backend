@@ -99,7 +99,7 @@ const getChatroom = async (req, res) => {
     }
 
     if (chatroom?.isGroup) {
-      console.log("Chatrooms ", chatroom?._id, chatroom?.isGroup);
+      // console.log("Chatrooms ", chatroom?._id, chatroom?.isGroup);
       formattedChatroom = {
         avatar: chatroom.image,
         alt: chatroom.groupName + " image",
@@ -152,7 +152,7 @@ const getChatrooms = async (req, res) => {
 const getChatroomsByUserId = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
+    // console.log(id);
     const chatrooms = await Chatroom.find({
       participants: {
         $elemMatch: {
@@ -169,9 +169,9 @@ const getChatroomsByUserId = async (req, res) => {
       let subtitle = "";
       let date = null;
       let unread = false;
-      console.log("Chatroom", chatroom);
+      // console.log("Chatroom", chatroom);
       const user = chatroom?.participants.filter((e) => {
-        console.log(e.toString());
+        // console.log(e.toString());
         return e.userId?._id?.toString() === id;
       })[0];
       // console.log(chatroom.latestMessage);
@@ -185,7 +185,7 @@ const getChatroomsByUserId = async (req, res) => {
       }
 
       if (chatroom?.isGroup) {
-        console.log("Chatrooms ", chatroom?._id, chatroom?.isGroup);
+        // console.log("Chatrooms ", chatroom?._id, chatroom?.isGroup);
         formattedChatrooms.push({
           avatar: chatroom.image,
           alt: chatroom.groupName + " image",
