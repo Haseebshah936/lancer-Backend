@@ -164,18 +164,17 @@ const getChatroomsByUserId = async (req, res) => {
       "profilePic name isOnline text type createdAt"
     );
     let formattedChatrooms = [];
-    chatrooms.forEach((chatroom) => {
+    // console.log("Chatrooms ", chatrooms);
+    chatrooms.forEach((chatroom, i) => {
       let subtitle = "";
       let date = null;
       let unread = false;
-      const user = chatroom.participants.filter(
-        (e) => {
-          console.log(e.toString());
-          return e.userId._id.toString() === id
-        }
-      )[0];
-
-      console.log(chatroom.latestMessage);
+      console.log("Chatroom", chatroom);
+      const user = chatroom?.participants.filter((e) => {
+        console.log(e.toString());
+        return e.userId?._id?.toString() === id;
+      })[0];
+      // console.log(chatroom.latestMessage);
       if (chatroom?.latestMessage) {
         subtitle =
           chatroom.latestMessage?.type === "text"
@@ -202,7 +201,7 @@ const getChatroomsByUserId = async (req, res) => {
         });
       } else {
         const participant = chatroom.participants.filter(
-          (e) => e.userId._id.toString() !== id
+          (e) => e.userId?._id?.toString() !== id
         )[0];
         formattedChatrooms.push({
           avatar: participant.userId.profilePic,
@@ -221,7 +220,6 @@ const getChatroomsByUserId = async (req, res) => {
         });
       }
     });
-    console.log(chatrooms);
     res.status(200).json(formattedChatrooms);
   } catch (error) {
     console.log(error);
