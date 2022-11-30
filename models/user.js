@@ -72,18 +72,7 @@ const sellerSchema = new mongoose.Schema({
       },
     },
   ],
-  languages: [
-    {
-      language: {
-        type: String,
-        required: true,
-      },
-      proficiency: {
-        type: String,
-        required: true,
-      },
-    },
-  ],
+  languages: [{ type: String, required: true }],
   englishLevel: {
     type: String,
     required: true,
