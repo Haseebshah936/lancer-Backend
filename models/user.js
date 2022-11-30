@@ -87,6 +87,7 @@ const sellerSchema = new mongoose.Schema({
   englishLevel: {
     type: String,
     required: true,
+    default: "Beginner",
   },
   activeOrders: { type: Number, default: 0 },
   cancelledOrders: { type: Number, default: 0 },

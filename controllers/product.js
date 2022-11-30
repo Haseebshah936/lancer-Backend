@@ -16,7 +16,7 @@ const getProduct = async (req, res) => {
     const { id } = req.params;
     const p = await product.Product.findById(id).populate(
       "owner._id",
-      "profilePic name badge seller"
+      "profilePic name badge country emailVerified seller"
     );
     if (!p) return res.status(404).send({ error: "Product not found" });
     res.status(200).send(p);
@@ -30,7 +30,10 @@ const getProductByUserId = async (req, res) => {
     const p = await product.Product.find({
       "owner._id": id,
     })
-      .populate("owner._id", "profilePic name badge seller")
+      .populate(
+        "owner._id",
+        "profilePic emailVerified name badge country seller"
+      )
       .select("title images rating reviews ranking cost seller state");
     if (!p) return res.status(404).send({ error: "Product not found" });
     res.status(200).send(p);
@@ -324,7 +327,7 @@ const getProductsBySubCategory = async (req, res) => {
       category,
       state: "live",
     })
-      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .populate("owner._id", "isOnline seller name profilePic badge")
       .select("title images rating reviews ranking cost seller")
       .sort({
         ranking: -1,
@@ -348,7 +351,7 @@ const getProductsBySubCategoryWithCost = async (req, res) => {
         $lte: upperRange,
       },
     })
-      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .populate("owner._id", "isOnline seller name profilePic badge")
       .select("title images rating reviews ranking cost seller")
       .sort({
         ranking: -1,
@@ -369,7 +372,7 @@ const getProductsBySubCategoryWithBadge = async (req, res) => {
       state: "live",
       "owner.badge": badge,
     })
-      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .populate("owner._id", "isOnline seller name profilePic badge")
       .select("title images rating reviews ranking cost seller")
       .sort({
         ranking: -1,
@@ -394,7 +397,7 @@ const getProductsBySubCategoryWithBadge_Cost = async (req, res) => {
         $lte: upperRange,
       },
     })
-      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .populate("owner._id", "isOnline seller name profilePic badge")
       .select("title images rating reviews ranking cost seller")
       .sort({
         ranking: -1,
@@ -416,7 +419,7 @@ const getProductsByCategory = async (req, res) => {
     let products;
     if (!subCategories) {
       products = await product.Product.find({ category, state: "live" })
-        .populate("owner._id", "isOnline seller.score name profilePic badge")
+        .populate("owner._id", "isOnline seller name profilePic badge")
         .select("title images rating reviews ranking cost seller")
         .sort({
           ranking: -1,
@@ -452,7 +455,7 @@ const getProductsByCategoryWithCost = async (req, res) => {
           $lte: upperRange,
         },
       })
-        .populate("owner._id", "isOnline seller.score name profilePic badge")
+        .populate("owner._id", "isOnline seller name profilePic badge")
         .select("title images rating reviews ranking cost seller")
         .sort({
           ranking: -1,
@@ -491,7 +494,7 @@ const getProductsByCategoryWithBadge = async (req, res) => {
         state: "live",
         "owner.badge": badge,
       })
-        .populate("owner._id", "isOnline seller.score name profilePic badge")
+        .populate("owner._id", "isOnline seller name profilePic badge")
         .select("title images rating reviews ranking cost seller")
         .sort({
           ranking: -1,
@@ -531,7 +534,7 @@ const getProductsByCategoryWithBadge_Cost = async (req, res) => {
           $lte: upperRange,
         },
       })
-        .populate("owner._id", "isOnline seller.score name profilePic badge")
+        .populate("owner._id", "isOnline seller name profilePic badge")
         .select("title images rating reviews ranking cost seller")
         .sort({
           ranking: -1,
@@ -576,7 +579,7 @@ const getProductsBySearch = async (req, res) => {
       },
     })
       // .or(searchTags)
-      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .populate("owner._id", "isOnline seller name profilePic badge")
       .select("title images rating reviews ranking cost seller")
       .sort({
         ranking: -1,
@@ -611,7 +614,7 @@ const getProductsBySearchWithCost = async (req, res) => {
       state: "live",
     })
       // .or(searchTags)
-      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .populate("owner._id", "isOnline seller name profilePic badge")
       .select("title images rating reviews ranking cost seller")
       .sort({
         ranking: -1,
@@ -643,7 +646,7 @@ const getProductsBySearchWithBadge = async (req, res) => {
       state: "live",
     })
       // .or(searchTags)
-      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .populate("owner._id", "isOnline seller name profilePic badge")
       .select("title images rating reviews ranking cost seller ")
       .sort({
         ranking: -1,
@@ -679,7 +682,7 @@ const getProductsBySearchWithBadge_Cost = async (req, res) => {
       },
     })
       // .or(searchTags)
-      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .populate("owner._id", "isOnline seller name profilePic badge")
       .select("title images rating reviews ranking cost seller")
       .sort({
         ranking: -1,
@@ -712,7 +715,7 @@ const getProductsBySearchAndSubCategory = async (req, res) => {
       },
     })
       // .or(searchTags)
-      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .populate("owner._id", "isOnline seller name profilePic badge")
       .select("title images rating reviews ranking cost seller")
       .sort({
         ranking: -1,
@@ -749,7 +752,7 @@ const getProductsBySearchAndSubCategoryWithCost = async (req, res) => {
       },
     })
       // .or(searchTags)
-      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .populate("owner._id", "isOnline seller name profilePic badge")
       .select("title images rating reviews ranking cost seller")
       .sort({
         ranking: -1,
@@ -783,7 +786,7 @@ const getProductsBySearchAndSubCategoryWithBadge = async (req, res) => {
       },
     })
       // .or(searchTags)
-      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .populate("owner._id", "isOnline seller name profilePic badge")
       .select("title images rating reviews ranking cost seller")
       .sort({
         ranking: -1,
@@ -821,7 +824,7 @@ const getProductsBySearchAndSubCategoryWithBadge_Cost = async (req, res) => {
       },
     })
       // .or(searchTags)
-      .populate("owner._id", "isOnline seller.score name profilePic badge")
+      .populate("owner._id", "isOnline seller name profilePic badge")
       .select("title images rating reviews ranking cost seller")
       .sort({
         ranking: -1,
