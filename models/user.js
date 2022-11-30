@@ -92,6 +92,14 @@ const sellerSchema = new mongoose.Schema({
   cancelledOrders: { type: Number, default: 0 },
   completedOrders: { type: Number, default: 0 },
   score: { type: Number, default: 0 },
+  reviews: {
+    type: Number,
+    default: 0,
+  },
+  rating: {
+    type: Number,
+    default: 5,
+  },
 });
 
 const userSchema = new mongoose.Schema({
@@ -148,6 +156,7 @@ const userSchema = new mongoose.Schema({
   earnings: { type: Number, default: 0 },
   gender: { type: String },
   DOB: { type: Date },
+  profileCompleted: { type: Boolean, default: false },
 });
 // userSchema.plugin(passportLocalMongoose);
 userSchema.plugin(findOrCreate);

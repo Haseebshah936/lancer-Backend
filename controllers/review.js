@@ -43,6 +43,18 @@ const getBuyerReviews = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+// const getBuyerReviewsCount = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const reviews = await Review.find({ buyerId: id }).count();
+
+//     if (!reviews) return res.status(404).send("Reviews not found");
+//     res.status(200).send(reviews);
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send(error.message);
+//   }
+// };
 
 const getSellerReviews = async (req, res) => {
   try {
@@ -63,6 +75,17 @@ const getSellerReviews = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+// const getSellerReviewsCount = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const reviews = await Review.find({ sellerId: id }).count();
+//     if (!reviews) return res.status(404).send("Reviews not found");
+//     res.status(200).send(reviews);
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send(error.message);
+//   }
+// };
 
 const createReview = async (req, res) => {
   try {
