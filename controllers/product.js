@@ -4,7 +4,12 @@ const user = require("../models/user");
 
 const getProducts = async (req, res) => {
   try {
-    const products = await product.Product.find();
+    const products = await product.Product.find({ state: "live" })
+      .populate("owner._id", "isOnline seller name profilePic badge")
+      .select("title images rating reviews ranking cost seller")
+      .sort({
+        ranking: -1,
+      });
     if (!products) return res.status(404).send({ error: "Product not found" });
     res.status(200).send(products);
   } catch (error) {

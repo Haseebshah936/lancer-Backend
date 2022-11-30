@@ -206,10 +206,12 @@ const getChatroomsByUserId = async (req, res) => {
           userId: id,
         },
       },
-    }).populate(
-      "participants.userId latestMessage",
-      "profilePic name isOnline text type createdAt"
-    );
+    })
+      .populate(
+        "participants.userId latestMessage",
+        "profilePic name isOnline text type createdAt"
+      )
+      .sort({ createdAt: -1 });
     let formattedChatrooms = [];
     // console.log("Chatrooms ", chatrooms);
     chatrooms.forEach((chatroom, i) => {
