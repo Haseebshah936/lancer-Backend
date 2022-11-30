@@ -86,7 +86,7 @@ const getChatroom = async (req, res) => {
     let date = null;
     let unread = false;
     const user = chatroom.participants.filter(
-      (e) => e.userId._id.toString() === userId
+      (e) => e.userId?._id?.toString() === userId
     )[0];
     console.log(chatroom.latestMessage);
     if (chatroom?.latestMessage) {
@@ -115,7 +115,7 @@ const getChatroom = async (req, res) => {
       };
     } else {
       const participant = chatroom.participants.filter(
-        (e) => e.userId._id.toString() !== id
+        (e) => e.userId?._id?.toString() !== id
       )[0];
       formattedChatroom = {
         avatar: participant.userId.profilePic,
@@ -251,7 +251,7 @@ const removeAdmin = async (req, res) => {
     let chatroom = await Chatroom.findById(id);
     if (!chatroom) return res.status(404).send("Chatroom not found");
     chatroom.admin = chatroom.admin.filter(
-      (admin) => admin.toString() !== userId
+      (admin) => admin?.toString() !== userId
     );
     await chatroom.save();
     res.status(200).send(chatroom);
