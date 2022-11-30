@@ -85,6 +85,7 @@ const createMessage = async (req, res) => {
       (participant) => participant.userId.toString() === userId._id
     )[0]._id;
     chatroom.participants.id(participantId).lastVisited = new Date();
+    chatroom.updatedAt = new Date();
     const response = await newMessage.save();
     await chatroom.save();
     res.status(201).send(response);

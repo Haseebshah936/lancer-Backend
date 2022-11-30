@@ -57,6 +57,10 @@ const chatroomSchema = new mongoose.Schema({
     ref: "Message",
     default: null,
   },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Chatroom = mongoose.model("Chatroom", chatroomSchema);

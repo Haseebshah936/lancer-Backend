@@ -211,7 +211,7 @@ const getChatroomsByUserId = async (req, res) => {
         "participants.userId latestMessage",
         "profilePic name isOnline text type createdAt"
       )
-      .sort({ createdAt: -1 });
+      .sort({ updatedAt: -1 });
     let formattedChatrooms = [];
     // console.log("Chatrooms ", chatrooms);
     chatrooms.forEach((chatroom, i) => {
@@ -266,6 +266,69 @@ const getChatroomsByUserId = async (req, res) => {
           participantId: participant.userId._id,
           isGroup: chatroom.isGroup,
           isOnline: participant.userId.isOnline,
+        });
+      }
+    });
+    res.status(200).json(formattedChatrooms);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error.message);
+  }
+};
+
+const getChatroomsByUserIdWithCreatorAcess = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // console.log(id);
+    const chatrooms = await Chatroom.find({
+      participants: {
+        $elemMatch: {
+          userId: id,
+          isAdmin: true,
+        },
+      },
+      isGroup: true,
+    })
+      .populate(
+        "participants.userId latestMessage",
+        "profilePic name isOnline text type createdAt"
+      )
+      .sort({ updatedAt: -1 });
+    let formattedChatrooms = [];
+    // console.log("Chatrooms ", chatrooms);
+    chatrooms.forEach((chatroom, i) => {
+      let subtitle = "";
+      let date = null;
+      let unread = false;
+      // console.log("Chatroom", chatroom);
+      const user = chatroom?.participants.filter((e) => {
+        // console.log(e.toString());
+        return e.userId?._id?.toString() === id;
+      })[0];
+      // console.log(chatroom.latestMessage);
+      if (chatroom?.latestMessage) {
+        subtitle =
+          chatroom.latestMessage?.type === "text"
+            ? chatroom.latestMessage?.text
+            : "key##->doc";
+        date = new Date(chatroom.latestMessage?.createdAt);
+        unread = date.getTime() > new Date(user.lastVisited).getTime();
+      }
+
+      if (chatroom?.isGroup) {
+        // console.log("Chatrooms ", chatroom?._id, chatroom?.isGroup);
+        formattedChatrooms.push({
+          avatar: chatroom.image,
+          alt: chatroom.groupName + " image",
+          title: chatroom.groupName,
+          description: chatroom.description,
+          subtitle,
+          date,
+          unread,
+          muted: user.muted,
+          userParticipantId: user._id,
+          id: chatroom._id,
+          isGroup: chatroom.isGroup,
         });
       }
     });
@@ -471,6 +534,7 @@ module.exports = {
   getChatroom,
   getChatrooms,
   getChatroomsByUserId,
+  getChatroomsByUserIdWithCreatorAcess,
   makeAdmin,
   removeAdmin,
   blockRoom,
