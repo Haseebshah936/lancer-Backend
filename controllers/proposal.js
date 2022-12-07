@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { Project } = require("../models/project");
 const Proposal = require("../models/proposal");
 
 const getProposals = async (req, res) => {
@@ -113,6 +114,10 @@ const createProposal = async (req, res) => {
   try {
     const { projectId, creatorId, productId, description, budget, duration } =
       req.body;
+    const project = await Project.findById(projectId);
+    if (!project) return res.status(404).send("Project not found");
+    project.proposalCount++;
+    await project.save();
     let proposal = await Proposal.findOne({ projectId, creatorId });
     if (proposal) {
       res.status(409).send("Proposal already exists");

@@ -14,6 +14,7 @@ const message = require("./routes/message");
 const chatroom = require("./routes/chatroom");
 const review = require("./routes/review");
 const proposal = require("./routes/proposal");
+const project = require("./routes/project");
 // Initialzing express app
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/api/message", message);
 app.use("/api/chatroom", chatroom);
 app.use("/api/review", review);
 app.use("/api/proposal", proposal);
+app.use("/api/project", project);
 app.get("/api/", (req, res) => {
   res.send("Hello World");
 });
