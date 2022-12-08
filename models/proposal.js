@@ -32,6 +32,10 @@ const proposalSchema = new mongoose.Schema({
     default: "active",
     enum: ["active", "rejected", "accepted", "cancelled"],
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Proposal = mongoose.model("Proposal", proposalSchema);

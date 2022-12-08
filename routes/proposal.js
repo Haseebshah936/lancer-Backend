@@ -15,16 +15,17 @@ const {
   rejectProposal,
   cancelProposal,
   deleteProposal,
+  activeProposal,
 } = require("../controllers/proposal");
 
 const router = require("express").Router();
 
 router.get("/", getProposals);
 router.get("/:id", getProposal);
-router.get("/userId/:userId", getProposalsByUserId);
-router.get("/userId/active/:userId", getActiveProposalsByUserId);
-router.get("/userId/accpeted/:userId", getAcceptedProposalsByUserId);
-router.get("/productId/:projectId", getProposalsByProjectId);
+router.get("/user/:userId", getProposalsByUserId);
+router.get("/user/active/:userId", getActiveProposalsByUserId);
+router.get("/user/accepted/:userId", getAcceptedProposalsByUserId);
+router.get("/product/:projectId", getProposalsByProjectId);
 router.get("/active/:projectId", getProposalsByProjectId_active);
 router.get("/rejected/:projectId", getProposalsByProjectId_rejected);
 router.get("/accepted/:projectId", getProposalsByProjectId_accepted);
@@ -34,6 +35,7 @@ router.put("/:id", updateProposal);
 router.put("/accept/:id", acceptProposal);
 router.put("/reject/:id", rejectProposal);
 router.put("/cancel/:id", cancelProposal);
+router.put("/active/:id", activeProposal);
 router.delete("/:id", deleteProposal);
 
 module.exports = router;
