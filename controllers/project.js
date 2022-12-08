@@ -59,7 +59,14 @@ const getProjectsAsCreator_onGoing = async (req, res) => {
     const projects = await Project.find({
       creatorId,
       state: {
-        $in: ["onGoing", "delivered", "revision", "extended", "desputed"],
+        $in: [
+          "onGoing",
+          "delivered",
+          "revision",
+          "extended",
+          "disputed",
+          "requirementGathering",
+        ],
       },
     });
     res.status(200).send(projects);
@@ -125,7 +132,14 @@ const getProjectsAsSeller_onGoing = async (req, res) => {
     const projects = await Project.find({
       "hired.userId": sellerId,
       state: {
-        $in: ["onGoing", "delivered", "revision", "extended", "desputed"],
+        $in: [
+          "onGoing",
+          "delivered",
+          "revision",
+          "extended",
+          "disputed",
+          "requirementGathering",
+        ],
       },
     });
     res.status(200).send(projects);
@@ -168,11 +182,16 @@ const requestRequirement = async (req, res) => {
     const requirement = new Requirenment({
       state: "pending",
     });
-    project.requirements.push(requirement);
+    project.requirenments.push(requirement);
     project.markModified("requirements");
     await project.save();
     res.status(201).send(project);
   } catch (error) {
+    console.log(
+      "🚀 ~ file: project.js:176 ~ requestRequirement ~ error",
+      error
+    );
+
     res.status(500).send(error);
   }
 };
@@ -180,20 +199,30 @@ const requestRequirement = async (req, res) => {
 const provideRequirement = async (req, res) => {
   try {
     const { id } = req.params;
-    const {requirementId ,files, links, details} = req.body;
-    const project = await Project.findById(id);
+    const { requirementId, files, links, details } = req.body;
+    const project = await Project.findOneAndUpdate(
+      {
+        _id: id,
+        "requirenments._id": requirementId,
+      },
+      {
+        $set: {
+          "requirenments.$.state": "provided",
+          "requirenments.$.files": files,
+          "requirenments.$.links": links,
+          "requirenments.$.details": details,
+        },
+      },
+      { new: true }
+    );
     if (!project) return res.status(404).send("No project found");
-    project.requirements.id(requirementId) = new Requirenment({
-        state: "provided",
-        files,
-        links,
-        details,
-        createdAt: project.requirements.id(requirementId).createdAt,
-    });
-    project.markModified("requirements");
-    await project.save();
     res.status(201).send(project);
   } catch (error) {
+    console.log(
+      "🚀 ~ file: project.js:199 ~ provideRequirement ~ error",
+      error
+    );
+
     res.status(500).send(error);
   }
 };
@@ -208,11 +237,11 @@ const createProject = async (req, res) => {
       budget,
       pricingType,
       days,
-      skills,
       experties,
       files,
       links,
     } = req.body;
+    console.log(req.body);
     const project = new Project({
       creatorId,
       title,
@@ -221,7 +250,6 @@ const createProject = async (req, res) => {
       budget,
       pricingType,
       days,
-      skills,
       experties,
       files,
       links,
@@ -331,16 +359,17 @@ const deliverProject = async (req, res) => {
 const reviseProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const { deliveyId, reason } = req.body;
+    const { deliveryId, reason } = req.body;
     const project = await Project.findById(id);
     if (!project) return res.status(404).send("Project not found");
     project.state = "revision";
-    project.delivery.id(deliveyId).state = "rejected";
-    project.delivery.id(deliveyId).reason = reason;
+    project.delivery.id(deliveryId).state = "rejected";
+    project.delivery.id(deliveryId).reason = reason;
     project.markModified("delivery");
     const response = await project.save();
     res.status(201).send(response);
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 };
@@ -400,6 +429,11 @@ const rejectProjectExtension = async (req, res) => {
     const response = await project.save();
     res.status(201).send(response);
   } catch (error) {
+    console.log(
+      "🚀 ~ file: project.js:403 ~ rejectProjectExtension ~ error",
+      error
+    );
+
     res.status(500).send(error);
   }
 };
@@ -439,7 +473,6 @@ const cancelProject = async (req, res) => {
 const completeProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const { userId, reason, canceller } = req.body;
     const project = await Project.findById(id);
     if (!project) return res.status(404).send("Project not found");
     project.state = "completed";
@@ -489,5 +522,5 @@ module.exports = {
   completeProject,
   deleteProject,
   requestRequirement,
-  provideRequirement
+  provideRequirement,
 };

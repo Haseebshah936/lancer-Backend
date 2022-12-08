@@ -95,6 +95,10 @@ const requirementSchema = new mongoose.Schema({
     default: "pending",
     enum: ["pending", "provided"],
   },
+  require: {
+    type: String,
+    default: "",
+  },
   files: [
     {
       type: String,
@@ -144,7 +148,7 @@ const projectSchema = new mongoose.Schema({
     type: String,
     required: true,
     default: "fixed",
-    enum: ["fixed", "hourly"],
+    enum: ["fixed", "hourly", "biding"],
   },
   days: {
     type: Number,
