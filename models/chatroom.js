@@ -61,6 +61,14 @@ const chatroomSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  state: {
+    type: String,
+    enum: ["active", "archived"],
+  },
+  isCustomerSupport: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Chatroom = mongoose.model("Chatroom", chatroomSchema);

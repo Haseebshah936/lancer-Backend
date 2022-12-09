@@ -1,16 +1,31 @@
+const {
+  createDispute,
+  getCustomerSupportIssues,
+  getDisputes,
+  getIssueById,
+  getPendingDisputes,
+  getActiveDisputes,
+  getResolvedDisputes,
+  updateDispute,
+  activateIssue,
+  resolveIssue,
+  becomeResolver,
+  deleteIssue,
+} = require("../controllers/customerSupport");
+
 const router = require("express").Router();
 
 router.get("/", getCustomerSupportIssues);
+router.get("/:id", getIssueById);
 router.get("/dispute/", getDisputes);
-router.get("/pending", getPendingDisputes);
-router.get("/inProgress", getInProgressDisputes);
-router.get("/solved", getSolvedDisputes);
-router.get("/:id", getDispute);
+router.get("/dispute/pending", getPendingDisputes);
+router.get("/dispute/active", getActiveDisputes);
+router.get("/dispute/resolved", getResolvedDisputes);
 router.post("/", createDispute);
 router.put("/:id", updateDispute);
-router.put("/:id/inProgress", inProgressDispute);
-router.put("/:id/resolve", resolveDispute);
-router.put("/:id/asignHandler", assignDisputeHandler);
-router.delete("/:id", deleteDispute);
+router.put("/active/:id", activateIssue);
+router.put("/resolve/:id", resolveIssue);
+router.put("/asignHandler/:id", becomeResolver);
+router.delete("/:id", deleteIssue);
 
 module.exports = router;

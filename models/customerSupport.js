@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const customerSupportSchema = new mongoose.Schema({
   creatorId: {
-    type: mongoose.Types.Array.objectId,
+    type: mongoose.Types.ObjectId,
     ref: "User",
     required: true,
   },
@@ -21,7 +21,7 @@ const customerSupportSchema = new mongoose.Schema({
       return this.requestType === "other";
     },
   },
-  deputeReason: {
+  disputeReason: {
     type: String,
     required: function () {
       return this.requestType === "dispute";
@@ -35,35 +35,37 @@ const customerSupportSchema = new mongoose.Schema({
   },
   state: {
     type: String,
-    enum: ["pending", "resolved", "inProgress"],
+    enum: ["pending", "resolved", "active"],
     default: "pending",
   },
   projectId: {
-    type: mongoose.Types.Array.objectId,
+    type: mongoose.Types.ObjectId,
     ref: "Project",
     required: function () {
       return this.requestType === "dispute";
     },
   },
-  handlerId: {
-    type: mongoose.Types.Array.objectId,
-    ref: "User",
-    default: null,
-  },
+  resolvers: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now,
   },
-  solvedAt: {
+  resolvedAt: {
     type: Date,
     default: Date.now,
   },
-  converationId: {
-    type: mongoose.Types.Array.objectId,
+  chatroomId: {
+    type: mongoose.Types.ObjectId,
     ref: "Chatroom",
     required: function () {
-      return this.handlerId !== null;
+      return this.handlerId?.length > 0;
     },
+    default: null,
   },
 });
 
