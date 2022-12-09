@@ -26,6 +26,7 @@ const {
   hiredProjectWorker,
   requestRequirement,
   provideRequirement,
+  getProjectsByCategory,
 } = require("../controllers/project");
 
 const router = require("express").Router();
@@ -33,6 +34,7 @@ const router = require("express").Router();
 router.get("/", getProjects);
 router.get("/:id", getProject);
 router.get("/creator/:creatorId", getProjectsByCreatorId);
+router.get("/category/:categoryId", getProjectsByCategory);
 router.get("/creator/pending/:creatorId", getProjectsAsCreator_pending);
 router.get("/creator/onGoing/:creatorId", getProjectsAsCreator_onGoing);
 router.get("/creator/completed/:creatorId", getProjectsAsCreator_completed);
