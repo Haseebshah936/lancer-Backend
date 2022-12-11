@@ -123,10 +123,12 @@ const createGroupChatroom = async (req, res) => {
 const getChatroom = async (req, res) => {
   try {
     const { id, userId } = req.params;
-    const chatroom = await Chatroom.findById(id).populate(
-      "participants.userId latestMessage",
-      "profilePic name isOnline text type createdAt"
-    );
+    const chatroom = await Chatroom.findById(id)
+      .populate(
+        "participants.userId latestMessage",
+        "profilePic name isOnline text type createdAt"
+      )
+      .sort({ "latestMessage.createdAt": -1 });
     if (!chatroom) return res.status(404).send("Chatroom not found");
     let formattedChatroom;
     let subtitle = "";
