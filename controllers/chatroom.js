@@ -145,6 +145,8 @@ const getChatroom = async (req, res) => {
           : "key##->doc";
       date = new Date(chatroom.latestMessage?.createdAt);
       unread = date.getTime() > new Date(user.lastVisited).getTime();
+    } else {
+      date = new Date(chatroom.createdAt);
     }
 
     if (chatroom?.isGroup) {
