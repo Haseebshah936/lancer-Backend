@@ -10,8 +10,11 @@ const {
 
 const getProjects = async (req, res) => {
   try {
-    const projects = await Project.find()
+    const projects = await Project.find({
+      state: "pending",
+    })
       .populate("creatorId hired.userId", "name profilePic badge")
+      .limit(10)
       .sort({ createdAt: -1 });
     res.status(200).send(projects);
   } catch (error) {
