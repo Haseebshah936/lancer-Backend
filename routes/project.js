@@ -27,10 +27,15 @@ const {
   requestRequirement,
   provideRequirement,
   getProjectsByCategory,
+  getPendingProjects,
+  getOnGoingProjects,
 } = require("../controllers/project");
 
 const router = require("express").Router();
 
+router.get("/", getProjects);
+router.get("/pending", getPendingProjects);
+router.get("/onGoing", getOnGoingProjects);
 router.get("/", getProjects);
 router.get("/:id", getProject);
 router.get("/creator/:creatorId", getProjectsByCreatorId);

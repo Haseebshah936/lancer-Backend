@@ -10,8 +10,43 @@ const {
 
 const getProjects = async (req, res) => {
   try {
+    const projects = await Project.find()
+      .populate("creatorId hired.userId", "name profilePic badge")
+      .limit(10)
+      .sort({ createdAt: -1 });
+    res.status(200).send(projects);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const getPendingProjects = async (req, res) => {
+  try {
     const projects = await Project.find({
       state: "pending",
+    })
+      .populate("creatorId", "name profilePic badge")
+      .limit(10)
+      .sort({ createdAt: -1 });
+    res.status(200).send(projects);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const getOnGoingProjects = async (req, res) => {
+  try {
+    const projects = await Project.find({
+      state: {
+        $in: [
+          "onGoing",
+          "delivered",
+          "revision",
+          "extended",
+          "disputed",
+          "requirementGathering",
+        ],
+      },
     })
       .populate("creatorId hired.userId", "name profilePic badge")
       .limit(10)
@@ -540,6 +575,8 @@ const deleteProject = async (req, res) => {
 module.exports = {
   getProjects,
   getProject,
+  getPendingProjects,
+  getOnGoingProjects,
   getProjectsByCreatorId,
   getProjectsByCategory,
   getProjectsAsCreator_pending,
