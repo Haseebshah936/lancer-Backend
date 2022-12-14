@@ -4,6 +4,7 @@ const featureSchema = new moongose.Schema({
   title: { type: String, required: true },
   active: { type: Boolean, required: true },
   quantity: { type: Number, default: 0, required: true },
+  time: { type: Number, default: 0, required: true },
 });
 
 const additionalFeaturesSchema = new moongose.Schema({
@@ -11,6 +12,7 @@ const additionalFeaturesSchema = new moongose.Schema({
   active: { type: Boolean, required: true, default: false },
   cost: { type: Number, default: 0, required: true },
   quantity: { type: Number, default: 0, required: true },
+  time: { type: Number, default: 0, required: true },
 });
 
 const packageSchema = new moongose.Schema({
@@ -29,6 +31,7 @@ const packageSchema = new moongose.Schema({
   delivery: {
     type: Number,
     required: true,
+    default: 1,
   },
   features: [featureSchema],
 });

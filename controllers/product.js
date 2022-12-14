@@ -2,7 +2,21 @@ const product = require("../models/product");
 const Category = require("../models/category");
 const user = require("../models/user");
 
-const getProducts = async (req, res) => {
+const getAllProducts = async (req, res) => {
+  try {
+    const products = await product.Product.find()
+      .populate("owner._id", "isOnline seller name profilePic badge")
+      .select("title images rating reviews ranking cost seller")
+      .sort({
+        ranking: -1,
+      });
+    if (!products) return res.status(404).send({ error: "Product not found" });
+    res.status(200).send(products);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+const getActiveProducts = async (req, res) => {
   try {
     const products = await product.Product.find({ state: "live" })
       .populate("owner._id", "isOnline seller name profilePic badge")
@@ -73,6 +87,7 @@ const createProduct = async (req, res) => {
           title: f.title,
           active: f.active,
           quantity: f.quantity,
+          time: f?.time,
         });
         newFeatures.push(feature);
       });
@@ -93,6 +108,7 @@ const createProduct = async (req, res) => {
         active: f.active,
         cost: f.cost,
         quantity: f?.quantity,
+        time: f?.time,
       });
       newAdditionalFeatures.push(additionalFeature);
     });
@@ -147,6 +163,7 @@ const updateProduct = async (req, res) => {
           title: f.title,
           active: f.active,
           quantity: f.quantity,
+          time: f?.time,
         });
         newFeatures.push(feature);
       });
@@ -166,6 +183,7 @@ const updateProduct = async (req, res) => {
         active: f.active,
         cost: f.cost,
         quantity: f?.quantity,
+        time: f?.time,
       });
       newAdditionalFeatures.push(additionalFeature);
     });
@@ -868,7 +886,8 @@ module.exports = {
   updateRating,
   updateRanking,
   getProduct,
-  getProducts,
+  getAllProducts,
+  getActiveProducts,
   getProductByUserId,
   getProductsBySubCategory,
   getProductsBySubCategoryWithCost,

@@ -1,7 +1,8 @@
 const product = require("../controllers/product");
 const router = require("express").Router();
 
-router.get("/", product.getProducts);
+router.get("/all", product.getAllProducts);
+router.get("/", product.getActiveProducts);
 router.get("/:id", product.getProduct);
 router.get("/byUserId/:id", product.getProductByUserId);
 router.post("/createProduct", product.createProduct);
