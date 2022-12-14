@@ -92,6 +92,7 @@ const createProduct = async (req, res) => {
         title: f.title,
         active: f.active,
         cost: f.cost,
+        quantity: f?.quantity,
       });
       newAdditionalFeatures.push(additionalFeature);
     });
@@ -164,6 +165,7 @@ const updateProduct = async (req, res) => {
         title: f.title,
         active: f.active,
         cost: f.cost,
+        quantity: f?.quantity,
       });
       newAdditionalFeatures.push(additionalFeature);
     });
@@ -197,6 +199,18 @@ const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const deletedProduct = await product.Product.findByIdAndDelete(id);
+    if (!deletedProduct)
+      return res.status(404).send({ error: "Product not found" });
+    res.status(200).send("Product deleted");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error.message);
+  }
+};
+
+const deleteProducts = async (req, res) => {
+  try {
+    const deletedProduct = await product.Product.deleteMany();
     if (!deletedProduct)
       return res.status(404).send({ error: "Product not found" });
     res.status(200).send("Product deleted");
@@ -846,6 +860,7 @@ module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
+  deleteProducts,
   addOrderImage,
   addOrderVideo,
   updateState,

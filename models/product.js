@@ -10,6 +10,7 @@ const additionalFeaturesSchema = new moongose.Schema({
   title: { type: String, required: true },
   active: { type: Boolean, required: true, default: false },
   cost: { type: Number, default: 0, required: true },
+  quantity: { type: Number, default: 0, required: true },
 });
 
 const packageSchema = new moongose.Schema({

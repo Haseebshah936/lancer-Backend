@@ -17,13 +17,21 @@ const categorySchema = new moongose.Schema({
   features: [
     {
       title: { type: String, required: true },
-      quantityBased: { type: Boolean, default: false },
+      type: {
+        type: String,
+        default: "",
+        enum: ["", "quantity", "time", "timeAndQuantity"],
+      },
     },
   ],
   additionalFeatures: [
     {
       title: { type: String, required: true },
-      quantityBased: { type: Boolean, default: false },
+      type: {
+        type: String,
+        default: "",
+        enum: ["", "quantity", "time", "timeAndQuantity"],
+      },
     },
   ],
   createdAt: { type: Date, default: Date.now },

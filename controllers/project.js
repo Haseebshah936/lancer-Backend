@@ -22,12 +22,15 @@ const getProjects = async (req, res) => {
 
 const getPendingProjects = async (req, res) => {
   try {
+    let { skip } = req.qurey;
+    if (!skip) skip = 0;
     const projects = await Project.find({
       state: "pending",
     })
       .populate("creatorId", "name profilePic badge")
-      .limit(10)
       .sort({ createdAt: -1 });
+    // .limit(10)
+    // .skip(skip)
     res.status(200).send(projects);
   } catch (error) {
     res.status(500).send(error);

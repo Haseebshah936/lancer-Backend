@@ -7,6 +7,7 @@ router.get("/byUserId/:id", product.getProductByUserId);
 router.post("/createProduct", product.createProduct);
 router.put("/updateProduct/:id", product.updateProduct);
 router.delete("/:id", product.deleteProduct);
+router.delete("/", product.deleteProducts);
 router.put("/addOrderImage/:id", product.addOrderImage);
 router.put("/addOrderVideo/:id", product.addOrderVideo);
 router.put("/updateState/:id", product.updateState);

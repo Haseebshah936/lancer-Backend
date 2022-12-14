@@ -124,6 +124,15 @@ const getSubCategory = async (req, res) => {
   }
 };
 
+const deleteAll = async (req, res) => {
+  try {
+    const result = await Category.deleteMany();
+    res.status(200).send("All categories deleted");
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
@@ -157,6 +166,7 @@ module.exports = {
   createSubCategory,
   updateSubCategory,
   getSubCategories,
+  deleteAll,
   deleteCategory,
   deleteCategoryByTitle,
 };
