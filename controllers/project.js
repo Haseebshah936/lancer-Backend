@@ -22,7 +22,7 @@ const getProjects = async (req, res) => {
 
 const getPendingProjects = async (req, res) => {
   try {
-    let { skip } = req.qurey;
+    let  skip  = req.qurey?.skip;
     if (!skip) skip = 0;
     const projects = await Project.find({
       state: "pending",
@@ -33,6 +33,7 @@ const getPendingProjects = async (req, res) => {
     // .skip(skip)
     res.status(200).send(projects);
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 };
