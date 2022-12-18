@@ -137,7 +137,7 @@ const createProposal = async (req, res) => {
       req.body;
     const project = await Project.findById(projectId);
     if (!project) return res.status(404).send("Project not found");
-    let proposal = await Proposal.findOne({ projectId, creatorId, productId });
+    let proposal = await Proposal.findOne({ creatorId, productId });
     if (proposal) {
       res.status(409).send("Proposal already exists");
       return;
@@ -151,6 +151,7 @@ const createProposal = async (req, res) => {
       duration,
     });
     project.proposalCount++;
+    project.proposals.push(creatorId);
     await project.save();
     await proposal.save();
     res.status(201).send(proposal);
@@ -197,6 +198,7 @@ const acceptProposal = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
 const activeProposal = async (req, res) => {
   try {
     const { id } = req.params;
@@ -212,6 +214,7 @@ const activeProposal = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
 const rejectProposal = async (req, res) => {
   try {
     const { id } = req.params;
@@ -227,6 +230,7 @@ const rejectProposal = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
 const cancelProposal = async (req, res) => {
   try {
     const { id } = req.params;

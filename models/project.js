@@ -233,6 +233,12 @@ const projectSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  proposals: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   requirenments: [requirementSchema],
 });
 

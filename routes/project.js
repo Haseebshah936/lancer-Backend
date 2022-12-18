@@ -34,7 +34,7 @@ const {
 const router = require("express").Router();
 
 router.get("/", getProjects);
-router.get("/pending", getPendingProjects);
+router.get("/pending/:userId", getPendingProjects);
 router.get("/onGoing", getOnGoingProjects);
 router.get("/", getProjects);
 router.get("/:id", getProject);

@@ -22,10 +22,14 @@ const getProjects = async (req, res) => {
 
 const getPendingProjects = async (req, res) => {
   try {
+    const { userId } = req.params;
     let skip = req.qurey?.skip;
     if (!skip) skip = 0;
     const projects = await Project.find({
       state: "pending",
+      proposals: {
+        $nin: userId,
+      },
     })
       .populate("creatorId", "name profilePic badge")
       .sort({ createdAt: -1 });
