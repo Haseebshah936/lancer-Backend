@@ -29,6 +29,7 @@ const {
   getProjectsByCategory,
   getPendingProjects,
   getOnGoingProjects,
+  deleteProjects,
 } = require("../controllers/project");
 
 const router = require("express").Router();
@@ -64,5 +65,6 @@ router.put("/dispute/:id", disputeProject);
 router.put("/cancel/:id", cancelProject);
 router.put("/complete/:id", completeProject);
 router.delete("/:id", deleteProject);
+router.delete("/", deleteProjects);
 
 module.exports = router;

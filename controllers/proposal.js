@@ -21,7 +21,7 @@ const getProposal = async (req, res) => {
       .populate("creatorId productId", "name profilePic badge title images")
       .sort({ createdAt: -1 });
     if (!proposal) {
-      res.status(404).send("Proposal not found");
+      return res.status(404).send("Proposal not found");
     }
     res.status(200).send(proposal);
   } catch (error) {
@@ -191,6 +191,17 @@ const acceptProposal = async (req, res) => {
       res.status(404).send("Proposal not found");
       return;
     }
+    const project = await Project.findById(proposal.projectId);
+    if (!project) return res.status(404).send("Project not found");
+    project.state = "requirementGathering";
+    project.startedAt = Date.now();
+    const hired = new Hiring({
+      userId: proposal.creatorId,
+      productId: proposal.productId,
+    });
+    project.hired = hired;
+    project.markModified("hired");
+    await project.save();
     proposal.state = "accepted";
     await proposal.save();
     res.status(200).send(proposal);

@@ -579,6 +579,16 @@ const deleteProject = async (req, res) => {
     res.status(500).send(error);
   }
 };
+const deleteProjects = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const project = await Project.deleteMany();
+    if (!project) return res.status(404).send("Project not found");
+    res.status(200).send("Deleted all projects");
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
 
 module.exports = {
   getProjects,
@@ -609,6 +619,7 @@ module.exports = {
   cancelProject,
   completeProject,
   deleteProject,
+  deleteProjects,
   requestRequirement,
   provideRequirement,
 };
