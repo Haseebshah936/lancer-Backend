@@ -137,8 +137,6 @@ const createProposal = async (req, res) => {
       req.body;
     const project = await Project.findById(projectId);
     if (!project) return res.status(404).send("Project not found");
-    project.proposalCount++;
-    await project.save();
     let proposal = await Proposal.findOne({ projectId, creatorId, productId });
     if (proposal) {
       res.status(409).send("Proposal already exists");
@@ -152,6 +150,8 @@ const createProposal = async (req, res) => {
       budget,
       duration,
     });
+    project.proposalCount++;
+    await project.save();
     await proposal.save();
     res.status(201).send(proposal);
   } catch (error) {
