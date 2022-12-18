@@ -16,6 +16,8 @@ const {
   cancelProposal,
   deleteProposal,
   activeProposal,
+  deleteProposalsByProjectId,
+  deleteAllProposals,
 } = require("../controllers/proposal");
 
 const router = require("express").Router();
@@ -37,5 +39,7 @@ router.put("/reject/:id", rejectProposal);
 router.put("/cancel/:id", cancelProposal);
 router.put("/active/:id", activeProposal);
 router.delete("/:id", deleteProposal);
+router.delete("/all/:id", deleteProposalsByProjectId);
+router.delete("/", deleteAllProposals);
 
 module.exports = router;

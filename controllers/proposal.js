@@ -262,6 +262,26 @@ const deleteProposal = async (req, res) => {
   }
 };
 
+const deleteProposalsByProjectId = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    const proposals = await Proposal.deleteMany({ _id: projectId });
+    res.status(200).send("Deleted Proposals");
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const deleteAllProposals = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    const proposals = await Proposal.deleteMany();
+    res.status(200).send("Deleted Proposals");
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 module.exports = {
   getProposals,
   getProposal,
@@ -280,4 +300,6 @@ module.exports = {
   cancelProposal,
   activeProposal,
   deleteProposal,
+  deleteProposalsByProjectId,
+  deleteAllProposals,
 };
