@@ -11,7 +11,10 @@ const {
 const getProjects = async (req, res) => {
   try {
     const projects = await Project.find()
-      .populate("creatorId hired.userId", "name profilePic badge")
+      .populate(
+        "creatorId hired.userId",
+        "name profilePic badge seller.rating stars"
+      )
       .limit(10)
       .sort({ createdAt: -1 });
     res.status(200).send(projects);
@@ -31,7 +34,7 @@ const getPendingProjects = async (req, res) => {
         $nin: userId,
       },
     })
-      .populate("creatorId", "name profilePic badge")
+      .populate("creatorId", "name profilePic badge seller.rating stars")
       .sort({ createdAt: -1 });
     // .limit(10)
     // .skip(skip)
@@ -56,7 +59,10 @@ const getOnGoingProjects = async (req, res) => {
         ],
       },
     })
-      .populate("creatorId hired.userId", "name profilePic badge")
+      .populate(
+        "creatorId hired.userId",
+        "name profilePic badge seller.rating stars"
+      )
       .limit(10)
       .sort({ createdAt: -1 });
     res.status(200).send(projects);
@@ -70,7 +76,7 @@ const getProject = async (req, res) => {
     const { id } = req.params;
     const project = await Project.findById(id).populate(
       "creatorId hired.userId",
-      "name profilePic badge"
+      "name profilePic badge seller.rating stars"
     );
     if (!project) return res.status(404).send("No project found");
     res.status(200).send(project);
@@ -85,7 +91,10 @@ const getProjectsByCreatorId = async (req, res) => {
     const projects = await Project.find({
       creatorId,
     })
-      .populate("creatorId hired.userId", "name profilePic badge")
+      .populate(
+        "creatorId hired.userId",
+        "name profilePic badge seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(projects);
   } catch (error) {
@@ -99,7 +108,10 @@ const getProjectsByCategory = async (req, res) => {
     const projects = await Project.find({
       category: categoryId,
     })
-      .populate("creatorId hired.userId", "name profilePic badge")
+      .populate(
+        "creatorId hired.userId",
+        "name profilePic badge seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(projects);
   } catch (error) {
@@ -114,7 +126,10 @@ const getProjectsAsCreator_pending = async (req, res) => {
       creatorId,
       state: "pending",
     })
-      .populate("creatorId hired.userId", "name profilePic badge")
+      .populate(
+        "creatorId hired.userId",
+        "name profilePic badge seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(projects);
   } catch (error) {
@@ -138,7 +153,10 @@ const getProjectsAsCreator_onGoing = async (req, res) => {
         ],
       },
     })
-      .populate("creatorId hired.userId", "name profilePic badge")
+      .populate(
+        "creatorId hired.userId",
+        "name profilePic badge seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(projects);
   } catch (error) {
@@ -153,7 +171,10 @@ const getProjectsAsCreator_completed = async (req, res) => {
       creatorId,
       state: "completed",
     })
-      .populate("creatorId hired.userId", "name profilePic badge")
+      .populate(
+        "creatorId hired.userId",
+        "name profilePic badge seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(projects);
   } catch (error) {
@@ -168,7 +189,10 @@ const getProjectsAsCreator_cancelled = async (req, res) => {
       creatorId,
       state: "cancelled",
     })
-      .populate("creatorId hired.userId", "name profilePic badge")
+      .populate(
+        "creatorId hired.userId",
+        "name profilePic badge seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(projects);
   } catch (error) {
@@ -182,7 +206,10 @@ const getProjectsBySellerId = async (req, res) => {
     const projects = await Project.find({
       "hired.userId": sellerId,
     })
-      .populate("creatorId hired.userId", "name profilePic badge")
+      .populate(
+        "creatorId hired.userId",
+        "name profilePic badge seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(projects);
   } catch (error) {
@@ -197,7 +224,10 @@ const getProjectsAsSeller_pending = async (req, res) => {
       "hired.userId": sellerId,
       state: "pending",
     })
-      .populate("creatorId hired.userId", "name profilePic badge")
+      .populate(
+        "creatorId hired.userId",
+        "name profilePic badge seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(projects);
   } catch (error) {
@@ -221,7 +251,10 @@ const getProjectsAsSeller_onGoing = async (req, res) => {
         ],
       },
     })
-      .populate("creatorId hired.userId", "name profilePic badge")
+      .populate(
+        "creatorId hired.userId",
+        "name profilePic badge seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(projects);
   } catch (error) {
@@ -236,7 +269,10 @@ const getProjectsAsSeller_completed = async (req, res) => {
       "hired.userId": sellerId,
       state: "completed",
     })
-      .populate("creatorId hired.userId", "name profilePic badge")
+      .populate(
+        "creatorId hired.userId",
+        "name profilePic badge seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(projects);
   } catch (error) {
@@ -251,7 +287,10 @@ const getProjectsAsSeller_cancelled = async (req, res) => {
       "hired.userId": sellerId,
       state: "cancelled",
     })
-      .populate("creatorId hired.userId", "name profilePic badge")
+      .populate(
+        "creatorId hired.userId",
+        "name profilePic badge seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(projects);
   } catch (error) {

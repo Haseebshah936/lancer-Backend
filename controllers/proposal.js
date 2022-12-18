@@ -5,7 +5,10 @@ const Proposal = require("../models/proposal");
 const getProposals = async (req, res) => {
   try {
     const proposals = await Proposal.find()
-      .populate("creatorId productId", "name profilePic badge title images")
+      .populate(
+        "creatorId productId",
+        "name profilePic badge title images seller.rating stars"
+      )
       .sort({ createdAt: -1 });
 
     res.status(200).send(proposals);
@@ -18,7 +21,10 @@ const getProposal = async (req, res) => {
   try {
     const { id } = req.params;
     const proposal = await Proposal.findById(id)
-      .populate("creatorId productId", "name profilePic badge title images")
+      .populate(
+        "creatorId productId",
+        "name profilePic badge title images seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     if (!proposal) {
       return res.status(404).send("Proposal not found");
@@ -33,7 +39,10 @@ const getProposalsByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
     const proposals = await Proposal.find({ creatorId: userId })
-      .populate("creatorId productId", "name profilePic badge title images")
+      .populate(
+        "creatorId productId",
+        "name profilePic badge title images seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(proposals);
   } catch (error) {
@@ -48,7 +57,10 @@ const getActiveProposalsByUserId = async (req, res) => {
       creatorId: userId,
       state: "active",
     })
-      .populate("creatorId productId", "name profilePic badge title images")
+      .populate(
+        "creatorId productId",
+        "name profilePic badge title images seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(proposals);
   } catch (error) {
@@ -63,7 +75,10 @@ const getAcceptedProposalsByUserId = async (req, res) => {
       creatorId: userId,
       state: "accepted",
     })
-      .populate("creatorId productId", "name profilePic badge title images")
+      .populate(
+        "creatorId productId",
+        "name profilePic badge title images seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(proposals);
   } catch (error) {
@@ -75,7 +90,10 @@ const getProposalsByProjectId = async (req, res) => {
   try {
     const { projectId } = req.params;
     const proposals = await Proposal.find({ projectId })
-      .populate("creatorId productId", "name profilePic badge title images")
+      .populate(
+        "creatorId productId",
+        "name profilePic badge title images seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(proposals);
   } catch (error) {
@@ -87,7 +105,10 @@ const getProposalsByProjectId_active = async (req, res) => {
   try {
     const { projectId } = req.params;
     const proposals = await Proposal.find({ projectId, state: "active" })
-      .populate("creatorId productId", "name profilePic badge title images")
+      .populate(
+        "creatorId productId",
+        "name profilePic badge title images seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(proposals);
   } catch (error) {
@@ -99,7 +120,10 @@ const getProposalsByProjectId_accepted = async (req, res) => {
   try {
     const { projectId } = req.params;
     const proposals = await Proposal.find({ projectId, state: "accepted" })
-      .populate("creatorId productId", "name profilePic badge title images")
+      .populate(
+        "creatorId productId",
+        "name profilePic badge title images seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(proposals);
   } catch (error) {
@@ -111,7 +135,10 @@ const getProposalsByProjectId_rejected = async (req, res) => {
   try {
     const { projectId } = req.params;
     const proposals = await Proposal.find({ projectId, state: "rejected" })
-      .populate("creatorId productId", "name profilePic badge title images")
+      .populate(
+        "creatorId productId",
+        "name profilePic badge title images seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(proposals);
   } catch (error) {
@@ -123,7 +150,10 @@ const getProposalsByProjectId_cancelled = async (req, res) => {
   try {
     const { projectId } = req.params;
     const proposals = await Proposal.find({ projectId, state: "cancelled" })
-      .populate("creatorId productId", "name profilePic badge title images")
+      .populate(
+        "creatorId productId",
+        "name profilePic badge title images seller.rating stars"
+      )
       .sort({ createdAt: -1 });
     res.status(200).send(proposals);
   } catch (error) {
