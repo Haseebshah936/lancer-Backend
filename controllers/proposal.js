@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Project } = require("../models/project");
+const { Project, Hiring } = require("../models/project");
 const Proposal = require("../models/proposal");
 
 const getProposals = async (req, res) => {
