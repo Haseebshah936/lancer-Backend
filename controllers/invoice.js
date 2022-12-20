@@ -267,6 +267,7 @@ module.exports = {
   getInvoiceByUserId,
   getInvoiceByProjectId,
   createInvoice,
+  createTip,
   payByWallet,
   updateInvoice,
   completePayment,

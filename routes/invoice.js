@@ -10,6 +10,7 @@ const {
   deleteInvoice,
   updateInvoiceStatus,
   payByWallet,
+  createTip,
 } = require("../controllers/invoice");
 
 const router = require("express").Router();
@@ -19,6 +20,7 @@ router.get("/:id", getInvoice);
 router.get("/getInvoiceByUserId/:userId", getInvoiceByUserId);
 router.get("/getInvoiceByProjectId/:projectId", getInvoiceByProjectId);
 router.post("/", createInvoice);
+router.post("/payTip", createTip);
 router.post("/payByWallet", payByWallet);
 router.put("/:id", updateInvoice);
 router.put("/completePayment/:id", completePayment);
