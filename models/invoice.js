@@ -22,12 +22,12 @@ const invoiceSchema = new mongoose.Schema({
   },
   paymentMethod: {
     type: String,
-    enum: ["creditCard", "bankTransfer"],
+    enum: ["creditCard", "bankTransfer", "wallet", "JazzCash", "EasyPaisa"],
     required: true,
   },
   invoiceStatus: {
     type: String,
-    enum: ["pending", "paid", "cancelled", "refunded", "failed"],
+    enum: ["pending", "recieved", "paid", "cancelled", "refunded", "failed"],
     default: "pending",
   },
   paymentDate: {
@@ -42,6 +42,10 @@ const invoiceSchema = new mongoose.Schema({
     default: "",
   },
   tip: {
+    type: Boolean,
+    default: false,
+  },
+  revision: {
     type: Boolean,
     default: false,
   },

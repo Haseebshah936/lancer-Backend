@@ -10,7 +10,6 @@ const sellerSchema = new mongoose.Schema({
   ],
   about: {
     type: String,
-    required: true,
   },
   experience: [
     {

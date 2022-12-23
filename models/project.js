@@ -11,6 +11,10 @@ const hiringSchema = new mongoose.Schema({
     ref: "Product",
     required: true,
   },
+  extras: {
+    type: Array,
+    default: [],
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -134,11 +138,9 @@ const projectSchema = new mongoose.Schema({
   category: {
     type: mongoose.Types.ObjectId,
     ref: "Category",
-    required: true,
   },
   description: {
     type: String,
-    required: true,
   },
   budget: {
     type: Number,
@@ -239,6 +241,14 @@ const projectSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
+  revisionsAllowed: {
+    type: Number,
+    default: Infinity,
+  },
+  revisionCount: {
+    type: Number,
+    default: 0,
+  },
   requirenments: [requirementSchema],
 });
 

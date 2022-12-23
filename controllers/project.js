@@ -487,6 +487,9 @@ const reviseProject = async (req, res) => {
     const project = await Project.findById(id);
     if (!project) return res.status(404).send("Project not found");
     project.state = "revision";
+    if (project.revisionCount === project.revisionAllowed)
+      return res.status(400).send("Revision limit reached");
+    project.revisionCount++;
     project.delivery.id(deliveryId).state = "rejected";
     project.delivery.id(deliveryId).reason = reason;
     project.markModified("delivery");
