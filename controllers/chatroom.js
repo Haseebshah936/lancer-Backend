@@ -1,4 +1,4 @@
-const { Chatroom, Participant } = require("../models/chatroom");
+const { Chatroom, Participant, Report } = require("../models/chatroom");
 
 const createChatroom = async (req, res) => {
   try {
@@ -566,6 +566,7 @@ const updateGroupName = async (req, res) => {
 const reportChatroom = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(req.body);
     let { type, userId, description } = req.body;
     if (!description) description = "";
     const chatroom = await Chatroom.findById(id);
@@ -577,6 +578,7 @@ const reportChatroom = async (req, res) => {
     await chatroom.save();
     res.status(200).send(chatroom);
   } catch (error) {
+    console.log(error);
     res.status(500).send(error.message);
   }
 };

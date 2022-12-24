@@ -30,8 +30,8 @@ const reportSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: function (e) {
-      return e.type === "Other";
+    required: function () {
+      return this.type === "Other";
     },
     default: "",
   },
