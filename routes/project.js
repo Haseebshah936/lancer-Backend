@@ -11,6 +11,7 @@ const {
   getProjectsAsSeller_onGoing,
   getProjectsAsSeller_completed,
   getProjectsAsSeller_cancelled,
+  getProjectsBetween,
   createProject,
   updateProject,
   startProject,
@@ -50,6 +51,7 @@ router.get("/seller/pending/:sellerId", getProjectsAsSeller_pending);
 router.get("/seller/onGoing/:sellerId", getProjectsAsSeller_onGoing);
 router.get("/seller/completed/:sellerId", getProjectsAsSeller_completed);
 router.get("/seller/cancelled/:sellerId", getProjectsAsSeller_cancelled);
+router.get("/projectBetween/:creatorId/:sellerId", getProjectsBetween);
 router.post("/", createProject);
 router.put("/:id", updateProject);
 router.put("/hired/:id", hiredProjectWorker);

@@ -191,6 +191,23 @@ const getChatroom = async (req, res) => {
   }
 };
 
+const getChatroomComplete = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const chatroom = await Chatroom.findById(id)
+      .populate(
+        "participants.userId latestMessage reports.reportedBy",
+        "profilePic name isOnline text type createdAt"
+      )
+      .sort({ "latestMessage.createdAt": -1 });
+    if (!chatroom) return res.status(404).send("Chatroom not found");
+    res.status(200).json(chatroom);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 const getChatrooms = async (req, res) => {
   try {
     const chatrooms = await Chatroom.find();
@@ -343,18 +360,48 @@ const getChatroomsByUserIdWithCreatorAcess = async (req, res) => {
   }
 };
 
+const getChatroomsParticipants = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const chatroom = await Chatroom.findById(id).populate(
+      "participants.userId",
+      "name profilePic badge"
+    );
+    if (!chatroom) return res.status(404).send("Chatroom not found");
+    res.status(200).send(chatroom.participants);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const getReportedChatrooms = async (req, res) => {
+  try {
+    const chatrooms = await Chatroom.find({
+      reports: {
+        $elemMatch: {
+          state: "pending",
+        },
+      },
+    });
+    res.status(200).send(chatrooms);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 const makeAdmin = async (req, res) => {
   try {
     const { participantId } = req.body;
     const { id } = req.params;
+    console.log(participantId);
     const chatroom = await Chatroom.findById(id);
     if (!chatroom) return res.status(404).send("Chatroom not found");
     const participant = chatroom.participants.id(participantId);
-    console.log(participant);
     participant.isAdmin = true;
     await chatroom.save();
-    res.status(200).send(chatroom);
+    res.status(200).send(chatroom.participants.id(participantId));
   } catch (error) {
+    console.log(error);
     res.status(500).send(error.message);
   }
 };
@@ -366,11 +413,9 @@ const removeAdmin = async (req, res) => {
     console.log(userId);
     let chatroom = await Chatroom.findById(id);
     if (!chatroom) return res.status(404).send("Chatroom not found");
-    chatroom.admin = chatroom.admin.filter(
-      (admin) => admin?.toString() !== userId
-    );
+    chatroom.participants.id(userId).isAdmin = false;
     await chatroom.save();
-    res.status(200).send(chatroom);
+    res.status(200).send(chatroom.participants.id(userId));
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -396,14 +441,15 @@ const removeParticipant = async (req, res) => {
     const { userId } = req.body;
     const chatroom = await Chatroom.findById(id);
     if (!chatroom) return res.status(404).send("Chatroom not found");
-    chatroom.participants = chatroom.participants.filter(
-      (e) => e.toString() !== userId
-    );
-    chatroom.admin = chatroom.admin.filter((e) => e.toString() !== userId);
+    // chatroom.participants = chatroom.participants.filter(
+    //   (e) => e.toString() !== userId
+    // );
+    chatroom.participants.remove(userId);
     await chatroom.save();
     res.status(200).send(chatroom);
   } catch (error) {
-    req.status(500).send(error.message);
+    console.log(error);
+    res.status(500).send(error.message);
   }
 };
 
@@ -517,6 +563,40 @@ const updateGroupName = async (req, res) => {
   }
 };
 
+const reportChatroom = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let { type, userId, description } = req.body;
+    if (!description) description = "";
+    const chatroom = await Chatroom.findById(id);
+    if (!chatroom) return res.status(404).send("Chatroom not found");
+    chatroom.reports.push(
+      new Report({ type, reportedBy: userId, description })
+    );
+    chatroom.reportCount++;
+    await chatroom.save();
+    res.status(200).send(chatroom);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+const resolveReport = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reportId } = req.body;
+    const chatroom = await Chatroom.findById(id);
+    if (!chatroom) return res.status(404).send("Chatroom not found");
+    const report = chatroom.reports.id(reportId);
+    if (!report) return res.status(404).send("Report not found");
+    report.state = "resolved";
+    await chatroom.save();
+    res.status(200).send(chatroom);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 const deleteChatroom = async (req, res) => {
   try {
     const { id } = req.params;
@@ -536,9 +616,12 @@ module.exports = {
   createChatroomWithId,
   createGroupChatroom,
   getChatroom,
+  getChatroomComplete,
   getChatrooms,
   getChatroomsByUserId,
   getChatroomsByUserIdWithCreatorAcess,
+  getChatroomsParticipants,
+  getReportedChatrooms,
   makeAdmin,
   removeAdmin,
   blockRoom,
@@ -551,4 +634,6 @@ module.exports = {
   updateImage,
   updateDescription,
   updateGroupName,
+  reportChatroom,
+  resolveReport,
 };

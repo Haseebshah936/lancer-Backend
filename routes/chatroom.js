@@ -20,15 +20,25 @@ const {
   lastVisitedRoom,
   createChatroomWithId,
   getChatroomsByUserIdWithCreatorAcess,
+  getChatroomsParticipants,
+  getChatroomComplete,
+  getReportedChatrooms,
+  reportChatroom,
 } = require("../controllers/chatroom");
 
 router.get("/", getChatrooms);
 router.get("/getChatroom/:id/:userId", getChatroom);
+router.get("/getChatroomComplete/:id", getChatroomComplete);
 router.get("/getChatroomsById/:id", getChatroomsByUserId);
 router.get(
   "/getChatroomsByUserIdWithCreatorAcess/:id",
   getChatroomsByUserIdWithCreatorAcess
 );
+
+router.get("/reportedChatrooms", getReportedChatrooms);
+router.put("/reportChatroom/:id", reportChatroom);
+router.put("/resolveChatroom/:id", reportChatroom);
+router.get("/participants/:id", getChatroomsParticipants);
 router.post("/createChatroom", createChatroom);
 router.post("/createChatroomWithId", createChatroomWithId);
 router.post("/createGroupChatroom", createGroupChatroom);

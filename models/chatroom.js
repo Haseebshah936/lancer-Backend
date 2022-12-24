@@ -22,6 +22,30 @@ const participantSchema = new mongoose.Schema({
     default: false,
   },
 });
+
+const reportSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ["Spam", "Abuse", "FakeAccount", "Other"],
+  },
+  description: {
+    type: String,
+    required: function (e) {
+      return e.type === "Other";
+    },
+    default: "",
+  },
+  reportedBy: {
+    type: mongoose.Types.ObjectId,
+    ref: "User",
+  },
+  state: {
+    type: String,
+    enum: ["pending", "resolved"],
+    default: "pending",
+  },
+});
+
 const chatroomSchema = new mongoose.Schema({
   isGroup: {
     type: Boolean,
@@ -69,8 +93,14 @@ const chatroomSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  reports: [reportSchema],
+  reportCount: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const Chatroom = mongoose.model("Chatroom", chatroomSchema);
 const Participant = mongoose.model("Participant", participantSchema);
-module.exports = { Chatroom, Participant };
+const Report = mongoose.model("Report", reportSchema);
+module.exports = { Chatroom, Participant, Report };

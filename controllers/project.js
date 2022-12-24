@@ -298,6 +298,38 @@ const getProjectsAsSeller_cancelled = async (req, res) => {
   }
 };
 
+const getProjectsBetween = async (req, res) => {
+  try {
+    const { creatorId, sellerId } = req.params;
+    console.log(
+      "🚀 ~ file: project.js:304 ~ getProjectsBetween ~ creatorId, sellerId",
+      creatorId,
+      sellerId
+    );
+
+    const projects = await Project.find({
+      creatorId,
+      "hired.userId": sellerId,
+      state: {
+        $in: [
+          "requirementGathering",
+          "onGoing",
+          "delivered",
+          "revision",
+          "extended",
+          "disputed",
+          "cancelled",
+          "completed",
+        ],
+      },
+    }).count();
+    res.status(200).send({ count: projects });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
 const requestRequirement = async (req, res) => {
   try {
     const { id } = req.params;
@@ -648,6 +680,7 @@ module.exports = {
   getProjectsAsSeller_onGoing,
   getProjectsAsSeller_completed,
   getProjectsAsSeller_cancelled,
+  getProjectsBetween,
   createProject,
   updateProject,
   hiredProjectWorker,
