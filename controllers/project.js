@@ -335,6 +335,13 @@ const requestRequirement = async (req, res) => {
     const { id } = req.params;
     const project = await Project.findById(id);
     if (!project) return res.status(404).send("No project found");
+    if (
+      project.requirenments[project.requirenments.length - 1].state ===
+      "pending"
+    )
+      return res
+        .status(400)
+        .send("Please wait for the last requirement to be provided first");
     const requirement = new Requirenment({
       state: "pending",
     });
