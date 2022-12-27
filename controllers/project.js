@@ -464,6 +464,9 @@ const hiredProjectWorker = async (req, res) => {
       userId: sellerId,
       productId,
     });
+    project.requirenments.push(
+      new Requirenment({ files, links, details, state: "pending" })
+    );
     project.hired = hired;
     project.markModified("hired");
     await project.save();
@@ -476,14 +479,17 @@ const hiredProjectWorker = async (req, res) => {
 const startProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const { files, links, details } = req.body;
+    const { requirementId, files, links, details } = req.body;
     const project = await Project.findById(id);
     if (!project) return res.status(404).send("Project not found");
     project.state = "onGoing";
     project.completionDate = Date.now() + project.days * 24 * 60 * 60 * 1000;
-    project.requirenments.push(
-      new Requirenment({ files, links, details, state: "provided" })
-    );
+    const requirement = project.requirenments.id(requirementId);
+    if (!requirement) return res.status(404).send("No requirement found");
+    requirement.state = "provided";
+    requirement.files = files;
+    requirement.links = links;
+    requirement.details = details;
     project.markModified("requirenments");
     await project.save();
     res.status(201).send(project);
