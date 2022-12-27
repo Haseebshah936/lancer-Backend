@@ -366,7 +366,11 @@ const provideRequirement = async (req, res) => {
     const project = await Project.findOneAndUpdate(
       {
         _id: id,
-        "requirenments._id": requirementId,
+        requirenments: {
+          $elemMatch: {
+            _id: requirementId,
+          },
+        },
       },
       {
         $set: {
