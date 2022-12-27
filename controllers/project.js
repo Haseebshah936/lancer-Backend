@@ -383,6 +383,30 @@ const provideRequirement = async (req, res) => {
     res.status(500).send(error);
   }
 };
+const deliverRequirement = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { requirementId, files, links, details } = req.body;
+    const project = await Project.findById(id);
+    if (!project) return res.status(404).send("No project found");
+    const requirement = project.requirenments.id(requirementId);
+    if (!requirement) return res.status(404).send("No requirement found");
+    requirement.state = "delivered";
+    requirement.files = files;
+    requirement.links = links;
+    requirement.details = details;
+    project.markModified("requirements");
+    await project.save();
+    res.status(201).send(project);
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: project.js:199 ~ provideRequirement ~ error",
+      error
+    );
+
+    res.status(500).send(error);
+  }
+};
 
 const createProject = async (req, res) => {
   try {
@@ -704,4 +728,5 @@ module.exports = {
   deleteProjects,
   requestRequirement,
   provideRequirement,
+  deliverRequirement,
 };

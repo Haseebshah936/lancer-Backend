@@ -97,7 +97,7 @@ const requirementSchema = new mongoose.Schema({
   state: {
     type: String,
     default: "pending",
-    enum: ["pending", "provided"],
+    enum: ["pending", "delivered", "provided"],
   },
   require: {
     type: String,

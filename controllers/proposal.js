@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Project, Hiring } = require("../models/project");
+const { Project, Hiring, Requirenment } = require("../models/project");
 const Proposal = require("../models/proposal");
 
 const getProposals = async (req, res) => {
@@ -231,6 +231,8 @@ const acceptProposal = async (req, res) => {
     });
     project.hired = hired;
     project.markModified("hired");
+    project.requirenments.push(new Requirenment());
+    project.markModified("requirenments");
     await project.save();
     proposal.state = "accepted";
     await proposal.save();

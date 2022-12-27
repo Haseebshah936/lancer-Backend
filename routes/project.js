@@ -31,6 +31,7 @@ const {
   getPendingProjects,
   getOnGoingProjects,
   deleteProjects,
+  deliverRequirement,
 } = require("../controllers/project");
 
 const router = require("express").Router();
@@ -57,6 +58,7 @@ router.put("/:id", updateProject);
 router.put("/hired/:id", hiredProjectWorker);
 router.put("/requestRequirement/:id", requestRequirement);
 router.put("/provideRequirement/:id", provideRequirement);
+router.put("/deliverRequirement/:id", deliverRequirement);
 router.put("/start/:id", startProject);
 router.put("/deliver/:id", deliverProject);
 router.put("/revision/:id", reviseProject);
