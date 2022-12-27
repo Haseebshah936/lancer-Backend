@@ -510,7 +510,7 @@ const startProject = async (req, res) => {
     project.completionDate = Date.now() + project.days * 24 * 60 * 60 * 1000;
     const requirement = project.requirenments.id(requirementId);
     if (!requirement) return res.status(404).send("No requirement found");
-    requirement.state = "provided";
+    requirement.state = "delivered";
     requirement.files = files;
     requirement.links = links;
     requirement.details = details;

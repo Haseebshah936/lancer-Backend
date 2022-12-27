@@ -231,8 +231,9 @@ const acceptProposal = async (req, res) => {
     });
     project.hired = hired;
     project.markModified("hired");
-    project.requirenments.push(new Requirenment());
-    project.markModified("requirenments");
+    project.requirenments.push(
+      new Requirenment({ files, links, details, state: "pending" })
+    );
     await project.save();
     proposal.state = "accepted";
     await proposal.save();
