@@ -232,7 +232,7 @@ const acceptProposal = async (req, res) => {
     project.hired = hired;
     project.markModified("hired");
     project.requirenments.push(
-      new Requirenment({ files, links, details, state: "pending" })
+      new Requirenment({ files: [], links: [], details: "", state: "pending" })
     );
     await project.save();
     proposal.state = "accepted";

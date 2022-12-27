@@ -365,7 +365,7 @@ const provideRequirement = async (req, res) => {
     const { requirementId, files, links, details } = req.body;
     const project = await Project.findById(id);
     if (!project) return res.status(404).send("No project found");
-    const requirement = project.requirenments.id(requirementId);
+    let requirement = project.requirenments.id(requirementId);
     if (!requirement) return res.status(404).send("No requirement found");
     requirement.state = "provided";
     requirement.files = files;
