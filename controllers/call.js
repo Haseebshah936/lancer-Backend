@@ -5,22 +5,23 @@ const getCalls = async (req, res) => {
     const calls = await Call.find().sort({
       createdAt: -1,
     });
-    res.status(200).json(calls);
+    res.status(200).send(calls);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
 const getCall = async (req, res) => {
   try {
     const { id } = req.params;
-    const call = await Call.findById(id)
-      .populate("callerId receiverId", "name profilePic")
-      .populate("chatroomId", "participants");
+    const call = await Call.findById(id).populate(
+      "callerId receiverId",
+      "name profilePic isOnline"
+    );
     if (!call) return res.status(404).send("No call found");
     res.status(200).send(call);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -36,7 +37,7 @@ const getCallsByChatroomId = async (req, res) => {
       });
     res.status(200).send(calls);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -58,13 +59,14 @@ const getCallsByUserId = async (req, res) => {
       });
     res.status(200).send(calls);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
 const createCall = async (req, res) => {
   try {
     const { chatroomId, callerId, receiverId, offer } = req.body;
+    if (!offer) throw new Error("Offer is required");
     const call = new Call({
       chatroomId,
       callerId,
@@ -74,7 +76,7 @@ const createCall = async (req, res) => {
     call.save();
     res.status(201).send(call);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -82,6 +84,7 @@ const acceptCall = async (req, res) => {
   try {
     const { id } = req.params;
     const { answer } = req.body;
+    if (!answer) throw new Error("Answer is required");
     const call = await Call.findById(id);
     if (!call) return res.status(404).send("No call found");
     call.state = "accepted";
@@ -92,7 +95,7 @@ const acceptCall = async (req, res) => {
     call.save();
     res.status(200).send(call);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ error: error.message });
   }
 };
 const rejectCall = async (req, res) => {
@@ -104,7 +107,7 @@ const rejectCall = async (req, res) => {
     call.save();
     res.status(200).send(call);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -119,7 +122,22 @@ const endCall = async (req, res) => {
     call.save();
     res.status(200).send(call);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const missCall = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const call = await Call.findById(id);
+    if (!call) return res.status(404).send("No call found");
+    call.state = "missed";
+    const date = Date.now();
+    call.endedAt = date;
+    call.save();
+    res.status(200).send(call);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -132,7 +150,7 @@ const updateTime = async (req, res) => {
     call.save();
     res.status(200).send(call);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -148,7 +166,7 @@ const updateCall = async (req, res) => {
     call.save();
     res.status(200).send(call);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -160,7 +178,24 @@ const deleteCallsByChatroomId = async (req, res) => {
     });
     res.status(200).send("Deleted chatroom calls");
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const deleteCallsByUserId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const calls = await Call.deleteMany().or([
+      {
+        callerId: id,
+      },
+      {
+        receiverId: id,
+      },
+    ]);
+    res.status(200).send("Deleted user calls");
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -171,7 +206,7 @@ const deleteCall = async (req, res) => {
     if (!call) return res.status(404).send("No call found");
     res.status(200).send("Deleted call");
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -180,7 +215,7 @@ const deleteCalls = async (req, res) => {
     const call = await Call.deleteMany();
     res.status(200).send("Deleted all calls");
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -193,9 +228,11 @@ module.exports = {
   acceptCall,
   rejectCall,
   endCall,
+  missCall,
   updateTime,
   updateCall,
   deleteCallsByChatroomId,
+  deleteCallsByUserId,
   deleteCall,
   deleteCalls,
 };

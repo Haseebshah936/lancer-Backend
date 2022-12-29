@@ -19,6 +19,7 @@ const customerSupport = require("./routes/customerSupport");
 const invoice = require("./routes/invoice");
 const meetingGenerator = require("./utils/meetingGenerator");
 const meeting = require("./routes/meeting");
+const call = require("./routes/call");
 // Initialzing express app
 const app = express();
 
@@ -49,6 +50,7 @@ app.use("/api/project", project);
 app.use("/api/customerSupport", customerSupport);
 app.use("/api/invoice", invoice);
 app.use("/api/meeting", meeting);
+app.use("/api/call", call);
 app.get("/api/", (req, res) => {
   res.send("Hello World");
 });

@@ -8,7 +8,7 @@ const callSchema = new moongose.Schema({
   },
   state: {
     type: String,
-    enum: ["pending", "accepted", "rejected", "ended"],
+    enum: ["pending", "accepted", "rejected", "ended", "missed"],
     default: "pending",
   },
   callerId: {
