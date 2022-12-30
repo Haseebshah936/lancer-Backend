@@ -1,4 +1,5 @@
 const Call = require("../models/call");
+const Message = require("../models/message");
 
 const getCalls = async (req, res) => {
   try {
@@ -67,6 +68,25 @@ const createCall = async (req, res) => {
   try {
     const { chatroomId, callerId, receiverId, offer } = req.body;
     if (!offer) throw new Error("Offer is required");
+    const calls = await Call.find({
+      receiverId,
+      state: "pending",
+      updatedAt: {
+        $gt: Date.now() - 10000,
+      },
+    });
+    if (calls.length > 0) {
+      const message = Message({
+        chatroomId,
+        userId: callerId,
+        type: "system",
+        text: "Missed call from",
+        uri: "",
+      });
+      console.log(message);
+      message.save();
+      return res.status(201).send("User is busy");
+    }
     const call = new Call({
       chatroomId,
       callerId,

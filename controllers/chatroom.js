@@ -46,6 +46,7 @@ const createChatroom = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
 const createChatroomWithId = async (req, res) => {
   try {
     const { creatorId, participantId, id } = req.body;

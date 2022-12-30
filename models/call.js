@@ -40,6 +40,7 @@ const callSchema = new moongose.Schema({
   },
   updatedAt: {
     type: Date,
+    default: Date.now,
   },
   endedAt: {
     type: Date,
