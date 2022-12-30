@@ -70,7 +70,9 @@ const createCall = async (req, res) => {
     if (!offer) throw new Error("Offer is required");
     const calls = await Call.find({
       receiverId,
-      state: "pending",
+      state: {
+        $in: ["pending", "accepted"],
+      },
       updatedAt: {
         $gt: Date.now() - 10000,
       },
