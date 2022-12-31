@@ -663,10 +663,12 @@ const cancelProject = async (req, res) => {
 const completeProject = async (req, res) => {
   try {
     const { id } = req.params;
+    const { deliveryId } = req.body;
     const project = await Project.findById(id);
     if (!project) return res.status(404).send("Project not found");
     project.state = "completed";
     project.completedAt = Date.now();
+    project.delivery.id(deliveryId).state = "accepted";
     const response = await project.save();
     res.status(201).send(response);
   } catch (error) {
