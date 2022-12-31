@@ -655,7 +655,7 @@ const cancelProject = async (req, res) => {
       canceller,
     });
     const client = await User.findByIdAndUpdate(project.creatorId, {
-      $inc: { completedProjects: 1},
+      $inc: { completedProjects: 1 },
     });
     const freelancer = await User.findByIdAndUpdate(project.hired.userId, {
       $inc: { "seller.completedProjects": 1, "seller.score": .1 },
@@ -677,7 +677,7 @@ const completeProject = async (req, res) => {
     project.completedAt = Date.now();
     project.delivery.id(deliveryId).state = "accepted";
     const client = await User.findByIdAndUpdate(project.creatorId, {
-      $inc: { completedProjects: 1},
+      $inc: { completedProjects: 1 },
     });
     const freelancer = await User.findByIdAndUpdate(project.hired.userId, {
       $inc: { "seller.completedProjects": 1, "seller.score": .1 },

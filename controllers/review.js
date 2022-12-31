@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const { User } = require("../models/user");
 
 function ratingCalculation(oldRating, oldReviewsCount, newRating, newReviewsCount) {
-  const newRating = (oldRating * oldReviewsCount) / newReviewsCount + newRating / newReviewsCount;
-  return newRating;
+  const nRating = (oldRating * oldReviewsCount) / newReviewsCount + newRating / newReviewsCount;
+  return nRating;
 }
 
 const getReview = async (req, res) => {
