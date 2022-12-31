@@ -595,10 +595,10 @@ const acceptProjectExtension = async (req, res) => {
     project.completionDate =
       Date.now() +
       (project.days + project.extension.id(extensionId).days) *
-        24 *
-        60 *
-        60 *
-        1000;
+      24 *
+      60 *
+      60 *
+      1000;
     project.markModified("extension");
     const response = await project.save();
     res.status(201).send(response);
