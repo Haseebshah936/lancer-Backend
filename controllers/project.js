@@ -7,6 +7,7 @@ const {
   Cancellation,
   Requirenment,
 } = require("../models/project");
+const { User } = require("../models/user");
 
 const getProjects = async (req, res) => {
   try {
@@ -653,6 +654,12 @@ const cancelProject = async (req, res) => {
       reason,
       canceller,
     });
+    const client = await User.findByIdAndUpdate(project.creatorId, {
+      $inc: { completedProjects: 1},
+    });
+    const freelancer = await User.findByIdAndUpdate(project.hired.userId, {
+      $inc: { "seller.completedProjects": 1, "seller.score": .1 },
+    });
     const response = await project.save();
     res.status(201).send(response);
   } catch (error) {
@@ -669,6 +676,12 @@ const completeProject = async (req, res) => {
     project.state = "completed";
     project.completedAt = Date.now();
     project.delivery.id(deliveryId).state = "accepted";
+    const client = await User.findByIdAndUpdate(project.creatorId, {
+      $inc: { completedProjects: 1},
+    });
+    const freelancer = await User.findByIdAndUpdate(project.hired.userId, {
+      $inc: { "seller.completedProjects": 1, "seller.score": .1 },
+    });
     const response = await project.save();
     res.status(201).send(response);
   } catch (error) {
