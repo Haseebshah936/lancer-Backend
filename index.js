@@ -17,6 +17,9 @@ const proposal = require("./routes/proposal");
 const project = require("./routes/project");
 const customerSupport = require("./routes/customerSupport");
 const invoice = require("./routes/invoice");
+const meetingGenerator = require("./utils/meetingGenerator");
+const meeting = require("./routes/meeting");
+const call = require("./routes/call");
 // Initialzing express app
 const app = express();
 
@@ -29,6 +32,9 @@ app.use(express.json({ limit: "100KB" })); // For parsing application/json
 
 // Calling Morgan
 morgan(app);
+
+// MeetingGenerator
+meetingGenerator(app);
 
 // Routes
 app.use("/api/auth", authRouter);
@@ -43,6 +49,8 @@ app.use("/api/proposal", proposal);
 app.use("/api/project", project);
 app.use("/api/customerSupport", customerSupport);
 app.use("/api/invoice", invoice);
+app.use("/api/meeting", meeting);
+app.use("/api/call", call);
 app.get("/api/", (req, res) => {
   res.send("Hello World");
 });

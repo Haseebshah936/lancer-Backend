@@ -1,5 +1,11 @@
 const Review = require("../models/review");
 const mongoose = require("mongoose");
+const { User } = require("../models/user");
+
+function ratingCalculation(oldRating, oldReviewsCount, newRating, newReviewsCount) {
+  const newRating = (oldRating * oldReviewsCount) / newReviewsCount + newRating / newReviewsCount;
+  return newRating;
+}
 
 const getReview = async (req, res) => {
   try {
@@ -89,14 +95,27 @@ const getSellerReviews = async (req, res) => {
 
 const createReview = async (req, res) => {
   try {
-    const { rating, comment, buyerId, sellerId, productId } = req.body;
+    const { rating, comment, buyerId, sellerId, productId, projectId } = req.body;
     const review = new Review({
       rating,
       comment,
       buyerId,
       sellerId,
       productId,
+      projectId,
     });
+    const client = await User.findById(buyerId);
+    if (!client) return res.status(404).send("Client not found");
+    const newBuyerRating = ratingCalculation(client.stars, client.reviews, rating, client.reviews + 1);
+    client.reviews++;
+    client.stars = newBuyerRating;
+    const freelancer = await User.findById(sellerId);
+    if (!freelancer) return res.status(404).send("Freelancer not found");
+    const newFreelancerRating = ratingCalculation(freelancer.seller.rating, freelancer.seller.reviews, rating, freelancer.seller.reviews + 1);
+    freelancer.reviews++;
+    freelancer.stars = newFreelancerRating;
+    await client.save();
+    await freelancer.save();
     await review.save();
     res.status(200).send(review);
   } catch (error) {
@@ -160,3 +179,4 @@ module.exports = {
   updateReview,
   deleteReview,
 };
+

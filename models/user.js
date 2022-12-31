@@ -145,6 +145,8 @@ const userSchema = new mongoose.Schema({
   earnings: { type: Number, default: 0 },
   gender: { type: String },
   DOB: { type: Date },
+  completedOrders: { type: Number, default: 0 },
+  cancelledOrders: { type: Number, default: 0 },
   profileCompleted: { type: Boolean, default: false },
 });
 // userSchema.plugin(passportLocalMongoose);
