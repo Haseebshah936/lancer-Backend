@@ -41,6 +41,12 @@ const reviewSchema = new mongoose.Schema({
     ref: "Project",
     required: true,
   },
+  sender: {
+    type: String,
+    default: "asSeller",
+    enum: ["asSeller", "asClienr"],
+    required: true,
+  },
 });
 const Review = mongoose.model("Review", reviewSchema);
 module.exports = Review;

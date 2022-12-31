@@ -35,7 +35,7 @@ const getBuyerReviews = async (req, res) => {
     let { skip } = req.query;
     console.log(skip);
     if (skip === undefined) skip = 0;
-    const reviews = await Review.find({ buyerId: id })
+    const reviews = await Review.find({ buyerId: id, sender: "asSeller" })
       .sort({
         createdAt: -1,
       })
@@ -67,7 +67,7 @@ const getSellerReviews = async (req, res) => {
     const { id } = req.params;
     let { skip } = req.query;
     if (skip === undefined) skip = 0;
-    const reviews = await Review.find({ sellerId: id })
+    const reviews = await Review.find({ sellerId: id, sender: "asClient" })
       .sort({
         createdAt: -1,
       })
@@ -95,7 +95,7 @@ const getSellerReviews = async (req, res) => {
 
 const createReview = async (req, res) => {
   try {
-    const { rating, comment, buyerId, sellerId, productId, projectId } = req.body;
+    const { rating, comment, buyerId, sellerId, productId, projectId, sender } = req.body;
     const review = new Review({
       rating,
       comment,
@@ -103,6 +103,7 @@ const createReview = async (req, res) => {
       sellerId,
       productId,
       projectId,
+      reviewType,
     });
     const client = await User.findById(buyerId);
     if (!client) return res.status(404).send("Client not found");
