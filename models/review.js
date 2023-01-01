@@ -43,8 +43,8 @@ const reviewSchema = new mongoose.Schema({
   },
   sender: {
     type: String,
-    default: "asSeller",
-    enum: ["asSeller", "asClienr"],
+    default: "seller",
+    enum: ["seller", "client"],
     required: true,
   },
 });

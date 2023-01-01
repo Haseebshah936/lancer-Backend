@@ -42,6 +42,10 @@ const callSchema = new moongose.Schema({
     type: Date,
     default: Date.now,
   },
+  type: {
+    type: String,
+    enum: ["audio", "video"],
+  },
   endedAt: {
     type: Date,
   },

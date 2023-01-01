@@ -2,8 +2,15 @@ const Review = require("../models/review");
 const mongoose = require("mongoose");
 const { User } = require("../models/user");
 
-function ratingCalculation(oldRating, oldReviewsCount, newRating, newReviewsCount) {
-  const nRating = (oldRating * oldReviewsCount) / newReviewsCount + newRating / newReviewsCount;
+function ratingCalculation(
+  oldRating,
+  oldReviewsCount,
+  newRating,
+  newReviewsCount
+) {
+  const nRating =
+    (oldRating * oldReviewsCount) / newReviewsCount +
+    newRating / newReviewsCount;
   return nRating;
 }
 
@@ -35,7 +42,7 @@ const getBuyerReviews = async (req, res) => {
     let { skip } = req.query;
     console.log(skip);
     if (skip === undefined) skip = 0;
-    const reviews = await Review.find({ buyerId: id, sender: "asSeller" })
+    const reviews = await Review.find({ buyerId: id, sender: "seller" })
       .sort({
         createdAt: -1,
       })
@@ -49,6 +56,57 @@ const getBuyerReviews = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
+const getBuyerReviewForProject = async (req, res) => {
+  try {
+    const { userId, projectId } = req.params;
+    let { skip } = req.query;
+    console.log(skip);
+    if (skip === undefined) skip = 0;
+    const reviews = await Review.find({
+      sellerId: userId,
+      projectId,
+      sender: "client",
+    })
+      .sort({
+        createdAt: -1,
+      })
+      .populate("sellerId buyerId", "profilePic name ")
+      .skip(parseInt(skip))
+      .limit(10);
+    if (!reviews) return res.status(404).send("Reviews not found");
+    res.status(200).send(reviews);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error.message);
+  }
+};
+
+const getSellerReviewForProject = async (req, res) => {
+  try {
+    const { userId, projectId } = req.params;
+    let { skip } = req.query;
+    console.log(skip);
+    if (skip === undefined) skip = 0;
+    const reviews = await Review.find({
+      buyerId: userId,
+      projectId,
+      sender: "seller",
+    })
+      .sort({
+        createdAt: -1,
+      })
+      .populate("sellerId buyerId", "profilePic name ")
+      .skip(parseInt(skip))
+      .limit(10);
+    if (!reviews) return res.status(404).send("Reviews not found");
+    res.status(200).send(reviews);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error.message);
+  }
+};
+
 // const getBuyerReviewsCount = async (req, res) => {
 //   try {
 //     const { id } = req.params;
@@ -67,7 +125,7 @@ const getSellerReviews = async (req, res) => {
     const { id } = req.params;
     let { skip } = req.query;
     if (skip === undefined) skip = 0;
-    const reviews = await Review.find({ sellerId: id, sender: "asClient" })
+    const reviews = await Review.find({ sellerId: id, sender: "client" })
       .sort({
         createdAt: -1,
       })
@@ -95,7 +153,8 @@ const getSellerReviews = async (req, res) => {
 
 const createReview = async (req, res) => {
   try {
-    const { rating, comment, buyerId, sellerId, productId, projectId, sender } = req.body;
+    const { rating, comment, buyerId, sellerId, productId, projectId, sender } =
+      req.body;
     const review = new Review({
       rating,
       comment,
@@ -103,16 +162,26 @@ const createReview = async (req, res) => {
       sellerId,
       productId,
       projectId,
-      reviewType,
+      sender,
     });
     const client = await User.findById(buyerId);
     if (!client) return res.status(404).send("Client not found");
-    const newBuyerRating = ratingCalculation(client.stars, client.reviews, rating, client.reviews + 1);
+    const newBuyerRating = ratingCalculation(
+      client.stars,
+      client.reviews,
+      rating,
+      client.reviews + 1
+    );
     client.reviews++;
     client.stars = newBuyerRating;
     const freelancer = await User.findById(sellerId);
     if (!freelancer) return res.status(404).send("Freelancer not found");
-    const newFreelancerRating = ratingCalculation(freelancer.seller.rating, freelancer.seller.reviews, rating, freelancer.seller.reviews + 1);
+    const newFreelancerRating = ratingCalculation(
+      freelancer.seller.rating,
+      freelancer.seller.reviews,
+      rating,
+      freelancer.seller.reviews + 1
+    );
     freelancer.reviews++;
     freelancer.stars = newFreelancerRating;
     await client.save();
@@ -175,9 +244,10 @@ module.exports = {
   getReviews,
   getBuyerReviews,
   getSellerReviews,
+  getBuyerReviewForProject,
+  getSellerReviewForProject,
   createReview,
   createReply,
   updateReview,
   deleteReview,
 };
-

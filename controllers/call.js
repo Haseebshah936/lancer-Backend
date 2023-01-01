@@ -66,8 +66,18 @@ const getCallsByUserId = async (req, res) => {
 
 const createCall = async (req, res) => {
   try {
-    const { chatroomId, callerId, receiverId, offer } = req.body;
+    const { chatroomId, callerId, receiverId, offer, type } = req.body;
     if (!offer) throw new Error("Offer is required");
+
+    const sameCall = await Call.findOne({
+      chatroomId,
+      callerId,
+      receiverId,
+      state: {
+        $in: ["pending", "accepted"],
+      },
+    });
+    if (sameCall) return res.status(201).send("Call already exists");
     const calls = await Call.find({
       receiverId,
       state: {
@@ -87,13 +97,14 @@ const createCall = async (req, res) => {
       });
       console.log(message);
       message.save();
-      return res.status(201).send("User is busy");
+      return res.status(409).send("User is busy");
     }
     const call = new Call({
       chatroomId,
       callerId,
       receiverId,
       offer,
+      type,
     });
     call.save();
     res.status(201).send(call);
