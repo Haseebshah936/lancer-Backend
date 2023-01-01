@@ -1,6 +1,18 @@
 const Call = require("../models/call");
 const Message = require("../models/message");
 
+const missedCall = (chatroomId, callerId) => {
+  const message = new Message({
+    chatroomId,
+    userId: callerId,
+    type: "system",
+    text: "Missed call",
+    uri: "",
+  });
+  message.save();
+  return message;
+}
+
 const getCalls = async (req, res) => {
   try {
     const calls = await Call.find().sort({
@@ -76,27 +88,22 @@ const createCall = async (req, res) => {
       state: {
         $in: ["pending", "accepted"],
       },
+      updatedAt: {
+        $gt: Date.now() - 60000,
+      },
     });
-    if (sameCall) return res.status(201).send("Call already exists");
+    if (sameCall) return res.status(409).send("Call already exists");
     const calls = await Call.find({
       receiverId,
       state: {
         $in: ["pending", "accepted"],
       },
       updatedAt: {
-        $gt: Date.now() - 10000,
+        $gt: Date.now() - 60000,
       },
     });
     if (calls.length > 0) {
-      const message = Message({
-        chatroomId,
-        userId: callerId,
-        type: "system",
-        text: "Missed call from",
-        uri: "",
-      });
-      console.log(message);
-      message.save();
+      missedCall(chatroomId,receiverId);
       return res.status(409).send("User is busy");
     }
     const call = new Call({
@@ -109,6 +116,7 @@ const createCall = async (req, res) => {
     call.save();
     res.status(201).send(call);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -179,10 +187,19 @@ const updateTime = async (req, res) => {
     const { id } = req.params;
     const call = await Call.findById(id);
     if (!call) return res.status(404).send("No call found");
+    if(call.connectTries >= 3) {
+      call.state = "missed";
+      call.endedAt = Date.now();
+      call.save();
+      missedCall(call.chatroomId,call.callerId);
+      return res.status(403).send("Missed call");
+    }
     call.updatedAt = Date.now();
+    call.connectTries++;
     call.save();
     res.status(200).send(call);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: error.message });
   }
 };

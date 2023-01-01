@@ -45,7 +45,7 @@ const getMessages = async (req, res) => {
         createdAt: -1,
       })
       .skip(skip)
-      .limit(10);
+      .limit(20);
     res.status(200).send(messages);
   } catch (error) {
     console.log(error);

@@ -49,6 +49,14 @@ const callSchema = new moongose.Schema({
   endedAt: {
     type: Date,
   },
+  connectTries: {
+    type: Number,
+    default: 0,
+  },
+  reconnectTries: {
+    type: Number,
+    default: 0,
+  }
 });
 const Call = moongose.model("Call", callSchema);
 module.exports = Call;
