@@ -63,7 +63,7 @@ const getBuyerReviewForProject = async (req, res) => {
     let { skip } = req.query;
     console.log(skip);
     if (skip === undefined) skip = 0;
-    const reviews = await Review.find({
+    const reviews = await Review.findOne({
       sellerId: userId,
       projectId,
       sender: "client",
@@ -74,7 +74,7 @@ const getBuyerReviewForProject = async (req, res) => {
       .populate("sellerId buyerId", "profilePic name ")
       .skip(parseInt(skip))
       .limit(10);
-    if (!reviews) return res.status(404).send("Reviews not found");
+    if (!reviews) return res.status(404).send("Review not found");
     res.status(200).send(reviews);
   } catch (error) {
     console.log(error);
@@ -88,7 +88,7 @@ const getSellerReviewForProject = async (req, res) => {
     let { skip } = req.query;
     console.log(skip);
     if (skip === undefined) skip = 0;
-    const reviews = await Review.find({
+    const reviews = await Review.findOne({
       buyerId: userId,
       projectId,
       sender: "seller",
@@ -99,7 +99,7 @@ const getSellerReviewForProject = async (req, res) => {
       .populate("sellerId buyerId", "profilePic name ")
       .skip(parseInt(skip))
       .limit(10);
-    if (!reviews) return res.status(404).send("Reviews not found");
+    if (!reviews) return res.status(404).send("Review not found");
     res.status(200).send(reviews);
   } catch (error) {
     console.log(error);
@@ -164,6 +164,17 @@ const createReview = async (req, res) => {
       projectId,
       sender,
     });
+    const cheackReview = await Review.findOne({
+      buyerId,
+      sellerId,
+      productId,
+      projectId,
+      sender,
+    });
+    if (cheackReview)
+      return res
+        .status(400)
+        .send("You already submitted a review for this project");
     const client = await User.findById(buyerId);
     if (!client) return res.status(404).send("Client not found");
     const newBuyerRating = ratingCalculation(
