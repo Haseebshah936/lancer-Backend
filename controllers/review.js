@@ -107,18 +107,16 @@ const getSellerReviewForProject = async (req, res) => {
   }
 };
 
-// const getBuyerReviewsCount = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const reviews = await Review.find({ buyerId: id }).count();
-
-//     if (!reviews) return res.status(404).send("Reviews not found");
-//     res.status(200).send(reviews);
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).send(error.message);
-//   }
-// };
+const getBuyerReviewsCount = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const reviews = await Review.find({ buyerId: id }).count();
+    res.status(200).json(reviews);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error.message);
+  }
+};
 
 const getSellerReviews = async (req, res) => {
   try {
@@ -139,6 +137,21 @@ const getSellerReviews = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
+const getSellerReviewsCount = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const reviews = await Review.find({
+      sellerId: id,
+      sender: "client",
+    }).count();
+    res.status(200).json(reviews);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error.message);
+  }
+};
+
 // const getSellerReviewsCount = async (req, res) => {
 //   try {
 //     const { id } = req.params;
@@ -175,28 +188,33 @@ const createReview = async (req, res) => {
       return res
         .status(400)
         .send("You already submitted a review for this project");
-    const client = await User.findById(buyerId);
-    if (!client) return res.status(404).send("Client not found");
-    const newBuyerRating = ratingCalculation(
-      client.stars,
-      client.reviews,
-      rating,
-      client.reviews + 1
-    );
-    client.reviews++;
-    client.stars = newBuyerRating;
-    const freelancer = await User.findById(sellerId);
-    if (!freelancer) return res.status(404).send("Freelancer not found");
-    const newFreelancerRating = ratingCalculation(
-      freelancer.seller.rating,
-      freelancer.seller.reviews,
-      rating,
-      freelancer.seller.reviews + 1
-    );
-    freelancer.reviews++;
-    freelancer.stars = newFreelancerRating;
-    await client.save();
-    await freelancer.save();
+    if (sender === "seller") {
+      const client = await User.findById(buyerId);
+      if (!client) return res.status(404).send("Client not found");
+      const newBuyerRating = ratingCalculation(
+        client.stars,
+        client.reviews,
+        rating,
+        client.reviews + 1
+      );
+      client.reviews++;
+      client.stars = newBuyerRating;
+      await client.save();
+    }
+    if (sender === "client") {
+      const freelancer = await User.findById(sellerId);
+      if (!freelancer) return res.status(404).send("Freelancer not found");
+      const newFreelancerRating = ratingCalculation(
+        freelancer.seller.rating,
+        freelancer.seller.reviews,
+        rating,
+        freelancer.seller.reviews + 1
+      );
+      console.log(newFreelancerRating);
+      freelancer.seller.reviews++;
+      freelancer.seller.rating = newFreelancerRating;
+      await freelancer.save();
+    }
     await review.save();
     res.status(200).send(review);
   } catch (error) {
@@ -250,15 +268,27 @@ const deleteReview = async (req, res) => {
   }
 };
 
+const deleteReviews = async (req, res) => {
+  try {
+    const reviews = await Review.deleteMany();
+    res.status(200).send("Reviews deleted");
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   getReview,
   getReviews,
   getBuyerReviews,
+  getSellerReviewsCount,
   getSellerReviews,
+  getBuyerReviewsCount,
   getBuyerReviewForProject,
   getSellerReviewForProject,
   createReview,
   createReply,
   updateReview,
   deleteReview,
+  deleteReviews,
 };

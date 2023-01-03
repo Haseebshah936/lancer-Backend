@@ -89,6 +89,7 @@ const sellerSchema = new mongoose.Schema({
     type: Number,
     default: 5,
   },
+  views: { type: Number, default: 0 },
 });
 
 const userSchema = new mongoose.Schema({
@@ -148,6 +149,7 @@ const userSchema = new mongoose.Schema({
   completedOrders: { type: Number, default: 0 },
   cancelledOrders: { type: Number, default: 0 },
   profileCompleted: { type: Boolean, default: false },
+  views: { type: Number, default: 0 },
 });
 // userSchema.plugin(passportLocalMongoose);
 userSchema.plugin(findOrCreate);

@@ -145,7 +145,7 @@ const createTip = async (req, res) => {
     if (!invoice) return res.status(400).send("Invoice not exist exists");
     const user = await User.findById(freelancerId);
     if (!user) return res.status(400).send("User not found");
-    user.earnings += amount;
+    user.currentBalance += amount;
     const newInvoice = new Invoice({
       projectId,
       freelancerId,
@@ -215,7 +215,7 @@ const payByWalletAndCreateProject = async (req, res) => {
       extras,
     });
     const user = await User.findById(employerId);
-    if (user.earnings < amount)
+    if (user.currentBalance < amount)
       return res.status(400).send("Insufficient balance in wallet");
     const newProject = new Project({
       title,
@@ -238,7 +238,7 @@ const payByWalletAndCreateProject = async (req, res) => {
     });
     await newProject.save();
     await newInvoice.save();
-    user.earnings -= amount;
+    user.currentBalance -= amount;
     await user.save();
     res.status(201).send(newInvoice);
   } catch (error) {
@@ -255,7 +255,7 @@ const payByWallet = async (req, res) => {
     if (invoice) return res.status(400).send("Invoice already exists");
     const user = await User.findById(employerId);
     console.log(user);
-    if (user.earnings < amount)
+    if (user.currentBalance < amount)
       return res.status(400).send("Insufficient balance in wallet");
     const newInvoice = new Invoice({
       projectId,
@@ -266,7 +266,7 @@ const payByWallet = async (req, res) => {
       invoiceStatus: "recieved",
     });
     await newInvoice.save();
-    user.earnings -= amount;
+    user.currentBalance -= amount;
     await user.save();
     res.status(201).send(newInvoice);
   } catch (error) {
@@ -345,7 +345,7 @@ const completePayment = async (req, res) => {
     if (!invoice) return res.status(400).send("Invoice not found");
     const user = await User.findById(invoice.freelancerId);
     if (!user) return res.status(400).send("User not found");
-    user.earning = user.earning + invoice.amount;
+    user.currentBalance = user.currentBalance + invoice.amount;
     await user.save();
     res.status(201).send(invoice);
   } catch (error) {
@@ -368,7 +368,7 @@ const refundPayment = async (req, res) => {
     if (!invoice) return res.status(400).send("Invoice not found");
     const user = await User.findById(invoice.employerId);
     if (!user) return res.status(400).send("User not found");
-    user.earning = user.earning + invoice.amount;
+    user.currentBalance = user.currentBalance + invoice.amount;
     await user.save();
     res.status(201).send(invoice);
   } catch (error) {

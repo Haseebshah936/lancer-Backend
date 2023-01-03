@@ -655,10 +655,10 @@ const cancelProject = async (req, res) => {
       canceller,
     });
     const client = await User.findByIdAndUpdate(project.creatorId, {
-      $inc: { completedProjects: 1 },
+      $inc: { cancelledProjects: 1 },
     });
     const freelancer = await User.findByIdAndUpdate(project.hired.userId, {
-      $inc: { "seller.completedProjects": 1, "seller.score": .1 },
+      $inc: { "seller.cancelledProjects": 1, "seller.score": .1 },
     });
     const response = await project.save();
     res.status(201).send(response);
