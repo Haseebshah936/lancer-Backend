@@ -391,6 +391,17 @@ const deleteIssue = async (req, res) => {
   }
 };
 
+const deleteAllDisputes = async (req, res) => {
+  try {
+    const disputes = await CustomerSupport.deleteMany();
+    res.status(200).send("Desputes deleted successfully");
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   getCustomerSupportIssues,
   getDisputes,
@@ -413,4 +424,5 @@ module.exports = {
   resolveDispute,
   becomeResolver,
   deleteIssue,
+  deleteAllDisputes,
 };

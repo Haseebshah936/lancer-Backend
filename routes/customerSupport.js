@@ -19,6 +19,7 @@ const {
   getOtherDisputes,
   getDisputesByCreatorId,
   getAptitudeTestDisputeByCreatorId,
+  deleteAllDisputes,
 } = require("../controllers/customerSupport");
 
 const router = require("express").Router();
@@ -42,5 +43,6 @@ router.put("/active/:id", activateDispute);
 router.put("/resolve/:id", resolveDispute);
 router.put("/asignHandler/:id", becomeResolver);
 router.delete("/:id", deleteIssue);
+router.delete("/", deleteAllDisputes);
 
 module.exports = router;
