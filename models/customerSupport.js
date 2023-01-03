@@ -12,14 +12,8 @@ const customerSupportSchema = new mongoose.Schema({
   },
   requestType: {
     type: String,
-    enum: ["refund", "dispute", "aptitudeTest", "other"],
+    enum: ["dispute", "aptitudeTest", "other"],
     required: true,
-  },
-  request: {
-    type: String,
-    required: function () {
-      return this.requestType === "other";
-    },
   },
   disputeReason: {
     type: String,
@@ -47,8 +41,10 @@ const customerSupportSchema = new mongoose.Schema({
   },
   resolvers: [
     {
-      type: mongoose.Types.ObjectId,
-      ref: "User",
+      userId: {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+      },
     },
   ],
   createdAt: {

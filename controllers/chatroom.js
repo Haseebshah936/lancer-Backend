@@ -228,6 +228,7 @@ const getChatroomsByUserId = async (req, res) => {
           userId: id,
         },
       },
+      state: "active",
     })
       .populate(
         "participants.userId latestMessage",

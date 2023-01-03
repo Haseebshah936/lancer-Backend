@@ -16,7 +16,7 @@ const getCustomerSupportIssues = async (req, res) => {
   }
 };
 
-const getIssueById = async (req, res) => {
+const getDispute = async (req, res) => {
   try {
     const { id } = req.params;
     const issue = await CustomerSupport.findById(id).populate(
@@ -25,6 +25,55 @@ const getIssueById = async (req, res) => {
     );
     if (!issue) return res.status(404).send("Issue not found");
     res.status(200).send(issue);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const getProjectDisputes = async (req, res) => {
+  try {
+    let { skip } = req.query;
+    if (skip === undefined) skip = 0;
+    const issues = await CustomerSupport.find({
+      requestType: "dispute",
+    })
+      .populate("creatorId resolvers.userId", "name email badge profilePic")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(10);
+    res.status(200).send(issues);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+const getAptitudeTestDisputes = async (req, res) => {
+  try {
+    let { skip } = req.query;
+    if (skip === undefined) skip = 0;
+    const issues = await CustomerSupport.find({
+      requestType: "aptitudeTest",
+    })
+      .populate("creatorId", "name email badge profilePic")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(10);
+    res.status(200).send(issues);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+const getOtherDisputes = async (req, res) => {
+  try {
+    let { skip } = req.query;
+    if (skip === undefined) skip = 0;
+    const issues = await CustomerSupport.find({
+      requestType: "other",
+    })
+      .populate("creatorId", "name email badge profilePic")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(10);
+    res.status(200).send(issues);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -41,6 +90,41 @@ const getDisputes = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(10);
+    res.status(200).send(issues);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const getDisputesByCreatorId = async (req, res) => {
+  try {
+    const { creatorId } = req.params;
+    let { skip } = req.query;
+    if (skip === undefined) skip = 0;
+    const issues = await CustomerSupport.find({
+      creatorId,
+      state: "pending",
+    })
+      .populate("creatorId", "name email badge profilePic")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(10);
+    res.status(200).send(issues);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const getAptitudeTestDisputeByCreatorId = async (req, res) => {
+  try {
+    const { creatorId } = req.params;
+    const issues = await CustomerSupport.findOne({
+      creatorId,
+      state: "pending",
+      requestType: "aptitudeTest",
+    })
+      .populate("creatorId", "name email badge profilePic")
+      .sort({ createdAt: -1 });
     res.status(200).send(issues);
   } catch (error) {
     res.status(500).send(error);
@@ -134,9 +218,9 @@ const updateOtherIssue = async (req, res) => {
   }
 };
 
-const createDispute = async (req, res) => {
+const createProjectDispute = async (req, res) => {
   try {
-    const { creatorId, details, disputeReason, projectId } = req.body;
+    const { creatorId, disputeReason, projectId } = req.body;
     const dispute = await CustomerSupport.findOne({
       creatorId,
       requestType: "dispute",
@@ -150,9 +234,56 @@ const createDispute = async (req, res) => {
     const newDispute = new CustomerSupport({
       creatorId,
       requestType: "dispute",
-      details,
       disputeReason,
       projectId,
+    });
+    const response = await newDispute.save();
+    res.status(200).send(response);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const createAptitudeTestDispute = async (req, res) => {
+  try {
+    const { creatorId, disputeReason, categoryId } = req.body;
+    const dispute = await CustomerSupport.findOne({
+      creatorId,
+      requestType: "aptitudeTest",
+      state: "pending",
+
+      category: categoryId,
+      createdAt: { $gte: Date.now() - 24 * 60 * 60 * 1000 },
+    });
+    if (dispute)
+      return res.status(400).send("You already requested an aptitude Test.");
+    const newDispute = new CustomerSupport({
+      creatorId,
+      requestType: "aptitudeTest",
+      disputeReason,
+      category: categoryId,
+    });
+    const response = await newDispute.save();
+    res.status(200).send(response);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const createOtherDispute = async (req, res) => {
+  try {
+    const { creatorId, details } = req.body;
+    const dispute = await CustomerSupport.findOne({
+      creatorId,
+      requestType: "other",
+      state: "pending",
+    });
+    if (dispute)
+      return res.status(400).send("You already have a pending dispute.");
+    const newDispute = new CustomerSupport({
+      creatorId,
+      requestType: "other",
+      details,
     });
     const response = await newDispute.save();
     res.status(200).send(response);
@@ -176,11 +307,11 @@ const updateDispute = async (req, res) => {
   }
 };
 
-const activateIssue = async (req, res) => {
+const activateDispute = async (req, res) => {
   try {
     const { id } = req.params;
     const dispute = await CustomerSupport.findById(id);
-    if (!dispute) return res.status(404).send("Issue not found");
+    if (!dispute) return res.status(404).send("Dispute not found");
     dispute.state = "active";
     dispute.save();
     res.status(200).send(response);
@@ -189,11 +320,11 @@ const activateIssue = async (req, res) => {
   }
 };
 
-const resolveIssue = async (req, res) => {
+const resolveDispute = async (req, res) => {
   try {
     const { id } = req.params;
     const dispute = await CustomerSupport.findById(id);
-    if (!dispute) return res.status(404).send("Issue not found");
+    if (!dispute) return res.status(404).send("Dispute not found");
     dispute.state = "resolved";
     const chatroom = await Chatroom.findById(dispute.chatroomId);
     chatroom.state = "archived";
@@ -263,16 +394,23 @@ const deleteIssue = async (req, res) => {
 module.exports = {
   getCustomerSupportIssues,
   getDisputes,
-  getIssueById,
+  getDispute,
   getPendingDisputes,
   getActiveDisputes,
   getResolvedDisputes,
-  createDispute,
+  getDisputesByCreatorId,
+  getAptitudeTestDisputeByCreatorId,
+  getProjectDisputes,
+  getAptitudeTestDisputes,
+  getOtherDisputes,
+  createProjectDispute,
+  createAptitudeTestDispute,
+  createOtherDispute,
   createOtherIssue,
   updateOtherIssue,
   updateDispute,
-  activateIssue,
-  resolveIssue,
+  activateDispute,
+  resolveDispute,
   becomeResolver,
   deleteIssue,
 };
