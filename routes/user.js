@@ -13,6 +13,7 @@ router.put("/updateSearchHistory/:id", user.updateSearchHistory);
 router.put("/makeSeller/:id", user.makeSeller);
 router.put("/removeSeller/:id", user.removeSeller);
 router.put("/updateProfile/:id", user.completeProfile);
+router.put("/updateRecentSearches/:id", user.updateRecentSearches);
 router.put("/updateBadge/:id", user.updateBadge);
 router.put("/updateOnlineStatus/:id", user.updateOnlineStatus);
 router.put("/updateCurrentBalance/:id", user.updateCurrentBalance);

@@ -26,7 +26,12 @@ const app = express();
 // Middlewares
 app.use(helmet()); // For security provide headers more to read on this
 app.use(cors({ origin: true })); // Allow cross origin requests
-app.use(express.json({ limit: "100KB" })); // For parsing application/json
+app.use(express.json({ limit: "300KB" })); // For parsing application/json
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
 
 // app.use(express.static("public")); // For serving static files
 
@@ -59,3 +64,12 @@ app.get("/api/", (req, res) => {
 // const port = process.env.PORT || 3002;
 const port = config.get("port");
 app.listen(port, () => logger(`Server started on port ${port}`));
+
+// const http = require("http");
+// const app1 = http.createServer((req, res) => {
+//   res.end(req.body?.offer);
+// });
+
+// app1.listen(3004, () => {
+//   console.log("Server is running on port 3004");
+// });

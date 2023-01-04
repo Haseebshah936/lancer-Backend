@@ -221,14 +221,16 @@ const getChatrooms = async (req, res) => {
 const getChatroomsByUserId = async (req, res) => {
   try {
     const { id } = req.params;
-    // console.log(id);
+    console.log(id);
     const chatrooms = await Chatroom.find({
       participants: {
         $elemMatch: {
           userId: id,
         },
       },
-      state: "active",
+      state: {
+        $ne: "archived",
+      },
     })
       .populate(
         "participants.userId latestMessage",

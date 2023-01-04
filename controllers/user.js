@@ -377,6 +377,21 @@ const updateEarning = async (req, res) => {
   }
 };
 
+const updateRecentSearches = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { recentSearch } = req.body;
+    const user = await User.findById(id).select("-password");
+    if (!user) return res.status(404).send("User not found");
+    if (user.recentSearches.length === 5) user.recentSearches.shift();
+    user.recentSearches.push(recentSearch);
+    await user.save();
+    res.status(200).send(user);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 const updateActiveOrders = async (req, res) => {
   try {
     const { id } = req.params;
@@ -481,6 +496,7 @@ module.exports = {
   updateOnlineStatus,
   updateCurrentBalance,
   updateEarning,
+  updateRecentSearches,
   updateActiveOrders,
   updateCancelledOrders,
   updateCompletedOrders,

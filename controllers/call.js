@@ -11,7 +11,7 @@ const missedCall = (chatroomId, callerId) => {
   });
   message.save();
   return message;
-}
+};
 
 const getCalls = async (req, res) => {
   try {
@@ -80,7 +80,7 @@ const createCall = async (req, res) => {
   try {
     const { chatroomId, callerId, receiverId, offer, type } = req.body;
     if (!offer) throw new Error("Offer is required");
-
+    console.log("Offer recieved ", offer.length);
     const sameCall = await Call.findOne({
       chatroomId,
       callerId,
@@ -103,7 +103,7 @@ const createCall = async (req, res) => {
       },
     });
     if (calls.length > 0) {
-      missedCall(chatroomId,receiverId);
+      missedCall(chatroomId, receiverId);
       return res.status(409).send("User is busy");
     }
     const call = new Call({
@@ -187,11 +187,11 @@ const updateTime = async (req, res) => {
     const { id } = req.params;
     const call = await Call.findById(id);
     if (!call) return res.status(404).send("No call found");
-    if(call.connectTries >= 3) {
+    if (call.connectTries >= 3) {
       call.state = "missed";
       call.endedAt = Date.now();
       call.save();
-      missedCall(call.chatroomId,call.callerId);
+      missedCall(call.chatroomId, call.callerId);
       return res.status(403).send("Missed call");
     }
     call.updatedAt = Date.now();
