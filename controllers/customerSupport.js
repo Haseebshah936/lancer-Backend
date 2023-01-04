@@ -36,6 +36,7 @@ const getProjectDisputes = async (req, res) => {
     if (skip === undefined) skip = 0;
     const issues = await CustomerSupport.find({
       requestType: "dispute",
+      state: "pending",
     })
       .populate("creatorId resolvers.userId", "name email badge profilePic")
       .sort({ createdAt: -1 })
@@ -43,6 +44,7 @@ const getProjectDisputes = async (req, res) => {
       .limit(10);
     res.status(200).send(issues);
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 };
@@ -52,6 +54,7 @@ const getAptitudeTestDisputes = async (req, res) => {
     if (skip === undefined) skip = 0;
     const issues = await CustomerSupport.find({
       requestType: "aptitudeTest",
+      state: "pending",
     })
       .populate("creatorId", "name email badge profilePic")
       .sort({ createdAt: -1 })
@@ -68,6 +71,7 @@ const getOtherDisputes = async (req, res) => {
     if (skip === undefined) skip = 0;
     const issues = await CustomerSupport.find({
       requestType: "other",
+      state: "pending",
     })
       .populate("creatorId", "name email badge profilePic")
       .sort({ createdAt: -1 })
@@ -79,12 +83,43 @@ const getOtherDisputes = async (req, res) => {
   }
 };
 
-const getDisputes = async (req, res) => {
+const getActiveDisputesByResolverId = async (req, res) => {
   try {
+    const { resolverId, requestType = "dispute" } = req.params;
     let { skip } = req.query;
     if (skip === undefined) skip = 0;
     const issues = await CustomerSupport.find({
-      requestType: "dispute",
+      requestType,
+      resolvers: {
+        $elemMatch: {
+          _id: resolverId,
+        },
+      },
+      state: "active",
+    })
+      .populate("creatorId", "name email badge profilePic")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(10);
+    res.status(200).send(issues);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const getResolvedDisputesByResolverId = async (req, res) => {
+  try {
+    const { resolverId, requestType = "dispute" } = req.params;
+    let { skip } = req.query;
+    if (skip === undefined) skip = 0;
+    const issues = await CustomerSupport.find({
+      requestType,
+      resolvers: {
+        $elemMatch: {
+          _id: resolverId,
+        },
+      },
+      state: "resolved",
     })
       .populate("creatorId", "name email badge profilePic")
       .sort({ createdAt: -1 })
@@ -117,8 +152,8 @@ const getDisputesByCreatorId = async (req, res) => {
 
 const getAptitudeTestDisputeByCreatorId = async (req, res) => {
   try {
-    const { creatorId } = req.params;
-    const issues = await CustomerSupport.findOne({
+    const { creatorId, categoryId } = req.params;
+    const issues = await CustomerSupport.find({
       creatorId,
       state: "pending",
       requestType: "aptitudeTest",
@@ -154,7 +189,6 @@ const getActiveDisputes = async (req, res) => {
     let { skip } = req.query;
     if (skip === undefined) skip = 0;
     const issues = await CustomerSupport.find({
-      requestType: "dispute",
       state: "active",
     })
       .populate("creatorId", "name email badge profilePic")
@@ -272,7 +306,7 @@ const createAptitudeTestDispute = async (req, res) => {
 
 const createOtherDispute = async (req, res) => {
   try {
-    const { creatorId, details } = req.body;
+    const { creatorId, disputeReason } = req.body;
     const dispute = await CustomerSupport.findOne({
       creatorId,
       requestType: "other",
@@ -283,7 +317,7 @@ const createOtherDispute = async (req, res) => {
     const newDispute = new CustomerSupport({
       creatorId,
       requestType: "other",
-      details,
+      disputeReason,
     });
     const response = await newDispute.save();
     res.status(200).send(response);
@@ -301,34 +335,62 @@ const updateDispute = async (req, res) => {
     dispute.details = details;
     dispute.disputeReason = disputeReason;
     dispute.save();
-    res.status(200).send(response);
+    res.status(200).send(dispute);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send(error.message);
   }
 };
 
 const activateDispute = async (req, res) => {
   try {
     const { id } = req.params;
+    const { resolverId } = req.body;
     const dispute = await CustomerSupport.findById(id);
     if (!dispute) return res.status(404).send("Dispute not found");
+    if (dispute.state === "active") {
+      return res.status(403).send("Dispute Already Activated");
+    }
+    dispute.resolvers.push(resolverId);
+    const chatroom = new Chatroom({
+      participants: [
+        new Participant({
+          userId: dispute.creatorId,
+        }),
+        new Participant({
+          userId: resolverId,
+          isAdmin: true,
+        }),
+      ],
+      creatorId: resolverId,
+      description: dispute.disputeReason,
+      groupName: "Customer Support",
+      isGroup: true,
+      isCustomerSupport: true,
+    });
+    chatroom.save();
+    dispute.chatroomId = chatroom._id;
     dispute.state = "active";
     dispute.save();
-    res.status(200).send(response);
+    res.status(200).send(dispute);
   } catch (error) {
-    res.status(500).send(error);
+    console.log(error);
+    res.status(500).send(error.message);
   }
 };
 
 const resolveDispute = async (req, res) => {
   try {
     const { id } = req.params;
+    const { resolverId, details } = req.body;
     const dispute = await CustomerSupport.findById(id);
     if (!dispute) return res.status(404).send("Dispute not found");
     dispute.state = "resolved";
     const chatroom = await Chatroom.findById(dispute.chatroomId);
     chatroom.state = "archived";
+    console.log(resolverId);
+    dispute.resolvedBy = resolverId;
     dispute.resolvedAt = Date.now();
+    dispute.details = details;
     await chatroom.save();
     const response = await dispute.save();
     res.status(200).send(response);
@@ -345,33 +407,33 @@ const becomeResolver = async (req, res) => {
     if (!issue) return res.status(404).send("Issue not found");
     issue.resolvers.push(resolverId);
     let chatroom;
-    if (issue.chatroomId) {
-      chatroom = await Chatroom.findById(issue.chatroomId);
-      chatroom.participants.push(
-        new Participant({
-          userId: resolverId,
-          isAdmin: true,
-        })
-      );
-    } else {
-      chatroom = new Chatroom({
-        participants: [
-          new Participant({
-            userId: issue.creatorId,
-          }),
-          new Participant({
-            userId: resolverId,
-            isAdmin: true,
-          }),
-        ],
-        creatorId: resolverId,
-        description: issue.details,
-        groupName: "Customer Support",
-        isGroup: true,
-        isCustomerSupport: true,
-      });
-      issue.chatroomId = response._id;
-    }
+    // if (issue.chatroomId) {
+    chatroom = await Chatroom.findById(issue.chatroomId);
+    chatroom.participants.push(
+      new Participant({
+        userId: resolverId,
+        isAdmin: true,
+      })
+    );
+    // } else {
+    //   chatroom = new Chatroom({
+    //     participants: [
+    //       new Participant({
+    //         userId: issue.creatorId,
+    //       }),
+    //       new Participant({
+    //         userId: resolverId,
+    //         isAdmin: true,
+    //       }),
+    //     ],
+    //     creatorId: resolverId,
+    //     description: issue.details,
+    //     groupName: "Customer Support",
+    //     isGroup: true,
+    //     isCustomerSupport: true,
+    //   });
+    //   issue.chatroomId = chatroom._id;
+    // }
     await chatroom.save();
     const response = await issue.save();
     res.status(200).send(response);
@@ -404,7 +466,8 @@ const deleteAllDisputes = async (req, res) => {
 
 module.exports = {
   getCustomerSupportIssues,
-  getDisputes,
+  getActiveDisputesByResolverId,
+  getResolvedDisputesByResolverId,
   getDispute,
   getPendingDisputes,
   getActiveDisputes,

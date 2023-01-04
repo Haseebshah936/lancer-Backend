@@ -1,7 +1,5 @@
 const {
-  createDispute,
   getCustomerSupportIssues,
-  getDisputes,
   getPendingDisputes,
   getActiveDisputes,
   getResolvedDisputes,
@@ -20,21 +18,33 @@ const {
   getDisputesByCreatorId,
   getAptitudeTestDisputeByCreatorId,
   deleteAllDisputes,
+  getActiveDisputesByResolverId,
+  getResolvedDisputesByResolverId,
 } = require("../controllers/customerSupport");
 
 const router = require("express").Router();
 
 router.get("/", getCustomerSupportIssues);
 router.get("/:id", getDispute);
-router.get("/disputes/creatorId", getDisputesByCreatorId);
-router.get("/aptitudeTestDispute/creatorId", getAptitudeTestDisputeByCreatorId);
-router.get("/disputes/", getDisputes);
-router.get("/projectDisputes/", getProjectDisputes);
-router.get("/aptitudeTestDisputes/", getAptitudeTestDisputes);
-router.get("/otherDisputes/", getOtherDisputes);
-router.get("/dispute/pending", getPendingDisputes);
-router.get("/dispute/active", getActiveDisputes);
-router.get("/dispute/resolved", getResolvedDisputes);
+router.get("/disputesByCreatorId/:creatorId", getDisputesByCreatorId);
+router.get(
+  "/aptitudeTestDispute/:creatorId",
+  getAptitudeTestDisputeByCreatorId
+);
+router.get(
+  "/disputes/active/:resolverId/:requestType",
+  getActiveDisputesByResolverId
+);
+router.get(
+  "/disputes/resolved/:resolverId/:requestType",
+  getResolvedDisputesByResolverId
+);
+router.get("/disputes/project/", getProjectDisputes);
+router.get("/disputes/aptitudeTest/", getAptitudeTestDisputes);
+router.get("/disputes/other", getOtherDisputes);
+router.get("/disputes/pending", getPendingDisputes);
+router.get("/disputes/active", getActiveDisputes);
+router.get("/disputes/resolved", getResolvedDisputes);
 router.post("/projectDispute", createProjectDispute);
 router.post("/aptitudeTest", createAptitudeTestDispute);
 router.post("/other", createOtherDispute);

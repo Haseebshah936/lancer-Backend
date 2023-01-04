@@ -8,7 +8,6 @@ const customerSupportSchema = new mongoose.Schema({
   },
   details: {
     type: String,
-    required: true,
   },
   requestType: {
     type: String,
@@ -54,6 +53,10 @@ const customerSupportSchema = new mongoose.Schema({
   resolvedAt: {
     type: Date,
     default: Date.now,
+  },
+  resolvedBy: {
+    type: mongoose.Types.ObjectId,
+    ref: "User",
   },
   chatroomId: {
     type: mongoose.Types.ObjectId,
