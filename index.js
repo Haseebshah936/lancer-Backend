@@ -20,6 +20,7 @@ const invoice = require("./routes/invoice");
 const meetingGenerator = require("./utils/meetingGenerator");
 const meeting = require("./routes/meeting");
 const call = require("./routes/call");
+const view = require("./routes/view");
 // Initialzing express app
 const app = express();
 
@@ -56,6 +57,7 @@ app.use("/api/customerSupport", customerSupport);
 app.use("/api/invoice", invoice);
 app.use("/api/meeting", meeting);
 app.use("/api/call", call);
+app.use("/api/view", view);
 app.get("/api/", (req, res) => {
   res.send("Hello World");
 });

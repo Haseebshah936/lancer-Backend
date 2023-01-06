@@ -287,7 +287,7 @@ const createAptitudeTestDispute = async (req, res) => {
       state: "pending",
 
       category: categoryId,
-      createdAt: { $gte: Date.now() - 24 * 60 * 60 * 1000 },
+      createdAt: { $gte: Date.now() - 180 * 24 * 60 * 60 * 1000 },
     });
     if (dispute)
       return res.status(400).send("You already requested an aptitude Test.");
