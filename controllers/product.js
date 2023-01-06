@@ -476,6 +476,35 @@ const getProductsByCategory = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+const getProductsCountByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+    let subCategories = await Category.find({ category }).select("_id");
+    subCategories = subCategories.map((subCategory) => subCategory._id);
+    let products;
+    if (!subCategories) {
+      products = await product.Product.find({ category, state: "live" })
+        .populate("owner._id", "isOnline seller name profilePic badge")
+        .select("title images rating reviews ranking cost seller")
+        .sort({
+          ranking: -1,
+        })
+        .count();
+      if (!products)
+        return res.status(404).send({ error: "Products not found" });
+    } else {
+      products = await product.Product.find({
+        category: { $in: subCategories },
+        state: "live",
+      }).count();
+      if (!products)
+        return res.status(404).send({ error: "Products not found" });
+    }
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
 const getProductsByCategoryWithCost = async (req, res) => {
   try {
     const { category, lowerRange, upperRange } = req.params;
@@ -894,6 +923,7 @@ module.exports = {
   getProductsBySubCategoryWithBadge,
   getProductsBySubCategoryWithBadge_Cost,
   getProductsByCategory,
+  getProductsCountByCategory,
   getProductsByCategoryWithCost,
   getProductsByCategoryWithBadge,
   getProductsByCategoryWithBadge_Cost,

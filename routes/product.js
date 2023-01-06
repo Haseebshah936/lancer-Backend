@@ -33,6 +33,10 @@ router.get(
 );
 router.get("/getProductByCategory/:category", product.getProductsByCategory);
 router.get(
+  "/getProductsCountByCategory/:category",
+  product.getProductsCountByCategory
+);
+router.get(
   "/getProductByCategory/:category/:lowerRange/:upperRange",
   product.getProductsByCategoryWithCost
 );

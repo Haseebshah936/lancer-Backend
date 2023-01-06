@@ -138,6 +138,19 @@ const getProjectsAsCreator_pending = async (req, res) => {
   }
 };
 
+const getProjectsAsCreator_pendingCount = async (req, res) => {
+  try {
+    const { creatorId } = req.params;
+    const projects = await Project.find({
+      creatorId,
+      state: "pending",
+    }).count();
+    res.status(200).json(projects);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 const getProjectsAsCreator_onGoing = async (req, res) => {
   try {
     const { creatorId } = req.params;
@@ -164,6 +177,27 @@ const getProjectsAsCreator_onGoing = async (req, res) => {
     res.status(500).send(error);
   }
 };
+const getProjectsAsCreator_onGoingCount = async (req, res) => {
+  try {
+    const { creatorId } = req.params;
+    const projects = await Project.find({
+      creatorId,
+      state: {
+        $in: [
+          "onGoing",
+          "delivered",
+          "revision",
+          "extended",
+          "disputed",
+          "requirementGathering",
+        ],
+      },
+    }).count();
+    res.status(200).json(projects);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
 
 const getProjectsAsCreator_completed = async (req, res) => {
   try {
@@ -182,6 +216,18 @@ const getProjectsAsCreator_completed = async (req, res) => {
     res.status(500).send(error);
   }
 };
+const getProjectsAsCreator_completedCount = async (req, res) => {
+  try {
+    const { creatorId } = req.params;
+    const projects = await Project.find({
+      creatorId,
+      state: "completed",
+    }).count();
+    res.status(200).json(projects);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
 
 const getProjectsAsCreator_cancelled = async (req, res) => {
   try {
@@ -196,6 +242,19 @@ const getProjectsAsCreator_cancelled = async (req, res) => {
       )
       .sort({ createdAt: -1 });
     res.status(200).send(projects);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const getProjectsAsCreator_cancelledCount = async (req, res) => {
+  try {
+    const { creatorId } = req.params;
+    const projects = await Project.find({
+      creatorId,
+      state: "cancelled",
+    }).count();
+    res.status(200).json(projects);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -236,6 +295,19 @@ const getProjectsAsSeller_pending = async (req, res) => {
   }
 };
 
+const getProjectsAsSeller_pendingCount = async (req, res) => {
+  try {
+    const { sellerId } = req.params;
+    const projects = await Project.find({
+      "hired.userId": sellerId,
+      state: "pending",
+    }).count();
+    res.status(200).json(projects);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 const getProjectsAsSeller_onGoing = async (req, res) => {
   try {
     const { sellerId } = req.params;
@@ -262,6 +334,27 @@ const getProjectsAsSeller_onGoing = async (req, res) => {
     res.status(500).send(error);
   }
 };
+const getProjectsAsSeller_onGoingCount = async (req, res) => {
+  try {
+    const { sellerId } = req.params;
+    const projects = await Project.find({
+      "hired.userId": sellerId,
+      state: {
+        $in: [
+          "onGoing",
+          "delivered",
+          "revision",
+          "extended",
+          "disputed",
+          "requirementGathering",
+        ],
+      },
+    }).count();
+    res.status(200).json(projects);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
 
 const getProjectsAsSeller_completed = async (req, res) => {
   try {
@@ -281,6 +374,19 @@ const getProjectsAsSeller_completed = async (req, res) => {
   }
 };
 
+const getProjectsAsSeller_completedCount = async (req, res) => {
+  try {
+    const { sellerId } = req.params;
+    const projects = await Project.find({
+      "hired.userId": sellerId,
+      state: "completed",
+    }).count();
+    res.status(200).json(projects);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 const getProjectsAsSeller_cancelled = async (req, res) => {
   try {
     const { sellerId } = req.params;
@@ -294,6 +400,19 @@ const getProjectsAsSeller_cancelled = async (req, res) => {
       )
       .sort({ createdAt: -1 });
     res.status(200).send(projects);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const getProjectsAsSeller_cancelledCount = async (req, res) => {
+  try {
+    const { sellerId } = req.params;
+    const projects = await Project.find({
+      "hired.userId": sellerId,
+      state: "cancelled",
+    }).count();
+    res.status(200).json(projects);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -596,10 +715,10 @@ const acceptProjectExtension = async (req, res) => {
     project.completionDate =
       Date.now() +
       (project.days + project.extension.id(extensionId).days) *
-      24 *
-      60 *
-      60 *
-      1000;
+        24 *
+        60 *
+        60 *
+        1000;
     project.markModified("extension");
     const response = await project.save();
     res.status(201).send(response);
@@ -658,7 +777,7 @@ const cancelProject = async (req, res) => {
       $inc: { cancelledProjects: 1 },
     });
     const freelancer = await User.findByIdAndUpdate(project.hired.userId, {
-      $inc: { "seller.cancelledProjects": 1, "seller.score": .1 },
+      $inc: { "seller.cancelledProjects": 1, "seller.score": 0.1 },
     });
     const response = await project.save();
     res.status(201).send(response);
@@ -680,7 +799,7 @@ const completeProject = async (req, res) => {
       $inc: { completedProjects: 1 },
     });
     const freelancer = await User.findByIdAndUpdate(project.hired.userId, {
-      $inc: { "seller.completedProjects": 1, "seller.score": .1 },
+      $inc: { "seller.completedProjects": 1, "seller.score": 0.1 },
     });
     const response = await project.save();
     res.status(201).send(response);
@@ -718,14 +837,22 @@ module.exports = {
   getProjectsByCreatorId,
   getProjectsByCategory,
   getProjectsAsCreator_pending,
+  getProjectsAsCreator_pendingCount,
   getProjectsAsCreator_onGoing,
+  getProjectsAsCreator_onGoingCount,
   getProjectsAsCreator_completed,
+  getProjectsAsCreator_completedCount,
   getProjectsAsCreator_cancelled,
+  getProjectsAsCreator_cancelledCount,
   getProjectsBySellerId,
   getProjectsAsSeller_pending,
+  getProjectsAsSeller_pendingCount,
   getProjectsAsSeller_onGoing,
+  getProjectsAsSeller_onGoingCount,
   getProjectsAsSeller_completed,
+  getProjectsAsSeller_completedCount,
   getProjectsAsSeller_cancelled,
+  getProjectsAsSeller_cancelledCount,
   getProjectsBetween,
   createProject,
   updateProject,
