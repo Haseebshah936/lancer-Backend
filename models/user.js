@@ -150,6 +150,18 @@ const userSchema = new mongoose.Schema({
   cancelledOrders: { type: Number, default: 0 },
   profileCompleted: { type: Boolean, default: false },
   views: { type: Number, default: 0 },
+  state: {
+    type: String,
+    enum: ["active", "inactive", "banned", "deleted"],
+    default: "active",
+  },
+  bannedReason: {
+    type: String,
+    default: "",
+    required: function () {
+      return this.state === "banned";
+    },
+  },
 });
 // userSchema.plugin(passportLocalMongoose);
 userSchema.plugin(findOrCreate);

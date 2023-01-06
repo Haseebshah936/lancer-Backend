@@ -479,6 +479,34 @@ const updateScore = async (req, res) => {
   }
 };
 
+const banUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+    const user = await User.findByIdAndUpdate(id, {
+      state: "banned",
+      bannedReason: reason,
+    });
+    if (!user) res.status(404).send("User not found");
+    res.status(200).send("User banned successfully");
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const unBanUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findByIdAndUpdate(id, {
+      state: "active",
+    });
+    if (!user) res.status(404).send("User not found");
+    res.status(200).send("User unbanned successfully");
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 module.exports = {
   getUsers,
   getSellers,
@@ -502,4 +530,6 @@ module.exports = {
   updateCompletedOrders,
   updateScore,
   removeSeller,
+  banUser,
+  unBanUser,
 };
