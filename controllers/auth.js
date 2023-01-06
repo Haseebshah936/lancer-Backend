@@ -38,6 +38,31 @@ const signup = async (req, res) => {
   }
 };
 
+const signupAsAdmin = async (req, res) => {
+  const { email, password } = req.body;
+  console.log(req.body);
+  const encryptedPassword = await argon2.hash(password);
+  const user = new User({
+    name: "test1",
+    email,
+    password: encryptedPassword,
+    role: "admin",
+  });
+  try {
+    const savedUser = await User.findOne({ email });
+    if (savedUser) return res.status(403).send("User already exists");
+    const result = await user.save();
+    res.status(201).send({
+      ...result._doc,
+      email,
+      password: encryptedPassword,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
 const login = async (req, res) => {
   try {
     const { email } = req.body;
@@ -262,6 +287,7 @@ const callback = () => {
 
 module.exports = {
   signup,
+  signupAsAdmin,
   login,
   remove,
   refreshToken,

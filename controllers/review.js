@@ -1,6 +1,7 @@
 const Review = require("../models/review");
 const mongoose = require("mongoose");
 const { User } = require("../models/user");
+const { Product } = require("../models/product");
 
 function ratingCalculation(
   oldRating,
@@ -210,6 +211,18 @@ const createReview = async (req, res) => {
         rating,
         freelancer.seller.reviews + 1
       );
+      const product = await Product.findById(productId);
+      const newProductRating = ratingCalculation(
+        product.rating,
+        product.reviews,
+        rating,
+        product.reviews + 1
+      );
+      product.reviews++;
+      product.rating = newProductRating;
+      if (rating === 5) product.ranking = product.ranking + 1;
+      else if (rating === 1) product.ranking = product.ranking - 1;
+      await product.save();
       console.log(newFreelancerRating);
       freelancer.seller.reviews++;
       freelancer.seller.rating = newFreelancerRating;

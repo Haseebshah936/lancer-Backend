@@ -80,10 +80,12 @@ const productSchema = new moongose.Schema({
   rating: {
     type: Number,
     default: 0,
+    required: true,
   },
   ranking: {
     type: Number,
     default: 0,
+    required: true,
   },
   cost: {
     type: Number,

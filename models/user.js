@@ -123,7 +123,11 @@ const userSchema = new mongoose.Schema({
   googleId: { type: String, default: null },
   facebookId: { type: String, default: null },
   twitterId: { type: String, default: null },
-  role: { type: String, default: "user" },
+  role: {
+    type: String,
+    default: "user",
+    enum: ["user", "admin", "superAdmin"],
+  },
   profilePic: { type: String, default: "" },
   country: { type: String, default: "" },
   currency: { type: String, default: "USD" },

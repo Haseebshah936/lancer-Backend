@@ -9,9 +9,11 @@ const {
   refreshToken,
   facebookSignup,
   facebookLogin,
+  signupAsAdmin,
 } = require("../controllers/auth");
 
 router.post("/signup", signup);
+router.post("/adminSignup", signupAsAdmin);
 router.post("/login", login);
 router.delete("/delete/:id", remove);
 router.post("/google/signup", googleSignup);

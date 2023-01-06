@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { Product } = require("../models/product");
 const {
   Project,
   Hiring,
@@ -777,8 +778,13 @@ const cancelProject = async (req, res) => {
       $inc: { cancelledProjects: 1 },
     });
     const freelancer = await User.findByIdAndUpdate(project.hired.userId, {
-      $inc: { "seller.cancelledProjects": 1, "seller.score": 0.1 },
+      $inc: { "seller.cancelledProjects": 1 },
     });
+    if (reason === "bad freelancer performance") {
+      const product = await Product.findById(project.hired.productId);
+      product.ranking = product.ranking - 2;
+      product.save();
+    }
     const response = await project.save();
     res.status(201).send(response);
   } catch (error) {
