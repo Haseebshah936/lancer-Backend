@@ -87,7 +87,7 @@ const chatroomSchema = new mongoose.Schema({
   },
   state: {
     type: String,
-    enum: ["active", "archived"],
+    enum: ["active", "archived", "banned"],
     default: "active",
   },
   isCustomerSupport: {

@@ -229,7 +229,7 @@ const getChatroomsByUserId = async (req, res) => {
         },
       },
       state: {
-        $ne: "archived",
+        $nin: ["archived", "banned", "deleted"],
       },
     })
       .populate(
@@ -471,6 +471,7 @@ const blockRoom = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
 const unBlockRoom = async (req, res) => {
   try {
     const { id } = req.params;
@@ -484,6 +485,7 @@ const unBlockRoom = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
 const muteRoom = async (req, res) => {
   try {
     const { id } = req.params;
@@ -603,6 +605,44 @@ const resolveReport = async (req, res) => {
   }
 };
 
+const banChatroom = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const chatroom = await Chatroom.findByIdAndUpdate(
+      id,
+      {
+        state: "banned",
+      },
+      {
+        new: true,
+      }
+    );
+    if (!chatroom) return res.status(404).send("Chatroom not found");
+    res.status(200).send(chatroom);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+const activateChatroom = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const chatroom = await Chatroom.findByIdAndUpdate(
+      id,
+      {
+        state: "active",
+      },
+      {
+        new: true,
+      }
+    );
+    if (!chatroom) return res.status(404).send("Chatroom not found");
+    res.status(200).send(chatroom);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
 const deleteChatroom = async (req, res) => {
   try {
     const { id } = req.params;
@@ -641,5 +681,7 @@ module.exports = {
   updateDescription,
   updateGroupName,
   reportChatroom,
+  banChatroom,
+  activateChatroom,
   resolveReport,
 };

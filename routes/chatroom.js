@@ -24,6 +24,8 @@ const {
   getChatroomComplete,
   getReportedChatrooms,
   reportChatroom,
+  activateChatroom,
+  banChatroom,
 } = require("../controllers/chatroom");
 
 router.get("/", getChatrooms);
@@ -54,6 +56,8 @@ router.put("/lastVisitedChatroom/:id", lastVisitedRoom);
 router.put("/updateImage/:id", updateImage);
 router.put("/updateDescription/:id", updateDescription);
 router.put("/updateGroupName/:id", updateGroupName);
+router.put("/ban/:id", banChatroom);
+router.put("/activate/:id", activateChatroom);
 router.delete("/:id", deleteChatroom);
 
 module.exports = router;
