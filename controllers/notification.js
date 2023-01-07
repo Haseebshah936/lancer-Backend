@@ -30,7 +30,7 @@ const getNotificationsByUserId = async (req, res) => {
       userId: id,
       isRead: false,
       type: {
-        $neq: "message",
+        $ne: "chat",
       },
     })
       .skip(skip)
@@ -51,7 +51,7 @@ const getMessageNotificationsByUserId = async (req, res) => {
     const notification = await Notification.find({
       userId: id,
       isRead: false,
-      type: "message",
+      type: "chat",
     })
       .populate("senderId", "name profilePic")
       .skip(skip)
@@ -67,11 +67,23 @@ const getMessageNotificationsByUserId = async (req, res) => {
 
 const createNotification = async (req, res) => {
   try {
-    const { title, description, type } = req.body;
+    const {
+      title,
+      description,
+      type,
+      userId,
+      chatroomId,
+      participantId,
+      senderId,
+    } = req.body; // type can be any ["info", "review", "chat","customerSupport"],
     const notification = await new Notification({
       title,
       description,
       type,
+      userId,
+      chatroomId,
+      participantId,
+      senderId,
     });
     await notification.save();
     res.status(200).send(notification);
@@ -84,12 +96,24 @@ const createNotification = async (req, res) => {
 const updateNotification = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, type } = req.body;
+    const {
+      title,
+      description,
+      type,
+      userId,
+      chatroomId,
+      participantId,
+      senderId,
+    } = req.body;
     const notification = await Notification.findByIdAndUpdate(id);
     if (!notification) return res.status(404).send("Notification not found");
     notification.title = title;
     notification.description = description;
     notification.type = type;
+    notification.userId = userId;
+    notification.chatroomId = chatroomId;
+    notification.participantId = participantId;
+    notification.senderId = senderId;
     await notification.save();
     res.status(200).send(notification);
   } catch (error) {
@@ -101,9 +125,15 @@ const updateNotification = async (req, res) => {
 const readNotitication = async (req, res) => {
   try {
     const { id } = req.params;
-    const notification = await Notification.findByIdAndUpdate(id, {
-      isRead: true,
-    });
+    const notification = await Notification.findByIdAndUpdate(
+      id,
+      {
+        isRead: true,
+      },
+      {
+        new: true,
+      }
+    );
     if (!notification) return res.status(404).send("Notification not found");
     res.status(200).send(notification);
   } catch (error) {

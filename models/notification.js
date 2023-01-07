@@ -20,13 +20,22 @@ const NotificationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ["info", "review", "chat", "message", "customerSupport"],
+    enum: ["info", "review", "chat", "customerSupport"],
     default: "info",
     required: true,
   },
+  senderId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: function () {
+      return this.type === "chat";
+    },
+  },
   description: {
     type: String,
-    required: true,
+    required: function () {
+      return this.type !== "chat";
+    },
   },
   isRead: {
     type: Boolean,

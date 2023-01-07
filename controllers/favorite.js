@@ -12,7 +12,10 @@ const getFavorites = async (req, res) => {
 const getFavorite = async (req, res) => {
   try {
     const { id } = req.params;
-    const favorite = await Favorite.findById(id);
+    const favorite = await Favorite.findById(id).populate(
+      "productId favoriteUserId",
+      "title images rating reviews ranking cost  name profilePic badge seller.rating seller.reviews"
+    );
 
     res.json(favorite);
   } catch (err) {
@@ -27,12 +30,13 @@ const getFavoritesByUserId = async (req, res) => {
     const favorites = await Favorite.find({ userId: id })
       .populate(
         "productId favoriteUserId",
-        "title images rating reviews ranking cost seller name profilePic badge seller.rating seller.reviews"
+        "title images rating reviews ranking cost  name profilePic badge seller.rating seller.reviews"
       )
       .skip(skip)
       .limit(10);
     res.json(favorites);
   } catch (err) {
+    console.log(err);
     res.status(500).json(err);
   }
 };
@@ -40,6 +44,12 @@ const getFavoritesByUserId = async (req, res) => {
 const createFavorite = async (req, res) => {
   try {
     const { userId, productId, favoriteUserId } = req.body;
+    const check = await Favorite.findOne({
+      userId,
+      productId,
+      favoriteUserId,
+    });
+    if (check) return res.status(400).json("Already in favorites");
     const favorite = new Favorite({
       userId,
       productId,
