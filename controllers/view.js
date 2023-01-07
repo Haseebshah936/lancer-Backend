@@ -74,7 +74,8 @@ const getViewsByUserIdForYear = async (req, res) => {
     const { id } = req.params;
     const date = new Date();
     const year = date.getFullYear();
-    const month = date.getMonth();
+    let month = date.getMonth();
+    month++;
     const monthInLastYear = 11 - month;
     const startFrom = 11 - monthInLastYear; // start from this month in last year
     const views = [];
@@ -84,29 +85,30 @@ const getViewsByUserIdForYear = async (req, res) => {
      * 1. Get the views for the last years months
      * 2. Put it in a promise array
      */
-    for (let i = startFrom; i < 12; i++) {
-      const startYear = year - 1;
-      const isLeap = startYear % 4 === 0;
-      const startMonth = i + 1;
-      const startFrom = new Date(`${startMonth}-01-${startYear}`);
-      const endAt = new Date(
-        new Date(
-          `${startMonth}-${monthDays[i].days + isLeap ? 1 : 0}-${startYear}`
-        ).getTime() +
-          24 * 60 * 60 * 1000
-      );
-      // console.log(startYear, startMonth, startFrom, endAt);
-      monthList.push(monthDays[i].month);
-      promises.push(
-        await View.find({
-          userId: id,
-          createdAt: {
-            $gte: new Date(startFrom.getFullYear(), startFrom.getMonth(), 1),
-            $lt: new Date(endAt.getFullYear(), endAt.getMonth() + 1, 1),
-          },
-        }).count()
-      );
-    }
+    if (monthInLastYear >= 0)
+      for (let i = startFrom; i < 12; i++) {
+        const startYear = year - 1;
+        const isLeap = startYear % 4 === 0;
+        const startMonth = i + 1;
+        const startFrom = new Date(`${startMonth}-01-${startYear}`);
+        const endAt = new Date(
+          new Date(
+            `${startMonth}-${monthDays[i].days + isLeap ? 1 : 0}-${startYear}`
+          ).getTime() +
+            24 * 60 * 60 * 1000
+        );
+        // console.log(startYear, startMonth, startFrom, endAt);
+        monthList.push(monthDays[i].month);
+        promises.push(
+          await View.find({
+            userId: id,
+            createdAt: {
+              $gte: new Date(startFrom.getFullYear(), startFrom.getMonth(), 1),
+              $lt: new Date(endAt.getFullYear(), endAt.getMonth() + 1, 1),
+            },
+          }).count()
+        );
+      }
     /** SECTION
      * 1. Get the views for the months in current year if month is not 0
      * 2. Put it in a promise array

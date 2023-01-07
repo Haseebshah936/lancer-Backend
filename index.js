@@ -21,6 +21,8 @@ const meetingGenerator = require("./utils/meetingGenerator");
 const meeting = require("./routes/meeting");
 const call = require("./routes/call");
 const view = require("./routes/view");
+const favorite = require("./routes/favorite");
+const notification = require("./routes/notification");
 // Initialzing express app
 const app = express();
 
@@ -58,6 +60,8 @@ app.use("/api/invoice", invoice);
 app.use("/api/meeting", meeting);
 app.use("/api/call", call);
 app.use("/api/view", view);
+app.use("/api/favorite", favorite);
+app.use("/api/notification", notification);
 app.get("/api/", (req, res) => {
   res.send("Hello World");
 });
