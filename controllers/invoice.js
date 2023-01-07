@@ -1,6 +1,6 @@
 const Invoice = require("../models/invoice");
 const { User } = require("../models/user");
-const { Project, Hiring } = require("../models/project");
+const { Project, Hiring, Requirenment } = require("../models/project");
 
 const getInvoices = async (req, res) => {
   try {
@@ -118,6 +118,7 @@ const createInvoiceAndProject = async (req, res) => {
       hired,
       revisionsAllowed,
     });
+    newProject.requirenments.push(new Requirenment({ state: "pending" }));
     const newInvoice = new Invoice({
       projectId: newProject._id,
       freelancerId,
@@ -228,6 +229,7 @@ const payByWalletAndCreateProject = async (req, res) => {
       hired,
       revisionsAllowed,
     });
+    newProject.requirenments.push(new Requirenment({ state: "pending" }));
     const newInvoice = new Invoice({
       projectId: newProject._id,
       freelancerId,

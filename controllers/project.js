@@ -178,6 +178,7 @@ const getProjectsAsCreator_onGoing = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
 const getProjectsAsCreator_onGoingCount = async (req, res) => {
   try {
     const { creatorId } = req.params;
@@ -217,6 +218,7 @@ const getProjectsAsCreator_completed = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
 const getProjectsAsCreator_completedCount = async (req, res) => {
   try {
     const { creatorId } = req.params;
@@ -335,6 +337,7 @@ const getProjectsAsSeller_onGoing = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
 const getProjectsAsSeller_onGoingCount = async (req, res) => {
   try {
     const { sellerId } = req.params;
@@ -504,6 +507,7 @@ const provideRequirement = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
 const deliverRequirement = async (req, res) => {
   try {
     const { id } = req.params;
@@ -609,9 +613,7 @@ const hiredProjectWorker = async (req, res) => {
       userId: sellerId,
       productId,
     });
-    project.requirenments.push(
-      new Requirenment({ files, links, details, state: "pending" })
-    );
+    project.requirenments.push(new Requirenment({ state: "pending" }));
     project.hired = hired;
     project.markModified("hired");
     await project.save();
@@ -824,6 +826,7 @@ const deleteProject = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
 const deleteProjects = async (req, res) => {
   try {
     const { id } = req.params;
