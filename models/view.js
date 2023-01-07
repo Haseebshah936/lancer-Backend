@@ -14,6 +14,11 @@ const viewSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  viewer: {
+    type: String,
+    enum: ["seller", "buyer"],
+    default: "buyer",
+  },
   productId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product",
