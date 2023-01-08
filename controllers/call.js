@@ -92,7 +92,12 @@ const createCall = async (req, res) => {
         $gt: Date.now() - 60000,
       },
     });
-    if (sameCall) return res.status(409).send("Call already exists");
+    if (sameCall) {
+      sameCall.offer = offer;
+      sameCall.save();
+      console.log("Same call ", sameCall);
+      return res.status(200).send(sameCall);
+    }
     const calls = await Call.find({
       receiverId,
       state: {
@@ -114,9 +119,10 @@ const createCall = async (req, res) => {
       type,
     });
     call.save();
+    console.log("Call ", call);
     res.status(201).send(call);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     res.status(500).json({ error: error.message });
   }
 };
