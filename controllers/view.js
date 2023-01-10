@@ -142,7 +142,7 @@ const getViewsByUserIdForYearAsBuyer = async (req, res) => {
     const result = await Promise.all(promises);
     for (let i = 0; i < result.length; i++) {
       views.push({
-        month: monthList[i],
+        name: monthList[i],
         views: result[i],
       });
     }
@@ -226,7 +226,7 @@ const getViewsByUserIdForYearAsSeller = async (req, res) => {
     const result = await Promise.all(promises);
     for (let i = 0; i < result.length; i++) {
       views.push({
-        month: monthList[i],
+        name: monthList[i],
         views: result[i],
       });
     }
