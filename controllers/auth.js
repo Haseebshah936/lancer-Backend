@@ -39,11 +39,11 @@ const signup = async (req, res) => {
 };
 
 const signupAsAdmin = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, name } = req.body;
   console.log(req.body);
   const encryptedPassword = await argon2.hash(password);
   const user = new User({
-    name: "test1",
+    name,
     email,
     password: encryptedPassword,
     role: "admin",
