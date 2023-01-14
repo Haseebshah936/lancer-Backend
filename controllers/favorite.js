@@ -44,7 +44,6 @@ const getFavoritesByUserId = async (req, res) => {
 const getFavoriteByUserId = async (req, res) => {
   try {
     let { id, productId, favoriteUserId } = req.params;
-    if (skip === undefined) skip = 0;
     const favorite = await Favorite.findOne({
       userId: id,
       productId,
