@@ -86,7 +86,8 @@ const updateFavorite = async (req, res) => {
 const deleteFavorite = async (req, res) => {
   try {
     const { id } = req.params;
-    await Favorite.findByIdAndDelete(id);
+    const favorite = await Favorite.findByIdAndDelete(id);
+    if (!favorite) return res.status(404).json("Favorite not found");
     res.json("Favorite has been deleted...");
   } catch (err) {
     res.status(500).json(err);
