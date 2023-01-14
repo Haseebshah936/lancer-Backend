@@ -41,6 +41,25 @@ const getFavoritesByUserId = async (req, res) => {
   }
 };
 
+const getFavoriteByUserId = async (req, res) => {
+  try {
+    let { id, productId, favoriteUserId } = req.params;
+    if (skip === undefined) skip = 0;
+    const favorite = await Favorite.findOne({
+      userId: id,
+      productId,
+      favoriteUserId,
+    }).populate(
+      "productId favoriteUserId",
+      "title images rating reviews ranking cost  name profilePic badge seller.rating seller.reviews"
+    );
+    res.json(favorite);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+};
+
 const createFavorite = async (req, res) => {
   try {
     const { userId, productId, favoriteUserId } = req.body;
@@ -107,6 +126,7 @@ module.exports = {
   getFavorites,
   getFavorite,
   getFavoritesByUserId,
+  getFavoriteByUserId,
   createFavorite,
   updateFavorite,
   deleteFavorite,
