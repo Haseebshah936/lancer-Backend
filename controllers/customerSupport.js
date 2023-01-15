@@ -1,4 +1,5 @@
 const { Chatroom, Participant } = require("../models/chatroom");
+const { User } = require("../models/user");
 const CustomerSupport = require("../models/customerSupport");
 
 const getCustomerSupportIssues = async (req, res) => {
@@ -350,6 +351,8 @@ const activateDispute = async (req, res) => {
     if (dispute.state === "active") {
       return res.status(403).send("Dispute Already Activated");
     }
+    const user = await User.findById(dispute.creatorId).select("name email");
+    if (!user) return res.status(404).send("User not found");
     dispute.resolvers.push(resolverId);
     const chatroom = new Chatroom({
       participants: [
@@ -363,7 +366,7 @@ const activateDispute = async (req, res) => {
       ],
       creatorId: resolverId,
       description: dispute.disputeReason,
-      groupName: "Customer Support",
+      groupName: user.name,
       isGroup: true,
       isCustomerSupport: true,
     });

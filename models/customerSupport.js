@@ -9,6 +9,10 @@ const customerSupportSchema = new mongoose.Schema({
   details: {
     type: String,
   },
+  isCustomerSupport: {
+    type: Boolean,
+    default: false,
+  },
   requestType: {
     type: String,
     enum: ["dispute", "aptitudeTest", "other"],
