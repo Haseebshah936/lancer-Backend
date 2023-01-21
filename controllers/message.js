@@ -1,6 +1,7 @@
 const Message = require("../models/message");
 const CustomerSupport = require("../models/customerSupport");
 const { Chatroom } = require("../models/chatroom");
+const axios = require("axios");
 
 const getMessage = async (req, res) => {
   try {
@@ -80,16 +81,11 @@ const createMessage = async (req, res) => {
       text,
       uri,
     });
-    fetch("http://mumerabid.pythonanywhere.com/nlp", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    axios
+      .post("http://mumerabid.pythonanywhere.com/nlp", {
         text,
         id: chatroomId,
-      }),
-    })
+      })
       .then((res) => {
         if (
           res.data.spam_pre === "true" ||
