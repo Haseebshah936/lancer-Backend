@@ -1,5 +1,7 @@
 const Message = require("../models/message");
+const CustomerSupport = require("../models/customerSupport");
 const { Chatroom } = require("../models/chatroom");
+const { default: axios } = require("axios");
 
 const getMessage = async (req, res) => {
   try {
@@ -79,7 +81,25 @@ const createMessage = async (req, res) => {
       text,
       uri,
     });
-    console.log(chatroom.participants);
+    axios
+      .post("http://mumerabid.pythonanywhere.com/nlp", {
+        text,
+        id: chatroomId,
+      })
+      .then((res) => {
+        if (res.data.spam_pre) {
+          const newDispute = new CustomerSupport({
+            userId,
+            requestType: "other",
+            message: text,
+            chatroomId,
+          });
+          newDispute.save();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     chatroom.latestMessage = newMessage._id;
     const participantId = chatroom.participants.filter(
       (participant) => participant.userId.toString() === userId._id
