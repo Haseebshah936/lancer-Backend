@@ -87,11 +87,17 @@ const createMessage = async (req, res) => {
         id: chatroomId,
       })
       .then((res) => {
-        if (res.data.spam_pre) {
+        if (
+          res.data.spam_pre === "true" ||
+          res.data.curse_pre === "true" ||
+          res.data.isNumbers === "true" ||
+          res.data.isEmails === "true" ||
+          res.data.isUrls === "true"
+        ) {
           const newDispute = new CustomerSupport({
             userId,
             requestType: "other",
-            message: text,
+            disputeReason: text,
             chatroomId,
           });
           newDispute.save();
