@@ -797,12 +797,13 @@ const cancelProject = async (req, res) => {
 const completeProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const { deliveryId } = req.body;
+    // const { deliveryId } = req.body;
     const project = await Project.findById(id);
     if (!project) return res.status(404).send("Project not found");
     project.state = "completed";
     project.completedAt = Date.now();
-    project.delivery.id(deliveryId).state = "accepted";
+    const deliveries = project.delivery.length;
+    if (deliveries > 0) project.delivery[deliveries - 1].state = "accepted";
     const client = await User.findByIdAndUpdate(project.creatorId, {
       $inc: { completedProjects: 1 },
     });

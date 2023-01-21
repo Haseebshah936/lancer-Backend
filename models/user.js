@@ -145,7 +145,11 @@ const userSchema = new mongoose.Schema({
   responseTime: { type: Number, default: 0 },
   stars: { type: Number, default: 5 },
   createdAt: { type: Date, default: Date.now },
-  badge: { type: String, default: "Newbie" },
+  badge: {
+    type: String,
+    default: "Newbie",
+    enum: ["Newbie", "Pro", "Verified Pro"],
+  },
   currentBalance: { type: Number, default: 0 },
   earnings: { type: Number, default: 0 },
   gender: { type: String },
