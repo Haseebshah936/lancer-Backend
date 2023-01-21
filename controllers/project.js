@@ -8,6 +8,7 @@ const {
   Cancellation,
   Requirenment,
 } = require("../models/project");
+const Invoice = require("../models/invoice");
 const { User } = require("../models/user");
 
 const getProjects = async (req, res) => {
@@ -776,9 +777,23 @@ const cancelProject = async (req, res) => {
       reason,
       canceller,
     });
+    const invoice = await Invoice.findOneAndUpdate(
+      {
+        projectId: id,
+      },
+      {
+        invoiceStatus: "refunded",
+      },
+      {
+        new: true,
+      }
+    );
+    if (!invoice) return res.status(404).send("Invoice not found");
+
     const client = await User.findByIdAndUpdate(project.creatorId, {
       $inc: { cancelledProjects: 1 },
     });
+    client.currentBalance = client.currentBalance + invoice.amount;
     const freelancer = await User.findByIdAndUpdate(project.hired.userId, {
       $inc: { "seller.cancelledProjects": 1 },
     });
