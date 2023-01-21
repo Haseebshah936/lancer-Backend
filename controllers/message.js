@@ -81,31 +81,31 @@ const createMessage = async (req, res) => {
       text,
       uri,
     });
-    axios
-      .post("http://mumerabid.pythonanywhere.com/nlp", {
-        text,
-        id: chatroomId,
-      })
-      .then((res) => {
-        if (
-          res.data.spam_pre === "true" ||
-          res.data.curse_pre === "true" ||
-          res.data.isNumbers === "true" ||
-          res.data.isEmails === "true" ||
-          res.data.isUrls === "true"
-        ) {
-          const newDispute = new CustomerSupport({
-            userId,
-            requestType: "other",
-            disputeReason: text,
-            chatroomId,
-          });
-          newDispute.save();
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    // axios
+    //   .post("http://mumerabid.pythonanywhere.com/nlp", {
+    //     text,
+    //     id: chatroomId,
+    //   })
+    //   .then((res) => {
+    //     if (
+    //       res.data.spam_pre === "true" ||
+    //       res.data.curse_pre === "true" ||
+    //       res.data.isNumbers === "true" ||
+    //       res.data.isEmails === "true" ||
+    //       res.data.isUrls === "true"
+    //     ) {
+    //       const newDispute = new CustomerSupport({
+    //         userId,
+    //         requestType: "other",
+    //         disputeReason: text,
+    //         chatroomId,
+    //       });
+    //       newDispute.save();
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
     chatroom.latestMessage = newMessage._id;
     const participantId = chatroom.participants.filter(
       (participant) => participant.userId.toString() === userId._id
