@@ -12,6 +12,8 @@ const {
   getSellerReviewsCount,
   getBuyerReviewsCount,
   deleteReviews,
+  getSellerReviewByProjectId,
+  getBuyerReviewByProjectId,
 } = require("../controllers/review");
 const router = require("express").Router();
 
@@ -22,7 +24,9 @@ router.get("/sellerReviewsCount/:id", getSellerReviewsCount);
 router.get("/buyerReviews/:id", getBuyerReviews);
 router.get("/buyerReviewsCount/:id", getBuyerReviewsCount);
 router.get("/sellerReview/:userId/:projectId", getSellerReviewForProject);
+router.get("/sellerReviewByProjectId/:projectId", getSellerReviewByProjectId);
 router.get("/buyerReview/:userId/:projectId", getBuyerReviewForProject);
+router.get("/buyerReviewByProjectId/:projectId", getBuyerReviewByProjectId);
 router.post("/", createReview);
 router.put("/reply/:id", createReply);
 router.put("/:id", updateReview);

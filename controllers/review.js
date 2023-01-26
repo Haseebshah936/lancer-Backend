@@ -83,6 +83,30 @@ const getBuyerReviewForProject = async (req, res) => {
   }
 };
 
+const getBuyerReviewByProjectId = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    let { skip } = req.query;
+    console.log(skip);
+    if (skip === undefined) skip = 0;
+    const reviews = await Review.findOne({
+      projectId,
+      sender: "client",
+    })
+      .sort({
+        createdAt: -1,
+      })
+      .populate("sellerId buyerId", "profilePic name ")
+      .skip(parseInt(skip))
+      .limit(10);
+    if (!reviews) return res.status(404).send("Review not found");
+    res.status(200).send(reviews);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error.message);
+  }
+};
+
 const getSellerReviewForProject = async (req, res) => {
   try {
     const { userId, projectId } = req.params;
@@ -91,6 +115,30 @@ const getSellerReviewForProject = async (req, res) => {
     if (skip === undefined) skip = 0;
     const reviews = await Review.findOne({
       buyerId: userId,
+      projectId,
+      sender: "seller",
+    })
+      .sort({
+        createdAt: -1,
+      })
+      .populate("sellerId buyerId", "profilePic name ")
+      .skip(parseInt(skip))
+      .limit(10);
+    if (!reviews) return res.status(404).send("Review not found");
+    res.status(200).send(reviews);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error.message);
+  }
+};
+
+const getSellerReviewByProjectId = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    let { skip } = req.query;
+    console.log(skip);
+    if (skip === undefined) skip = 0;
+    const reviews = await Review.findOne({
       projectId,
       sender: "seller",
     })
@@ -298,6 +346,8 @@ module.exports = {
   getSellerReviews,
   getBuyerReviewsCount,
   getBuyerReviewForProject,
+  getBuyerReviewByProjectId,
+  getSellerReviewByProjectId,
   getSellerReviewForProject,
   createReview,
   createReply,
