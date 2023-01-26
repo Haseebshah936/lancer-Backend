@@ -20,6 +20,7 @@ const {
   deleteAllDisputes,
   getActiveDisputesByResolverId,
   getResolvedDisputesByResolverId,
+  createSpamDispute,
 } = require("../controllers/customerSupport");
 
 const router = require("express").Router();
@@ -48,6 +49,7 @@ router.get("/disputes/resolved", getResolvedDisputes);
 router.post("/projectDispute", createProjectDispute);
 router.post("/aptitudeTest", createAptitudeTestDispute);
 router.post("/other", createOtherDispute);
+router.post("/spam", createSpamDispute);
 router.put("/:id", updateDispute);
 router.put("/active/:id", activateDispute);
 router.put("/resolve/:id", resolveDispute);

@@ -327,6 +327,29 @@ const createOtherDispute = async (req, res) => {
   }
 };
 
+const createSpamDispute = async (req, res) => {
+  try {
+    const { creatorId, disputeReason, chatroomId } = req.body;
+    const dispute = await CustomerSupport.findOne({
+      creatorId,
+      requestType: "other",
+      state: "pending",
+    });
+    if (dispute)
+      return res.status(400).send("You already have a pending dispute.");
+    const newDispute = new CustomerSupport({
+      creatorId,
+      requestType: "other",
+      disputeReason: "Spam in chatroom found",
+      chatroomId,
+    });
+    const response = await newDispute.save();
+    res.status(200).send(response);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 const updateDispute = async (req, res) => {
   try {
     const { id } = req.params;
@@ -484,6 +507,7 @@ module.exports = {
   createAptitudeTestDispute,
   createOtherDispute,
   createOtherIssue,
+  createSpamDispute,
   updateOtherIssue,
   updateDispute,
   activateDispute,
