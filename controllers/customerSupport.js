@@ -329,7 +329,8 @@ const createOtherDispute = async (req, res) => {
 
 const createSpamDispute = async (req, res) => {
   try {
-    const { creatorId, disputeReason, chatroomId } = req.body;
+    let { creatorId, disputeReason, chatroomId } = req.body;
+    if (disputeReason == undefined) disputeReason = "Spam in chat";
     const dispute = await CustomerSupport.findOne({
       creatorId,
       requestType: "other",
@@ -340,7 +341,7 @@ const createSpamDispute = async (req, res) => {
     const newDispute = new CustomerSupport({
       creatorId,
       requestType: "other",
-      disputeReason: "Spam in chatroom found",
+      disputeReason,
       chatroomId,
     });
     const response = await newDispute.save();
