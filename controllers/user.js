@@ -10,6 +10,26 @@ const getUsers = async (req, res) => {
     res.status(500).send(error);
   }
 };
+const getActiveUsers = async (req, res) => {
+  try {
+    const users = await User.find({
+      state: "active",
+    }).select("-password");
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+const getBannedUsers = async (req, res) => {
+  try {
+    const users = await User.find({
+      state: "banned",
+    }).select("-password");
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
 const getSellers = async (req, res) => {
   try {
     console.log("get sellers");
@@ -509,6 +529,8 @@ const unBanUser = async (req, res) => {
 
 module.exports = {
   getUsers,
+  getActiveUsers,
+  getBannedUsers,
   getSellers,
   getUser,
   getUserById,

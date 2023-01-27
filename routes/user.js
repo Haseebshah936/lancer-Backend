@@ -1,6 +1,8 @@
 const user = require("../controllers/user");
 const router = require("express").Router();
 router.get("/", user.getUsers);
+router.get("/users/active", user.getActiveUsers);
+router.get("/users/banned", user.getBannedUsers);
 router.get("/:email", user.getUser);
 router.get("/getUser/:id", user.getUserById);
 router.get("/getUsers/sellers", user.getSellers);
