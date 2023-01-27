@@ -127,7 +127,7 @@ const getChatroom = async (req, res) => {
     const chatroom = await Chatroom.findById(id)
       .populate(
         "participants.userId latestMessage",
-        "profilePic name isOnline text type createdAt"
+        "profilePic name isOnline text type createdAt "
       )
       .sort({ "latestMessage.createdAt": -1 });
     if (!chatroom) return res.status(404).send("Chatroom not found");
@@ -164,6 +164,7 @@ const getChatroom = async (req, res) => {
         userParticipantId: user._id,
         id: chatroom._id,
         isGroup: chatroom.isGroup,
+        isCustomerSupport: chatroom.isCustomerSupport,
       };
     } else {
       const participant = chatroom.participants.filter(
@@ -183,6 +184,7 @@ const getChatroom = async (req, res) => {
         participantId: participant.userId._id,
         isGroup: chatroom.isGroup,
         isOnline: participant.userId.isOnline,
+        isCustomerSupport: chatroom.isCustomerSupport,
       };
     }
     res.status(201).json(formattedChatroom);
@@ -234,7 +236,7 @@ const getChatroomsByUserId = async (req, res) => {
     })
       .populate(
         "participants.userId latestMessage",
-        "profilePic name isOnline text type createdAt isCustomerSupport"
+        "profilePic name isOnline text type createdAt "
       )
       .sort({ updatedAt: -1 });
     let formattedChatrooms = [];
