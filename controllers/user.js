@@ -13,7 +13,9 @@ const getUsers = async (req, res) => {
 const getActiveUsers = async (req, res) => {
   try {
     const users = await User.find({
-      state: "active",
+      state: {
+        $ne: "banned",
+      },
     }).select("-password");
     res.status(200).json(users);
   } catch (error) {
