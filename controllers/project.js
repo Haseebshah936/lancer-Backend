@@ -839,11 +839,11 @@ const cancelProject = async (req, res) => {
     if (!invoice) return res.status(404).send("Invoice not found");
 
     const client = await User.findByIdAndUpdate(project.creatorId, {
-      $inc: { cancelledProjects: 1 },
+      $inc: { cancelledOrders: 1 },
     });
     client.currentBalance = client.currentBalance + invoice.amount;
     const freelancer = await User.findByIdAndUpdate(project.hired.userId, {
-      $inc: { "seller.cancelledProjects": 1 },
+      $inc: { "seller.cancelledOrders": 1 },
     });
     if (reason === "bad freelancer performance") {
       const product = await Product.findById(project.hired.productId);
@@ -868,10 +868,10 @@ const completeProject = async (req, res) => {
     const deliveries = project.delivery.length;
     if (deliveries > 0) project.delivery[deliveries - 1].state = "accepted";
     const client = await User.findByIdAndUpdate(project.creatorId, {
-      $inc: { completedProjects: 1 },
+      $inc: { completedOrders: 1 },
     });
     const freelancer = await User.findByIdAndUpdate(project.hired.userId, {
-      $inc: { "seller.completedProjects": 1, "seller.score": 0.1 },
+      $inc: { "seller.completedOrders": 1, "seller.score": 0.1 },
     });
     const response = await project.save();
     res.status(201).send(response);
