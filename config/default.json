@@ -4,5 +4,6 @@
         "name": "haseeb",
         "password": "haseeb"   
     },
+    "stripeSecretKey": "sk_test_51JgDf0HHulWCxCO2kNiKxyPfuGnO56w1zqEIlVUYFyPBExEk2xRxuIwzezz73kfH1gFYaqQKV2QZdVf3zGVu8LPy00LxSgIpcR",
     "port": 3003
 }

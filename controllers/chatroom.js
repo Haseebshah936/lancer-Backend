@@ -234,7 +234,7 @@ const getChatroomsByUserId = async (req, res) => {
     })
       .populate(
         "participants.userId latestMessage",
-        "profilePic name isOnline text type createdAt"
+        "profilePic name isOnline text type createdAt isCustomerSupport"
       )
       .sort({ updatedAt: -1 });
     let formattedChatrooms = [];
@@ -272,6 +272,7 @@ const getChatroomsByUserId = async (req, res) => {
           userParticipantId: user._id,
           id: chatroom._id,
           isGroup: chatroom.isGroup,
+          isCustomerSupport: chatroom.isCustomerSupport,
         });
       } else {
         const participant = chatroom.participants.filter(
@@ -291,6 +292,7 @@ const getChatroomsByUserId = async (req, res) => {
           participantId: participant.userId._id,
           isGroup: chatroom.isGroup,
           isOnline: participant.userId.isOnline,
+          isCustomerSupport: chatroom.isCustomerSupport,
         });
       }
     });

@@ -331,13 +331,6 @@ const createSpamDispute = async (req, res) => {
   try {
     let { creatorId, disputeReason, chatroomId } = req.body;
     if (disputeReason == undefined) disputeReason = "Spam in chat";
-    const dispute = await CustomerSupport.findOne({
-      creatorId,
-      requestType: "other",
-      state: "pending",
-    });
-    if (dispute)
-      return res.status(400).send("You already have a pending dispute.");
     const newDispute = new CustomerSupport({
       creatorId,
       requestType: "other",
