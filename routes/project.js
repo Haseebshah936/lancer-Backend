@@ -40,13 +40,19 @@ const {
   getProjectsAsSeller_onGoingCount,
   getProjectsAsSeller_completedCount,
   getProjectsAsSeller_cancelledCount,
+  getAllPendingProjects,
+  getCompletedProjects,
+  getCancelledProjects,
 } = require("../controllers/project");
 
 const router = require("express").Router();
 
 router.get("/", getProjects);
 router.get("/pending/:userId", getPendingProjects);
+router.get("/pending", getAllPendingProjects);
 router.get("/onGoing", getOnGoingProjects);
+router.get("/completed", getCompletedProjects);
+router.get("/cancelled", getCancelledProjects);
 router.get("/", getProjects);
 router.get("/:id", getProject);
 router.get("/creator/:creatorId", getProjectsByCreatorId);
