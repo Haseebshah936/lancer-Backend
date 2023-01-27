@@ -78,8 +78,8 @@ const sellerSchema = new mongoose.Schema({
     default: "Beginner",
   },
   activeOrders: { type: Number, default: 0 },
-  cancelledOrders: { type: Number, default: 0 },
-  completedOrders: { type: Number, default: 0 },
+  cancelledProjects: { type: Number, default: 0 },
+  completedProjects: { type: Number, default: 0 },
   score: { type: Number, default: 0 },
   reviews: {
     type: Number,
@@ -154,8 +154,8 @@ const userSchema = new mongoose.Schema({
   earnings: { type: Number, default: 0 },
   gender: { type: String },
   DOB: { type: Date },
-  completedOrders: { type: Number, default: 0 },
-  cancelledOrders: { type: Number, default: 0 },
+  completedProjects: { type: Number, default: 0 },
+  cancelledProjects: { type: Number, default: 0 },
   profileCompleted: { type: Boolean, default: false },
   views: { type: Number, default: 0 },
   state: {
