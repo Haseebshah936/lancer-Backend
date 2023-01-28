@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { Project, Hiring, Requirenment } = require("../models/project");
 const Proposal = require("../models/proposal");
+const Invoice = require("../models/invoice");
 
 const getProposals = async (req, res) => {
   try {
@@ -233,11 +234,20 @@ const acceptProposal = async (req, res) => {
       userId: proposal.creatorId,
       productId: proposal.productId,
     });
+    const newInvoice = new Invoice({
+      projectId: proposal.projectId,
+      freelancerId: proposal.creatorId,
+      employerId: project.creatorId,
+      amount: proposal.budget,
+      paymentMethod: "creditCard",
+      invoiceStatus: "recieved",
+    });
     project.hired = hired;
     project.markModified("hired");
     project.requirenments.push(
       new Requirenment({ files: [], links: [], details: "", state: "pending" })
     );
+    await newInvoice.save();
     await project.save();
     proposal.state = "accepted";
     await proposal.save();
