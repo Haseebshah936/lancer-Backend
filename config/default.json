@@ -5,5 +5,6 @@
         "password": "haseeb"   
     },
     "stripeSecretKey": "sk_test_51JgDf0HHulWCxCO2kNiKxyPfuGnO56w1zqEIlVUYFyPBExEk2xRxuIwzezz73kfH1gFYaqQKV2QZdVf3zGVu8LPy00LxSgIpcR",
+    "stripePublicKey": "pk_test_51JgDf0HHulWCxCO2rvJaz2Jxm1yUfy52n9weCoqxnXDH4jVVrjyu4UewmnhBGJSYamZhTvwx8JRkaKPq4w4ZwRdn00gD4wZNAX",
     "port": 3003
 }

@@ -281,19 +281,19 @@ const getChatroomsByUserId = async (req, res) => {
           (e) => e.userId?._id?.toString() !== id
         )[0];
         formattedChatrooms.push({
-          avatar: participant.userId.profilePic,
-          alt: participant.userId.name + " image",
-          title: participant.userId.name,
+          avatar: participant?.userId?.profilePic,
+          alt: participant?.userId?.name + " image",
+          title: participant?.userId?.name,
           description: chatroom.description,
           subtitle,
           date,
           unread,
           muted: user.muted,
-          id: chatroom._id,
-          userParticipantId: user._id,
-          participantId: participant.userId._id,
+          id: chatroom?._id,
+          userParticipantId: user?._id,
+          participantId: participant?.userId?._id,
           isGroup: chatroom.isGroup,
-          isOnline: participant.userId.isOnline,
+          isOnline: participant.userId?.isOnline,
           isCustomerSupport: chatroom.isCustomerSupport,
         });
       }

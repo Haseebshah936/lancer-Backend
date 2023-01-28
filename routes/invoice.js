@@ -15,6 +15,7 @@ const {
   createTip,
   createInvoiceAndProject,
   payByWalletAndCreateProject,
+  createProjectPaymentIntent,
 } = require("../controllers/invoice");
 
 const router = require("express").Router();
@@ -24,6 +25,7 @@ router.get("/:id", getInvoice);
 router.get("/getInvoiceByUserId/:userId", getInvoiceByUserId);
 router.get("/getInvoiceByProjectId/:projectId", getInvoiceByProjectId);
 router.post("/", createInvoice);
+router.post("/prjectIntent", createProjectPaymentIntent);
 router.post("/invoiceAndProject", createInvoiceAndProject);
 router.post("/payTip", createTip);
 router.post("/payByWallet", payByWallet);

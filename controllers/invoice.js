@@ -1,6 +1,31 @@
 const Invoice = require("../models/invoice");
 const { User } = require("../models/user");
+const { Product } = require("../models/product");
 const { Project, Hiring, Requirenment } = require("../models/project");
+const config = require("config");
+const stripeSecretKey = config.get("stripeSecretKey");
+const stripe = require("stripe")(stripeSecretKey);
+
+const calculateAmount = async (productId, extras, packageSelected) => {
+  const product = await Product.findById(productId);
+  if (!product) return res.status(400).send("Product not found");
+  const newExtras = {};
+  extras.map((extra) => (newExtras[extra.title] = extra));
+  const featuresList = product.additionalFeatures.filter((feature) =>
+    extras.some((extra) => extra.title === feature.title)
+  );
+  let amount = 0;
+  featuresList.forEach((feature) => {
+    const extra = newExtras[feature.title];
+    if (extra.quantity)
+      amount += parseFloat(feature.cost) * parseInt(extra.quantity);
+    // else amount += parseFloat(feature.cost);
+  });
+  product.packages.forEach((pack) => {
+    if (pack.name === packageSelected) amount += parseFloat(pack.cost);
+  });
+  return amount;
+};
 
 const getInvoices = async (req, res) => {
   try {
@@ -88,20 +113,47 @@ const createInvoice = async (req, res) => {
   }
 };
 
+const createProjectPaymentIntent = async (req, res) => {
+  try {
+    const { productId, extras, packageSelected, freelancerId, employerId } =
+      req?.body;
+    const amount = await calculateAmount(productId, extras, packageSelected);
+    console.log("Amount", amount);
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount * 100,
+      currency: "usd",
+      // amount_details: {
+      //   "employerId": employerId,
+      //   "freelancerId": freelancerId,
+      //   "productId": productId,
+      //   "extras": extras,
+      // },
+      // payment_method_types: ["card"],
+      automatic_payment_methods: { enabled: true },
+    });
+    res.status(200).send(paymentIntent);
+  } catch (error) {
+    res.send(error);
+    console.log(error);
+  }
+};
+
 const createInvoiceAndProject = async (req, res) => {
   try {
     let {
       title,
       freelancerId,
-      employerId,
-      amount,
-      paymentMethod,
       productId,
-      days,
+      employerId,
       extras,
+      packageSelected,
+      paymentMethod,
+      days,
       revisionsAllowed,
     } = req?.body;
     if (!extras) extras = [];
+    const amount = await calculateAmount(productId, extras, packageSelected);
+    console.log("Amount", amount);
     const hired = new Hiring({
       userId: freelancerId,
       productId,
@@ -403,6 +455,7 @@ module.exports = {
   getInvoice,
   getInvoiceByUserId,
   getInvoiceByProjectId,
+  createProjectPaymentIntent,
   createInvoice,
   createInvoiceAndProject,
   createTip,
