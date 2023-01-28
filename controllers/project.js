@@ -837,7 +837,6 @@ const cancelProject = async (req, res) => {
       }
     );
     if (!invoice) return res.status(404).send("Invoice not found");
-
     const client = await User.findByIdAndUpdate(project.creatorId, {
       $inc: { cancelledOrders: 1 },
     });
@@ -850,6 +849,8 @@ const cancelProject = async (req, res) => {
       product.ranking = product.ranking - 2;
       product.save();
     }
+    await client.save();
+    await freelancer.save();
     const response = await project.save();
     res.status(201).send(response);
   } catch (error) {
