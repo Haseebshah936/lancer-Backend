@@ -398,19 +398,35 @@ const updateInvoiceStatus = async (req, res) => {
   }
 };
 
+// const completePayment = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const invoice = await Invoice.findByIdAndUpdate(
+//       id,
+//       {
+//         invoiceStatus: "paid",
+//       },
+//       {
+//         new: true,
+//       }
+//     );
+//     if (!invoice) return res.status(400).send("Invoice not found");
+//     const user = await User.findById(invoice.freelancerId);
+//     if (!user) return res.status(400).send("User not found");
+//     user.currentBalance = user.currentBalance + invoice.amount;
+//     await user.save();
+//     res.status(201).send(invoice);
+//   } catch (error) {
+//     res.status(500).send(error);
+//   }
+// };
 const completePayment = async (req, res) => {
   try {
     const { id } = req.params;
-    const invoice = await Invoice.findByIdAndUpdate(
-      id,
-      {
-        invoiceStatus: "paid",
-      },
-      {
-        new: true,
-      }
-    );
-    if (!invoice) return res.status(400).send("Invoice not found");
+    const invoice = await Invoice.findOne({
+      projectId: id,
+    });
+    if (!invoice) return res.status(404).send("Invoice not found");
     const user = await User.findById(invoice.freelancerId);
     if (!user) return res.status(400).send("User not found");
     user.currentBalance = user.currentBalance + invoice.amount;
