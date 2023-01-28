@@ -221,10 +221,14 @@ const acceptProposal = async (req, res) => {
       res.status(404).send("Proposal not found");
       return;
     }
+    const budget = proposal.budget;
+    const duration = proposal.duration;
     const project = await Project.findById(proposal.projectId);
     if (!project) return res.status(404).send("Project not found");
     project.state = "requirementGathering";
     project.startedAt = Date.now();
+    project.budget = budget;
+    project.days = duration;
     const hired = new Hiring({
       userId: proposal.creatorId,
       productId: proposal.productId,

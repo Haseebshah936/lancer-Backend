@@ -1,6 +1,7 @@
 const Invoice = require("../models/invoice");
 const { User } = require("../models/user");
 const { Product } = require("../models/product");
+const Proposal = require("../models/proposal");
 const { Project, Hiring, Requirenment } = require("../models/project");
 const config = require("config");
 const stripeSecretKey = config.get("stripeSecretKey");
@@ -115,9 +116,22 @@ const createInvoice = async (req, res) => {
 
 const createProjectPaymentIntent = async (req, res) => {
   try {
-    const { productId, extras, packageSelected, freelancerId, employerId } =
-      req?.body;
-    const amount = await calculateAmount(productId, extras, packageSelected);
+    const {
+      productId,
+      extras,
+      packageSelected,
+      proposalId,
+      freelancerId,
+      employerId,
+    } = req?.body;
+    let amount = 0;
+    if (proposalId) {
+      const proposal = await Proposal.findById(proposalId);
+      if (!proposal) return res.status(400).send("Proposal not found");
+      amount = proposal?.budget;
+    } else {
+      amount = await calculateAmount(productId, extras, packageSelected);
+    }
     console.log("Amount", amount);
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount * 100,
