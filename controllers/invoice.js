@@ -423,14 +423,23 @@ const updateInvoiceStatus = async (req, res) => {
 const completePayment = async (req, res) => {
   try {
     const { id } = req.params;
+
     const invoice = await Invoice.findOne({
       projectId: id,
     });
+    console.log(id, invoice);
     if (!invoice) return res.status(404).send("Invoice not found");
+    if (invoice.invoiceStatus === "paid") {
+      return res.status(400).send("Invoice already paid");
+    }
+    invoice.invoiceStatus = "paid";
+    await invoice.save();
     const user = await User.findById(invoice.freelancerId);
     if (!user) return res.status(400).send("User not found");
+    console.log("Before", user.currentBalance);
     user.currentBalance = user.currentBalance + invoice.amount;
     await user.save();
+    console.log("After", user.currentBalance);
     res.status(201).send(invoice);
   } catch (error) {
     res.status(500).send(error);
