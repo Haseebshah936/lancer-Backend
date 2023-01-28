@@ -98,7 +98,7 @@ const getCompletedProjects = async (req, res) => {
         "creatorId hired.userId",
         "name profilePic badge seller.rating stars"
       )
-      .sort({ createdAt: -1 });
+      .sort({ completedAt: -1 });
     res.status(200).send(projects);
   } catch (error) {
     res.status(500).send(error);
