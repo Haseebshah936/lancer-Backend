@@ -57,22 +57,33 @@ const getInvoice = async (req, res) => {
   }
 };
 
-const getInvoiceByUserId = async (req, res) => {
+const getInvoiceSellerByUserId = async (req, res) => {
   try {
     const { id } = req.params;
-    const invoice = await Invoice.find()
-      .or([
-        {
-          freelancerId: id,
-        },
-        {
-          employerId: id,
-        },
-      ])
-      .populate(
-        "freelancerId employerId projectId",
-        "name profilePic email title budget state complitionDate completedAt"
-      );
+    console.log(id);
+    const invoice = await Invoice.find({
+      freelancerId: id,
+    }).populate(
+      "freelancerId employerId projectId",
+      "name profilePic email title budget state complitionDate completedAt"
+    );
+    if (!invoice) return res.status(404).send("Invoice not found");
+    res.status(200).send(invoice);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const getInvoiceBuyerByUserId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    const invoice = await Invoice.find({
+      employerId: id,
+    }).populate(
+      "freelancerId employerId projectId",
+      "name profilePic email title budget state complitionDate completedAt"
+    );
     if (!invoice) return res.status(404).send("Invoice not found");
     res.status(200).send(invoice);
   } catch (error) {
@@ -515,7 +526,8 @@ const deleteAllInvoices = async (req, res) => {
 module.exports = {
   getInvoices,
   getInvoice,
-  getInvoiceByUserId,
+  getInvoiceBuyerByUserId,
+  getInvoiceSellerByUserId,
   getInvoiceByProjectId,
   createProjectPaymentIntent,
   createInvoice,

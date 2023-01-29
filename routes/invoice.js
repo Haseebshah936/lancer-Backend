@@ -16,14 +16,17 @@ const {
   createInvoiceAndProject,
   payByWalletAndCreateProject,
   createProjectPaymentIntent,
+  getInvoiceSellerByUserId,
+  getInvoiceBuyerByUserId,
 } = require("../controllers/invoice");
 
 const router = require("express").Router();
 
 router.get("/", getInvoices);
 router.get("/:id", getInvoice);
-router.get("/getInvoiceByUserId/:userId", getInvoiceByUserId);
-router.get("/getInvoiceByProjectId/:projectId", getInvoiceByProjectId);
+router.get("/getInvoiceByUserId/seller/:id", getInvoiceSellerByUserId);
+router.get("/getInvoiceByUserId/buyer/:id", getInvoiceBuyerByUserId);
+router.get("/getInvoiceByProjectId/:id", getInvoiceByProjectId);
 router.post("/", createInvoice);
 router.post("/prjectIntent", createProjectPaymentIntent);
 router.post("/invoiceAndProject", createInvoiceAndProject);

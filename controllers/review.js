@@ -2,6 +2,10 @@ const Review = require("../models/review");
 const mongoose = require("mongoose");
 const { User } = require("../models/user");
 const { Product } = require("../models/product");
+const {
+  sendSoftNotification,
+  sendHardNotification,
+} = require("../utils/notification");
 
 function ratingCalculation(
   oldRating,
@@ -255,9 +259,13 @@ const createReview = async (req, res) => {
       return res
         .status(400)
         .send("You already submitted a review for this project");
+    const client = await User.findById(buyerId);
+    if (!client) return res.status(404).send("Client not found");
+    const freelancer = await User.findById(sellerId);
+    if (!freelancer) return res.status(404).send("Freelancer not found");
+    console.log("Freelancer", freelancer.name);
+    console.log("Client", client.name);
     if (sender === "seller") {
-      const client = await User.findById(buyerId);
-      if (!client) return res.status(404).send("Client not found");
       const newBuyerRating = ratingCalculation(
         client.stars,
         client.reviews,
@@ -267,10 +275,23 @@ const createReview = async (req, res) => {
       client.reviews++;
       client.stars = newBuyerRating;
       await client.save();
+      const title = "Review";
+      const text = `${freelancer.name} left ${rating} rating`;
+      const image = freelancer.profilePic;
+      if (client.subscription) {
+        sendSoftNotification(client.subscription, title, text, image);
+      }
+      sendHardNotification(
+        title,
+        text,
+        "review",
+        buyerId,
+        null,
+        projectId,
+        sellerId
+      );
     }
     if (sender === "client") {
-      const freelancer = await User.findById(sellerId);
-      if (!freelancer) return res.status(404).send("Freelancer not found");
       const newFreelancerRating = ratingCalculation(
         freelancer.seller.rating,
         freelancer.seller.reviews,
@@ -293,6 +314,21 @@ const createReview = async (req, res) => {
       freelancer.seller.reviews++;
       freelancer.seller.rating = newFreelancerRating;
       await freelancer.save();
+      const title = "new Review";
+      const text = `${client.name} left ${rating} rating`;
+      const image = client.profilePic;
+      if (freelancer.subscription) {
+        sendSoftNotification(freelancer.subscription, title, text, image);
+      }
+      sendHardNotification(
+        title,
+        text,
+        "review",
+        sellerId,
+        null,
+        projectId,
+        buyerId
+      );
     }
     await review.save();
     res.status(200).send(review);
