@@ -1,5 +1,9 @@
 const { Withdrawal, AccountDetail } = require("../models/withdrawal");
 const { User } = require("../models/user");
+const {
+  sendSoftNotification,
+  sendHardNotification,
+} = require("../utils/notification");
 
 const getWithdrawls = async (req, res) => {
   try {
@@ -153,6 +157,22 @@ const approveWithdrawal = async (req, res) => {
     withdrawal.status = "approved";
     withdrawal.completionDate = Date.now();
     await withdrawal.save();
+    const user = await User.findById(withdrawal.userId);
+    const title = "Withdrawal Approved";
+    const text = `Your withdrawal request of ${withdrawal.amount} has been approved`;
+    const image = null;
+    if (user.subscription) {
+      sendSoftNotification(user.subscription, title, text, image);
+    }
+    sendHardNotification(
+      title,
+      text,
+      "info",
+      withdrawal.userId,
+      null,
+      null,
+      null
+    );
     res.status(200).json(withdrawal);
   } catch (error) {
     res.status(500).json(error);
