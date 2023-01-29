@@ -1,4 +1,5 @@
 const webPush = require("web-push");
+const Notification = require("../models/notification");
 
 const sendSoftNotification = async (subscription, title, message, image) => {
   const options = {
@@ -9,7 +10,6 @@ const sendSoftNotification = async (subscription, title, message, image) => {
       privateKey: "rXWNPqO5L4SAviXKVAxm4l6R9D5XHXi12iQxUst5Wd8",
     },
   };
-  console.log("Sending Notification", image);
   const res2 = await webPush.sendNotification(
     subscription,
     JSON.stringify({
@@ -42,16 +42,16 @@ const sendHardNotification = async (
       participantId,
       senderId,
     });
+    console.log("Sending Notification", notification);
     await notification.save();
-    res.status(200).send(notification);
   } catch (error) {
     console.log(error);
-    res.status(500).send(error.message);
   }
 };
 
 module.exports = {
   sendSoftNotification,
+  sendHardNotification,
 };
 
 // "https://cdn2.vectorstock.com/i/thumb-large/94/66/emoji-smile-icon-symbol-smiley-face-vector-26119466.jpg",

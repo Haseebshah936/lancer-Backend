@@ -73,7 +73,7 @@ const createNotification = async (req, res) => {
       type,
       userId,
       chatroomId,
-      participantId,
+      productId,
       senderId,
     } = req.body; // type can be any ["info", "review", "chat","customerSupport"],
     const notification = await new Notification({
@@ -82,7 +82,7 @@ const createNotification = async (req, res) => {
       type,
       userId,
       chatroomId,
-      participantId,
+      productId,
       senderId,
     });
     await notification.save();
@@ -102,7 +102,7 @@ const updateNotification = async (req, res) => {
       type,
       userId,
       chatroomId,
-      participantId,
+      productId,
       senderId,
     } = req.body;
     const notification = await Notification.findByIdAndUpdate(id);
@@ -112,7 +112,7 @@ const updateNotification = async (req, res) => {
     notification.type = type;
     notification.userId = userId;
     notification.chatroomId = chatroomId;
-    notification.participantId = participantId;
+    notification.productId = productId;
     notification.senderId = senderId;
     await notification.save();
     res.status(200).send(notification);

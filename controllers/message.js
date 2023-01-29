@@ -3,7 +3,10 @@ const CustomerSupport = require("../models/customerSupport");
 const { Chatroom } = require("../models/chatroom");
 const axios = require("axios");
 const { request } = require("express");
-const { sendSoftNotification } = require("../utils/notification");
+const {
+  sendSoftNotification,
+  sendHardNotification,
+} = require("../utils/notification");
 
 const getMessage = async (req, res) => {
   try {
@@ -76,7 +79,7 @@ const createMessage = async (req, res) => {
     console.log(req.body);
     const chatroom = await Chatroom.findById(chatroomId).populate(
       "participants.userId",
-      "name profilePic badge inOnline subscription"
+      "name profilePic badge isOnline subscription"
     );
     if (!chatroom) return res.status(404).send("Chatroom not found");
     const newMessage = new Message({
@@ -101,10 +104,25 @@ const createMessage = async (req, res) => {
         if (subscription) {
           sendSoftNotification(subscription, title, text, image);
         }
+        console.log("Is Online ", participant.userId.isOnline);
+        console.log(
+          "Is Online ",
+          new Date(participant.userId.isOnline).getTime() <
+            new Date().getTime() - 30000
+        );
         if (
-          new Date(participant.userId.inOnline).getTime() <
+          new Date(participant.userId.isOnline).getTime() <
           new Date().getTime() - 30000
         ) {
+          sendHardNotification(
+            title,
+            text,
+            "chat",
+            id,
+            chatroomId,
+            null,
+            userId._id
+          );
         }
       }
     });
