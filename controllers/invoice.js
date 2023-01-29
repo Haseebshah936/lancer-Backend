@@ -4,6 +4,10 @@ const { Product } = require("../models/product");
 const Proposal = require("../models/proposal");
 const { Project, Hiring, Requirenment } = require("../models/project");
 const config = require("config");
+const {
+  sendSoftNotification,
+  sendHardNotification,
+} = require("../utils/notification");
 const stripeSecretKey = config.get("stripeSecretKey");
 const stripe = require("stripe")(stripeSecretKey);
 
@@ -75,6 +79,7 @@ const getInvoiceByUserId = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
 const getInvoiceByProjectId = async (req, res) => {
   try {
     const { id } = req.params;
@@ -195,9 +200,27 @@ const createInvoiceAndProject = async (req, res) => {
     });
     await newProject.save();
     await newInvoice.save();
+    const client = await User.findById(newProject.creatorId);
+    const freelancer = await User.findById(newProject.hired.userId);
+    title = "New Order";
+    const text = `A new order is placed by ${client.name}`;
+    const image = freelancer.profilePic;
+    if (freelancer.subscription) {
+      sendSoftNotification(freelancer.subscription, title, text, image);
+    }
+    sendHardNotification(
+      title,
+      text,
+      "info",
+      newProject.hired.userId,
+      null,
+      newProject._id,
+      newProject.creatorId
+    );
     res.status(201).send(newInvoice);
   } catch (error) {
     res.status(500).send(error);
+    console.log(error);
   }
 };
 

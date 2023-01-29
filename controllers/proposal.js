@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 const { Project, Hiring, Requirenment } = require("../models/project");
 const Proposal = require("../models/proposal");
 const Invoice = require("../models/invoice");
+const { User } = require("../models/user");
+const {
+  sendSoftNotification,
+  sendHardNotification,
+} = require("../utils/notification");
 
 const getProposals = async (req, res) => {
   try {
@@ -251,8 +256,26 @@ const acceptProposal = async (req, res) => {
     await project.save();
     proposal.state = "accepted";
     await proposal.save();
+    const client = await User.findById(project.creatorId);
+    const freelancer = await User.findById(project.hired.userId);
+    const title = "New Order";
+    const text = `A new order is placed by ${client.name}`;
+    const image = freelancer.profilePic;
+    if (freelancer.subscription) {
+      sendSoftNotification(freelancer.subscription, title, text, image);
+    }
+    sendHardNotification(
+      title,
+      text,
+      "info",
+      project.hired.userId,
+      null,
+      project._id,
+      project.creatorId
+    );
     res.status(200).send(proposal);
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 };

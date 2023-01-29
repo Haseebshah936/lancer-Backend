@@ -1,6 +1,11 @@
 const { Chatroom, Participant } = require("../models/chatroom");
 const { User } = require("../models/user");
 const CustomerSupport = require("../models/customerSupport");
+const { Project } = require("../models/project");
+const {
+  sendSoftNotification,
+  sendHardNotification,
+} = require("../utils/notification");
 
 const getCustomerSupportIssues = async (req, res) => {
   try {
@@ -371,16 +376,26 @@ const activateDispute = async (req, res) => {
     const user = await User.findById(dispute.creatorId).select("name email");
     if (!user) return res.status(404).send("User not found");
     dispute.resolvers.push(resolverId);
+    const participants = [
+      new Participant({
+        userId: dispute.creatorId,
+      }),
+      new Participant({
+        userId: resolverId,
+        isAdmin: true,
+      }),
+    ];
+    if (dispute.requestType === "dispute") {
+      const project = await Project.findById(dispute.projectId);
+      if (!project) return res.status(404).send("Project not found");
+      participants.push(
+        new Participant({
+          userId: project.hired.userId,
+        })
+      );
+    }
     const chatroom = new Chatroom({
-      participants: [
-        new Participant({
-          userId: dispute.creatorId,
-        }),
-        new Participant({
-          userId: resolverId,
-          isAdmin: true,
-        }),
-      ],
+      participants,
       creatorId: resolverId,
       description: dispute.disputeReason,
       groupName: user.name,
@@ -405,14 +420,36 @@ const resolveDispute = async (req, res) => {
     const dispute = await CustomerSupport.findById(id);
     if (!dispute) return res.status(404).send("Dispute not found");
     dispute.state = "resolved";
-    const chatroom = await Chatroom.findById(dispute.chatroomId);
+    const chatroom = await Chatroom.findById(dispute.chatroomId).populate(
+      "participants.userId",
+      "name profilePic badge isOnline subscription"
+    );
     chatroom.state = "archived";
-    console.log(resolverId);
     dispute.resolvedBy = resolverId;
     dispute.resolvedAt = Date.now();
     dispute.details = details;
     await chatroom.save();
     const response = await dispute.save();
+    const title = "Dispute Resolved";
+    const text = details;
+    const image = null;
+    chatroom.participants.forEach(async (participant) => {
+      const { subscription, id } = participant.userId;
+      if (id.toString() !== resolverId) {
+        if (subscription) {
+          sendSoftNotification(subscription, title, text, image);
+        }
+        sendHardNotification(
+          title,
+          text,
+          "customerSupport",
+          id,
+          null,
+          dispute.projectId,
+          resolverId
+        );
+      }
+    });
     res.status(200).send(response);
   } catch (error) {
     res.status(500).send(error);

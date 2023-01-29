@@ -43,7 +43,7 @@ const sendHardNotification = async (
       senderId,
     });
     console.log("Sending Notification", notification);
-    await notification.save();
+    return await notification.save();
   } catch (error) {
     console.log(error);
   }

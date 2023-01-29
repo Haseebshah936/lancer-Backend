@@ -10,6 +10,10 @@ const {
 } = require("../models/project");
 const Invoice = require("../models/invoice");
 const { User } = require("../models/user");
+const {
+  sendSoftNotification,
+  sendHardNotification,
+} = require("../utils/notification");
 
 const getProjects = async (req, res) => {
   try {
@@ -688,6 +692,23 @@ const startProject = async (req, res) => {
     // requirement.details = details;
     // project.markModified("requirenments");
     await project.save();
+    const client = await User.findById(project.creatorId);
+    const freelancer = await User.findById(project.hired.userId);
+    const title = "Order Started";
+    const text = `Your order has been started by ${freelancer.name}`;
+    const image = freelancer.profilePic;
+    if (client.subscription) {
+      sendSoftNotification(client.subscription, title, text, image);
+    }
+    sendHardNotification(
+      title,
+      text,
+      "info",
+      project.creatorId,
+      null,
+      id,
+      project.hired.userId
+    );
     res.status(201).send(project);
   } catch (error) {
     res.status(500).send(error);
@@ -709,6 +730,23 @@ const deliverProject = async (req, res) => {
     project.delivery.push(delivery);
     project.markModified("delivery");
     const response = await project.save();
+    const client = await User.findById(project.creatorId);
+    const freelancer = await User.findById(project.hired.userId);
+    const title = "Order Delivered";
+    const text = `Your order has been delivered by ${freelancer.name}`;
+    const image = freelancer.profilePic;
+    if (client.subscription) {
+      sendSoftNotification(client.subscription, title, text, image);
+    }
+    sendHardNotification(
+      title,
+      text,
+      "info",
+      project.creatorId,
+      null,
+      id,
+      project.hired.userId
+    );
     res.status(201).send(response);
   } catch (error) {
     res.status(500).send(error);
@@ -767,10 +805,10 @@ const acceptProjectExtension = async (req, res) => {
     project.completionDate =
       Date.now() +
       (project.days + project.extension.id(extensionId).days) *
-      24 *
-      60 *
-      60 *
-      1000;
+        24 *
+        60 *
+        60 *
+        1000;
     project.markModified("extension");
     const response = await project.save();
     res.status(201).send(response);
@@ -855,6 +893,21 @@ const cancelProject = async (req, res) => {
     await client.save();
     await freelancer.save();
     const response = await project.save();
+    const title = "Order Cancelled";
+    const text = `Your order has been cancelled by ${client.name}`;
+    const image = client.profilePic;
+    if (freelancer.subscription) {
+      sendSoftNotification(freelancer.subscription, title, text, image);
+    }
+    sendHardNotification(
+      title,
+      text,
+      "info",
+      project.hired.userId,
+      null,
+      id,
+      project.creatorId
+    );
     res.status(201).send(response);
   } catch (error) {
     res.status(500).send(error);
@@ -880,6 +933,21 @@ const completeProject = async (req, res) => {
     await client.save();
     await freelancer.save();
     const response = await project.save();
+    const title = "Order Completed";
+    const text = `Your order has been completed by ${client.name}`;
+    const image = client.profilePic;
+    if (freelancer.subscription) {
+      sendSoftNotification(freelancer.subscription, title, text, image);
+    }
+    sendHardNotification(
+      title,
+      text,
+      "info",
+      project.hired.userId,
+      null,
+      id,
+      project.creatorId
+    );
     res.status(201).send(response);
   } catch (error) {
     res.status(500).send(error);
