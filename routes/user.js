@@ -26,5 +26,6 @@ router.put("/updateCompletedOrders/:id", user.updateCompletedOrders);
 router.put("/updateSellerScore/:id", user.updateScore);
 router.put("/banUser/:id", user.banUser);
 router.put("/unBanUser/:id", user.unBanUser);
+router.put("/subscribe/:id", user.subscribe);
 
 module.exports = router;

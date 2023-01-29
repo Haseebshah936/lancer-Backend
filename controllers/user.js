@@ -1,6 +1,7 @@
 const c = require("config");
-const { User, Seller } = require("../models/user");
+const { User, Seller, Subscription } = require("../models/user");
 const product = require("../models/product");
+const webPush = require("web-push");
 
 const getUsers = async (req, res) => {
   try {
@@ -529,6 +530,48 @@ const unBanUser = async (req, res) => {
   }
 };
 
+const subscribe = async (req, res) => {
+  try {
+    // console.log("subscription request received", req.body);
+    const { id } = req.params;
+    const { endpoint, expirationTime, keys } = req.body;
+    const user = await User.findById(id);
+    if (!user) return res.status(404).send("User not found");
+    const newSubscription = new Subscription({
+      endpoint,
+      expirationTime,
+      keys,
+    });
+    user.subscription = newSubscription;
+    await user.save();
+    // console.log("new subscription saved", newSubscription);
+    // return res.send ('hallo');
+    // const options = {
+    //   vapidDetails: {
+    //     subject: "mailto:haseebshah936@gmail.com",
+    //     publicKey:
+    //       "BFpFtQOG8CLr_-AWQfz5JUrLE8FJ7vZEJMAokteah55WbdrW4Rs0BigiS1j0wQZAUO4rkg_EviJc81cDTOXtRNM",
+    //     privateKey: "rXWNPqO5L4SAviXKVAxm4l6R9D5XHXi12iQxUst5Wd8",
+    //   },
+    // };
+    // const res2 = await webPush.sendNotification(
+    //   newSubscription,
+    //   JSON.stringify({
+    //     title: "Hello from server",
+    //     description: "this message is coming from the server",
+    //     image:
+    //       "https://cdn2.vectorstock.com/i/thumb-large/94/66/emoji-smile-icon-symbol-smiley-face-vector-26119466.jpg",
+    //   }),
+    //   options
+    // );
+    // console.log("notification sent", res2);
+    res.status(200).send(user);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
+
 module.exports = {
   getUsers,
   getActiveUsers,
@@ -556,4 +599,5 @@ module.exports = {
   removeSeller,
   banUser,
   unBanUser,
+  subscribe,
 };

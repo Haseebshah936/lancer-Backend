@@ -877,6 +877,8 @@ const completeProject = async (req, res) => {
     const freelancer = await User.findByIdAndUpdate(project.hired.userId, {
       $inc: { "seller.completedOrders": 1, "seller.score": 0.1 },
     });
+    await client.save();
+    await freelancer.save();
     const response = await project.save();
     res.status(201).send(response);
   } catch (error) {

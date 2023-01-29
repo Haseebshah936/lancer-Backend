@@ -23,6 +23,7 @@ const call = require("./routes/call");
 const view = require("./routes/view");
 const favorite = require("./routes/favorite");
 const notification = require("./routes/notification");
+const withdrawal = require("./routes/withdrawal");
 // Initialzing express app
 const app = express();
 
@@ -62,6 +63,7 @@ app.use("/api/call", call);
 app.use("/api/view", view);
 app.use("/api/favorite", favorite);
 app.use("/api/notification", notification);
+app.use("/api/withdrawal", withdrawal);
 app.get("/api/", (req, res) => {
   res.send("Hello World");
 });

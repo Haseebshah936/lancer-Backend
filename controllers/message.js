@@ -3,6 +3,7 @@ const CustomerSupport = require("../models/customerSupport");
 const { Chatroom } = require("../models/chatroom");
 const axios = require("axios");
 const { request } = require("express");
+const { sendSoftNotification } = require("../utils/notification");
 
 const getMessage = async (req, res) => {
   try {
@@ -73,7 +74,10 @@ const createMessage = async (req, res) => {
   try {
     const { chatroomId, userId, type, text, uri } = req.body;
     console.log(req.body);
-    const chatroom = await Chatroom.findById(chatroomId);
+    const chatroom = await Chatroom.findById(chatroomId).populate(
+      "participants.userId",
+      "name profilePic badge inOnline subscription"
+    );
     if (!chatroom) return res.status(404).send("Chatroom not found");
     const newMessage = new Message({
       chatroomId,
@@ -84,10 +88,27 @@ const createMessage = async (req, res) => {
     });
 
     chatroom.latestMessage = newMessage._id;
-    const participantId = chatroom.participants.filter(
-      (participant) => participant.userId.toString() === userId._id
-    )[0]._id;
-    chatroom.participants.id(participantId).lastVisited = new Date();
+    const participant = chatroom.participants.filter(
+      (participant) => participant.userId._id.toString() === userId._id
+    )[0];
+    const title = "New Message" + " from " + userId.name;
+    const image = chatroom.isGroup
+      ? chatroom.image
+      : participant.userId.profilePic;
+    chatroom.participants.forEach(async (participant) => {
+      const { subscription, id } = participant.userId;
+      if (id.toString() !== userId._id) {
+        if (subscription) {
+          sendSoftNotification(subscription, title, text, image);
+        }
+        if (
+          new Date(participant.userId.inOnline).getTime() <
+          new Date().getTime() - 30000
+        ) {
+        }
+      }
+    });
+    chatroom.participants.id(participant._id).lastVisited = new Date();
     chatroom.updatedAt = Date.now();
     const response = await newMessage.save();
     await chatroom.save();
