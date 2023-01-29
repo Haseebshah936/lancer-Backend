@@ -1,7 +1,7 @@
 const {
-  getPendingWithdrawls,
   getWithdrawls,
   getWithdrawl,
+  getPendingWithdrawls,
   getApprovedWithdrawls,
   getRejectedWithdrawls,
   getWithdrawlsByUserId,
@@ -19,7 +19,7 @@ const {
 const router = require("express").Router();
 
 router.get("/", getWithdrawls);
-router.get("/:id", getWithdrawl);
+router.get("/user/:id", getWithdrawl);
 router.get("/pending", getPendingWithdrawls);
 router.get("/approved", getApprovedWithdrawls);
 router.get("/rejected", getRejectedWithdrawls);

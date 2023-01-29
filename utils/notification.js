@@ -28,7 +28,7 @@ const sendHardNotification = async (
   type,
   userId,
   chatroomId,
-  participantId,
+  productId,
   senderId
 ) => {
   try {
@@ -39,11 +39,11 @@ const sendHardNotification = async (
       type,
       userId,
       chatroomId,
-      participantId,
+      productId,
       senderId,
     });
     console.log("Sending Notification", notification);
-    await notification.save();
+    return await notification.save();
   } catch (error) {
     console.log(error);
   }

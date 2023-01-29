@@ -104,12 +104,6 @@ const createMessage = async (req, res) => {
         if (subscription) {
           sendSoftNotification(subscription, title, text, image);
         }
-        console.log("Is Online ", participant.userId.isOnline);
-        console.log(
-          "Is Online ",
-          new Date(participant.userId.isOnline).getTime() <
-            new Date().getTime() - 30000
-        );
         if (
           new Date(participant.userId.isOnline).getTime() <
           new Date().getTime() - 30000
