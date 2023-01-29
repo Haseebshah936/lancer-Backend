@@ -19,7 +19,7 @@ const {
 const router = require("express").Router();
 
 router.get("/", getWithdrawls);
-router.get("/user/:id", getWithdrawl);
+router.get("/single/:id", getWithdrawl);
 router.get("/pending", getPendingWithdrawls);
 router.get("/approved", getApprovedWithdrawls);
 router.get("/rejected", getRejectedWithdrawls);
