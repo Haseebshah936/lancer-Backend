@@ -22,9 +22,11 @@ const getWithdrawl = async (req, res) => {
 
 const getPendingWithdrawls = async (req, res) => {
   try {
+    console.log("getPendingWithdrawls");
     const withdrawls = await Withdrawal.find({ status: "pending" });
     res.status(200).json(withdrawls);
   } catch (error) {
+    console.log(error);
     res.status(500).json(error);
   }
 };
