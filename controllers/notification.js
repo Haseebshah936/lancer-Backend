@@ -25,16 +25,15 @@ const getNotification = async (req, res) => {
 const getNotificationsByUserId = async (req, res) => {
   try {
     let { id, skip } = req.params;
-    skip = parseInt(skip);
+    // skip = parseInt(skip);
     const notification = await Notification.find({
       userId: id,
-      isRead: false,
       type: {
         $ne: "chat",
       },
     })
-      .skip(skip)
-      .limit(10)
+      // .skip(skip)
+      // .limit(10)
       .sort({ createdAt: -1 });
     if (!notification) return res.status(404).send("Notification not found");
     res.status(200).send(notification);
