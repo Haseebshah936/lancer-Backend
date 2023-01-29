@@ -15,7 +15,7 @@ const customerSupportSchema = new mongoose.Schema({
   },
   requestType: {
     type: String,
-    enum: ["dispute", "aptitudeTest", "other"],
+    enum: ["dispute", "aptitudeTest", "other", "spam"],
     required: true,
   },
   disputeReason: {

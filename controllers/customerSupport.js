@@ -76,7 +76,9 @@ const getOtherDisputes = async (req, res) => {
     let { skip } = req.query;
     if (skip === undefined) skip = 0;
     const issues = await CustomerSupport.find({
-      requestType: "other",
+      requestType: {
+        $in: ["other", "spam"],
+      },
       state: "pending",
     })
       .populate("creatorId", "name email badge profilePic")
@@ -338,7 +340,7 @@ const createSpamDispute = async (req, res) => {
     if (disputeReason == undefined) disputeReason = "Spam in chat";
     const newDispute = new CustomerSupport({
       creatorId,
-      requestType: "other",
+      requestType: "spam",
       disputeReason,
       chatroomId,
     });
@@ -376,36 +378,42 @@ const activateDispute = async (req, res) => {
     const user = await User.findById(dispute.creatorId).select("name email");
     if (!user) return res.status(404).send("User not found");
     dispute.resolvers.push(resolverId);
-    const participants = [
-      new Participant({
-        userId: dispute.creatorId,
-      }),
-      new Participant({
-        userId: resolverId,
-        isAdmin: true,
-      }),
-    ];
-    if (dispute.requestType === "dispute") {
-      const project = await Project.findById(dispute.projectId);
-      if (!project) return res.status(404).send("Project not found");
-      participants.push(
+    if (!dispute.chatroomId) {
+      const participants = [
         new Participant({
-          userId: project.hired.userId,
-        })
-      );
+          userId: dispute.creatorId,
+        }),
+        new Participant({
+          userId: resolverId,
+          isAdmin: true,
+        }),
+      ];
+      if (dispute.requestType === "dispute") {
+        console.log("in dispute");
+        const project = await Project.findById(dispute.projectId);
+        if (!project) return res.status(404).send("Project not found");
+        participants.push(
+          new Participant({
+            userId: project.hired.userId,
+          })
+        );
+      }
+      const chatroom = new Chatroom({
+        participants,
+        creatorId: resolverId,
+        description: dispute.disputeReason,
+        groupName: user.name,
+        isGroup: true,
+        isCustomerSupport: true,
+      });
+      console.log(chatroom);
+      chatroom.save();
+
+      dispute.chatroomId = chatroom._id;
     }
-    const chatroom = new Chatroom({
-      participants,
-      creatorId: resolverId,
-      description: dispute.disputeReason,
-      groupName: user.name,
-      isGroup: true,
-      isCustomerSupport: true,
-    });
-    chatroom.save();
-    dispute.chatroomId = chatroom._id;
     dispute.state = "active";
     dispute.save();
+
     res.status(200).send(dispute);
   } catch (error) {
     console.log(error);

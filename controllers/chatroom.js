@@ -145,7 +145,8 @@ const getChatroom = async (req, res) => {
           ? chatroom.latestMessage?.text
           : "key##->doc";
       date = new Date(chatroom.latestMessage?.createdAt);
-      unread = date.getTime() > new Date(user.lastVisited).getTime();
+      if (user?.lastVisited)
+        unread = date.getTime() > new Date(user.lastVisited).getTime();
     } else {
       date = new Date(chatroom.createdAt);
     }
@@ -178,9 +179,9 @@ const getChatroom = async (req, res) => {
         subtitle,
         date,
         unread,
-        muted: user.muted,
+        muted: user?.muted,
         id: chatroom._id,
-        userParticipantId: user._id,
+        userParticipantId: user?._id,
         participantId: participant.userId._id,
         isGroup: chatroom.isGroup,
         isOnline: participant.userId.isOnline,
