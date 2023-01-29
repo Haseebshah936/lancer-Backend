@@ -47,7 +47,10 @@ const getBuyerReviews = async (req, res) => {
       .sort({
         createdAt: -1,
       })
-      .populate("sellerId buyerId projectId", "profilePic name ")
+      .populate(
+        "sellerId buyerId projectId",
+        "title budget description profilePic name "
+      )
       .skip(parseInt(skip))
       .limit(10);
     if (!reviews) return res.status(404).send("Reviews not found");
@@ -72,7 +75,10 @@ const getBuyerReviewForProject = async (req, res) => {
       .sort({
         createdAt: -1,
       })
-      .populate("sellerId buyerId projectId", "profilePic name ")
+      .populate(
+        "sellerId buyerId projectId",
+        "title budget description profilePic name "
+      )
       .skip(parseInt(skip))
       .limit(10);
     if (!reviews) return res.status(404).send("Review not found");
@@ -96,7 +102,10 @@ const getBuyerReviewByProjectId = async (req, res) => {
       .sort({
         createdAt: -1,
       })
-      .populate("sellerId buyerId projectId", "profilePic name ")
+      .populate(
+        "sellerId buyerId projectId",
+        "title budget description profilePic name "
+      )
       .skip(parseInt(skip))
       .limit(10);
     if (!reviews) return res.status(404).send("Review not found");
@@ -121,7 +130,10 @@ const getSellerReviewForProject = async (req, res) => {
       .sort({
         createdAt: -1,
       })
-      .populate("sellerId buyerId projectId", "profilePic name ")
+      .populate(
+        "sellerId buyerId projectId",
+        "title budget description profilePic name "
+      )
       .skip(parseInt(skip))
       .limit(10);
     if (!reviews) return res.status(404).send("Review not found");
@@ -145,7 +157,10 @@ const getSellerReviewByProjectId = async (req, res) => {
       .sort({
         createdAt: -1,
       })
-      .populate("sellerId buyerId projectId", "profilePic name ")
+      .populate(
+        "sellerId buyerId projectId",
+        "title budget description profilePic name "
+      )
       .skip(parseInt(skip))
       .limit(10);
     if (!reviews) return res.status(404).send("Review not found");
@@ -176,7 +191,10 @@ const getSellerReviews = async (req, res) => {
       .sort({
         createdAt: -1,
       })
-      .populate("sellerId buyerId projectId", "profilePic name")
+      .populate(
+        "sellerId buyerId projectId",
+        "title budget description profilePic name"
+      )
       .limit(10)
       .skip(parseInt(skip));
     if (!reviews) return res.status(404).send("Reviews not found");
