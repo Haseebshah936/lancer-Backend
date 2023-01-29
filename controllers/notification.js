@@ -28,13 +28,29 @@ const getNotificationsByUserId = async (req, res) => {
     // skip = parseInt(skip);
     const notification = await Notification.find({
       userId: id,
+      isRead: false,
       type: {
         $ne: "chat",
       },
-    })
-      // .skip(skip)
-      // .limit(10)
-      .sort({ createdAt: -1 });
+    }).sort({ createdAt: -1 });
+    if (!notification) return res.status(404).send("Notification not found");
+    res.status(200).send(notification);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error.message);
+  }
+};
+
+const getAllNotificationsByUserId = async (req, res) => {
+  try {
+    let { id, skip } = req.params;
+    // skip = parseInt(skip);
+    const notification = await Notification.find({
+      userId: id,
+      type: {
+        $ne: "chat",
+      },
+    }).sort({ createdAt: -1 });
     if (!notification) return res.status(404).send("Notification not found");
     res.status(200).send(notification);
   } catch (error) {
@@ -165,6 +181,7 @@ module.exports = {
   getNotifications,
   getNotification,
   getNotificationsByUserId,
+  getAllNotificationsByUserId,
   getMessageNotificationsByUserId,
   readNotitication,
   createNotification,

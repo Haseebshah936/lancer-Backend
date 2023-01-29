@@ -8,6 +8,7 @@ const {
   getMessageNotificationsByUserId,
   getNotificationsByUserId,
   readNotitication,
+  getAllNotificationsByUserId,
 } = require("../controllers/notification");
 
 const router = require("express").Router();
@@ -15,6 +16,7 @@ const router = require("express").Router();
 router.get("/", getNotifications);
 router.get("/:id", getNotification);
 router.get("/user/:id", getNotificationsByUserId);
+router.get("/all/user/:id", getAllNotificationsByUserId);
 router.get("/messages/user/:id", getMessageNotificationsByUserId);
 router.post("/", createNotification);
 router.put("/:id", updateNotification);
