@@ -7,7 +7,10 @@ const {
 
 const getWithdrawls = async (req, res) => {
   try {
-    const withdrawls = await Withdrawal.find();
+    const withdrawls = await Withdrawal.find().populate(
+      "userId",
+      "profilePic name badge"
+    );
     res.status(200).json(withdrawls);
   } catch (error) {
     res.status(500).json(error);
@@ -17,7 +20,10 @@ const getWithdrawls = async (req, res) => {
 const getWithdrawl = async (req, res) => {
   try {
     const { id } = req.params;
-    const withdrawl = await Withdrawal.findById(id);
+    const withdrawl = await Withdrawal.findById(id).populate(
+      "userId",
+      "profilePic name badge"
+    );
     res.status(200).json(withdrawl);
   } catch (error) {
     res.status(500).json(error);
@@ -26,7 +32,10 @@ const getWithdrawl = async (req, res) => {
 
 const getPendingWithdrawls = async (req, res) => {
   try {
-    const withdrawls = await Withdrawal.find({ status: "pending" });
+    const withdrawls = await Withdrawal.find({ status: "pending" }).populate(
+      "userId",
+      "profilePic name badge"
+    );
     res.status(200).json(withdrawls);
   } catch (error) {
     res.status(500).json(error);
@@ -35,7 +44,10 @@ const getPendingWithdrawls = async (req, res) => {
 
 const getApprovedWithdrawls = async (req, res) => {
   try {
-    const withdrawls = await Withdrawal.find({ status: "approved" });
+    const withdrawls = await Withdrawal.find({ status: "approved" }).populate(
+      "userId",
+      "profilePic name badge"
+    );
     res.status(200).json(withdrawls);
   } catch (error) {
     res.status(500).json(error);
@@ -44,7 +56,10 @@ const getApprovedWithdrawls = async (req, res) => {
 
 const getRejectedWithdrawls = async (req, res) => {
   try {
-    const withdrawls = await Withdrawal.find({ status: "rejected" });
+    const withdrawls = await Withdrawal.find({ status: "rejected" }).populate(
+      "userId",
+      "profilePic name badge"
+    );
     res.status(200).json(withdrawls);
   } catch (error) {
     res.status(500).json(error);
@@ -54,7 +69,10 @@ const getRejectedWithdrawls = async (req, res) => {
 const getWithdrawlsByUserId = async (req, res) => {
   try {
     const { id } = req.params;
-    const Withdrawals = await Withdrawal.find({ userId: id });
+    const Withdrawals = await Withdrawal.find({ userId: id }).populate(
+      "userId",
+      "profilePic name badge"
+    );
     res.status(200).json(Withdrawals);
   } catch (error) {
     res.status(500).json(error);
@@ -67,7 +85,7 @@ const getPendingWithdrawlsByUserId = async (req, res) => {
     const withdrawals = await Withdrawal.find({
       userId: id,
       status: "pending",
-    });
+    }).populate("userId", "profilePic name badge");
     res.status(200).json(withdrawals);
   } catch (error) {
     res.status(500).json(error);
@@ -80,7 +98,7 @@ const getApprovedWithdrawlsByUserId = async (req, res) => {
     const withdrawals = await Withdrawal.find({
       userId: id,
       status: "approved",
-    });
+    }).populate("userId", "profilePic name badge");
     res.status(200).json(withdrawals);
   } catch (error) {
     res.status(500).json(error);
@@ -93,7 +111,7 @@ const getRejectedWithdrawlsByUserId = async (req, res) => {
     const withdrawals = await Withdrawal.find({
       userId: id,
       status: "rejected",
-    });
+    }).populate("userId", "profilePic name badge");
     res.status(200).json(withdrawals);
   } catch (error) {
     res.status(500).json(error);
