@@ -276,7 +276,7 @@ const createReview = async (req, res) => {
       client.stars = newBuyerRating;
       await client.save();
       const title = "Review";
-      const text = `${freelancer.name} left ${rating} rating`;
+      const text = `${freelancer.name} left a ${rating} star rating`;
       const image = freelancer.profilePic;
       if (client.subscription) {
         sendSoftNotification(client.subscription, title, text, image);
@@ -315,7 +315,7 @@ const createReview = async (req, res) => {
       freelancer.seller.rating = newFreelancerRating;
       await freelancer.save();
       const title = "Review";
-      const text = `${client.name} left ${rating} rating`;
+      const text = `${client.name} left a ${rating} star rating`;
       const image = client.profilePic;
       if (freelancer.subscription) {
         sendSoftNotification(freelancer.subscription, title, text, image);
