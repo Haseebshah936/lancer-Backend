@@ -178,7 +178,7 @@ const approveWithdrawal = async (req, res) => {
     await withdrawal.save();
     const user = await User.findById(withdrawal.userId);
     const title = "Withdrawal Approved";
-    const text = `Your withdrawal request of ${withdrawal.amount} has been approved`;
+    const text = `Your withdrawal request for ${withdrawal.amount}$ has been approved`;
     const image = null;
     if (user.subscription) {
       sendSoftNotification(user.subscription, title, text, image);
