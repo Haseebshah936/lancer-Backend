@@ -314,7 +314,7 @@ const createReview = async (req, res) => {
       freelancer.seller.reviews++;
       freelancer.seller.rating = newFreelancerRating;
       await freelancer.save();
-      const title = "new Review";
+      const title = "Review";
       const text = `${client.name} left ${rating} rating`;
       const image = client.profilePic;
       if (freelancer.subscription) {
