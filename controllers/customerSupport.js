@@ -6,6 +6,7 @@ const {
   sendSoftNotification,
   sendHardNotification,
 } = require("../utils/notification");
+const e = require("express");
 
 const getCustomerSupportIssues = async (req, res) => {
   try {
@@ -410,6 +411,19 @@ const activateDispute = async (req, res) => {
       chatroom.save();
 
       dispute.chatroomId = chatroom._id;
+    } else {
+      const chatroom = await Chatroom.findById(dispute.chatroomId).populate(
+        "participants.userId",
+        "name profilePic badge isOnline subscription"
+      );
+      chatroom.state = "active";
+      chatroom.participants.push(
+        new Participant({
+          userId: resolverId,
+          isAdmin: true,
+        })
+      );
+      chatroom.save();
     }
     dispute.state = "active";
     dispute.save();
