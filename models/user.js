@@ -92,6 +92,15 @@ const sellerSchema = new mongoose.Schema({
   views: { type: Number, default: 0 },
 });
 
+const subscriptionSchema = new mongoose.Schema({
+  endpoint: String,
+  expirationTime: Number,
+  keys: {
+    p256dh: String,
+    auth: String,
+  },
+});
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -119,6 +128,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "I am a freelancer",
   },
+  subscription: { type: subscriptionSchema, default: null },
   emailVerified: { type: Boolean, default: false },
   googleId: { type: String, default: null },
   facebookId: { type: String, default: null },
@@ -173,6 +183,7 @@ const userSchema = new mongoose.Schema({
 });
 // userSchema.plugin(passportLocalMongoose);
 userSchema.plugin(findOrCreate);
+const Subscription = mongoose.model("Subscription", subscriptionSchema);
 const User = mongoose.model("User", userSchema);
 const Seller = mongoose.model("Seller", sellerSchema);
-module.exports = { User, Seller };
+module.exports = { User, Seller, Subscription };
