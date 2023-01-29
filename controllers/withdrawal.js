@@ -112,6 +112,8 @@ const createWithdrawl = async (req, res) => {
       amount,
       accountDetail,
     });
+    user.currentBalance -= amount;
+    await user.save();
     const withdrawal = await newWithdrawl.save();
     res.status(200).json(withdrawal);
   } catch (error) {
