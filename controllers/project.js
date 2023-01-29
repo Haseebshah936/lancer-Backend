@@ -767,10 +767,10 @@ const acceptProjectExtension = async (req, res) => {
     project.completionDate =
       Date.now() +
       (project.days + project.extension.id(extensionId).days) *
-        24 *
-        60 *
-        60 *
-        1000;
+      24 *
+      60 *
+      60 *
+      1000;
     project.markModified("extension");
     const response = await project.save();
     res.status(201).send(response);
@@ -840,7 +840,10 @@ const cancelProject = async (req, res) => {
     const client = await User.findByIdAndUpdate(project.creatorId, {
       $inc: { cancelledOrders: 1 },
     });
+    console.log("Before", client.currentBalance);
     client.currentBalance = client.currentBalance + invoice.amount;
+    console.log("After", client.currentBalance);
+
     const freelancer = await User.findByIdAndUpdate(project.hired.userId, {
       $inc: { "seller.cancelledOrders": 1 },
     });
