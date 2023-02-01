@@ -636,7 +636,7 @@ const getProductsBySearch = async (req, res) => {
     //     tags: new RegExp(e, "i"),
     //   });
     // });
-    const tags = search.split(" ");
+    const tags = search.toLowerCase().split(" ");
     console.log(tags);
     const products = await product.Product.find({
       state: "live",
