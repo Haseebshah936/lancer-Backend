@@ -59,7 +59,6 @@ const sellerSchema = new mongoose.Schema({
       },
       description: {
         type: String,
-        required: true,
       },
       starting: {
         type: String,
