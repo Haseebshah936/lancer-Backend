@@ -1,6 +1,7 @@
 const user = require("../controllers/user");
 const router = require("express").Router();
 router.get("/", user.getUsers);
+router.get("/rankedUsers", user.getRankedUsers);
 router.get("/users/active", user.getActiveUsers);
 router.get("/users/banned", user.getBannedUsers);
 router.get("/:email", user.getUser);

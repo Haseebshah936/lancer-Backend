@@ -11,6 +11,27 @@ const getUsers = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
+const getRankedUsers = async (req, res) => {
+  try {
+    const { limit } = req.query;
+    const users = await User.find({
+      seller: { $ne: null },
+      "seller.reviews": { $ne: null },
+      "seller.rating": { $ne: 0 },
+    })
+      .select(
+        "profilePic name country badge seller.reviews seller.completedOrders seller.score seller.rating"
+      )
+      .sort({ "seller.score": -1 })
+      .limit(parseInt(limit));
+    res.status(200).json(users);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+};
+
 const getActiveUsers = async (req, res) => {
   try {
     const users = await User.find({
@@ -574,6 +595,7 @@ const subscribe = async (req, res) => {
 
 module.exports = {
   getUsers,
+  getRankedUsers,
   getActiveUsers,
   getBannedUsers,
   getSellers,
