@@ -427,7 +427,9 @@ const updateRecentSearches = async (req, res) => {
     const { recentSearch } = req.body;
     const user = await User.findById(id).select("-password");
     if (!user) return res.status(404).send("User not found");
-    if (user.recentSearches.length === 5) user.recentSearches.shift();
+    if (user.recentSearches.includes(recentSearch))
+      user.recentSearches.splice(user.recentSearches.indexOf(recentSearch), 1);
+    else if (user.recentSearches.length === 5) user.recentSearches.shift();
     user.recentSearches.push(recentSearch);
     await user.save();
     res.status(200).send(user);
